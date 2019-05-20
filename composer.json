@@ -1,0 +1,25 @@
+{
+    "name": "uvdesk/extensions",
+    "description": "Extension Bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "akshay kumar",
+            "email": "akshay.kumar758@webkul.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0",
+        "uvdesk/composer-plugin": "0.1.*",
+        "symfony/flex": "^1.0",
+        "uvdesk/core-framework": "0.1.*"
+    },
+    "autoload": {
+        "psr-4": { "Webkul\\UVDesk\\ExtensionBundle\\": "" }
+    },
+    "extra": {
+        "uvdesk-package-extension": "Webkul\\UVDesk\\ExtensionBundle\\Package\\Composer"
+    },
+    "minimum-stability": "dev"
+}
