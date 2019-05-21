@@ -11,7 +11,7 @@ class HelpdeskExtension extends Extension
 {
     public function getAlias()
     {
-        return 'uvdesk_extension';
+        return 'uvdesk_extensions';
     }
 
     public function getConfiguration(array $configs, ContainerBuilder $container)
@@ -21,20 +21,22 @@ class HelpdeskExtension extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
-        // $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        // $loader->load('services.yaml');
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.yaml');
 
         // Load bundle configurations
         $configuration = $this->getConfiguration($configs, $container);
 
         foreach ($this->processConfiguration($configuration, $configs) as $param => $value) {
             switch ($param) {
-                case 'path':
-                    $container->setParameter("uvdesk.extensions.path", $value);
+                case 'dir':
+                    $container->setParameter("uvdesk_extensions.dir", $value);
                     break;
                 default:
                     break;
             }
         }
+
+        // Compile packages
     }
 }

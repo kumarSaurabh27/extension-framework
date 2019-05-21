@@ -10,9 +10,9 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('uvdesk_extension')
+        $treeBuilder->root('uvdesk_extensions')
             ->children()
-                ->node('path', 'scalar')->defaultValue('%kernel.project_dir%/apps')->end()
+                ->node('dir', 'scalar')->defaultValue('%kernel.project_dir%/apps')->end()
             ->end();
 
         return $treeBuilder;

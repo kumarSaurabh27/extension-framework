@@ -1,17 +1,6 @@
 services:
-    uvdesk.mailbox:
-        public: true
-        class: Webkul\UVDesk\MailboxBundle\Services\MailboxService
-        arguments: ['@service_container', '@request_stack', '@doctrine.orm.entity_manager']
-
-    Webkul\UVDesk\MailboxBundle\Console\:
-        resource: '../../Console/*'
-        exclude: '../../Console/{UTF8Symbol.php,ANSIEscapeSequence.php}'
+    Webkul\UVDesk\ExtensionBundle\EventListener\Console:
         arguments: ['@service_container', '@doctrine.orm.entity_manager']
-        tags: ['console.command']
-    
-    Webkul\UVDesk\MailboxBundle\EventListener\Mailbox:
-        arguments: ['@service_container', '@request_stack']
         tags:
-            - { name: uvdesk.event_listener, event: swiftmailer.configuration.removed, method: onSwiftMailerConfigurationRemoved, priority: 1 }
-            - { name: uvdesk.event_listener, event: swiftmailer.configuration.created, method: onSwiftMailerConfigurationCreated, priority: 2 }
+            - { name: kernel.event_listener, event: console.command }
+            - { name: kernel.event_listener, event: console.terminate }
