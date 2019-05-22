@@ -1,0 +1,12 @@
+{
+    "vendors": [
+        {
+            "name": "uvdesk",
+            "extensions": [
+                {
+                    "name": "shopify-extension"
+                }
+            ]
+        }
+    ]
+}

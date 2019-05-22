@@ -1,0 +1,7 @@
+{
+    "name": "uvdesk/shopify-extension",
+    "type": "uvdesk-ecommerce-extension",
+    "autoload": {
+        "HelpdeskExtension\\UVDesk\\ShopifyEcommerce\\": ""
+    }
+}
