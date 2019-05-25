@@ -1,0 +1,44 @@
+<!--Aside-->
+<div class="uv-aside" {% if app.request.cookies and app.request.cookies.get('uv-asideView') %}style="display: none;"{% endif %}>
+        <div class="uv-aside-head">
+            <div class="uv-aside-title">
+                <h6>{{ 'App Centre'|trans }}</h6>
+            </div>
+            <div class="uv-aside-back">
+                <a href="{{ 'app_base' == app.request.attributes.get('_route') ? path('dashboard_action') : path('app_base') }}">
+                    <span>
+                        {{ 'Back'|trans }}
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="uv-aside-nav">
+            <ul>
+                <li><a class="uv-aside-nav-active" data-filter="All" href="{{ path('app_base') }}#">{{ 'All'|trans }}</a></li>
+                <li><a href="{{ path('app_base') }}#free" data-filter="Free">{{ 'Free'|trans }}</a></li>
+                <li><a href="{{ path('app_base') }}#premium" data-filter="Premium">{{ 'Premium'|trans }}</a></li>
+                <li><a class="uv-installed-apps" data-filter="Installed"  href="{{ path('app_base') }}#installed">{{ 'Installed Apps'|trans }}</a></li>
+                {#<li><a >{{ 'Request an App'|trans }}</a></li>#}
+            </ul>
+        </div>
+
+        <div class="uv-aside-nav">
+            <h6>{{ 'Categories'|trans }}</h6>
+            <ul id="uv-app-categories">
+                {% set categories = application_service.getAllAppCategories() %}
+                {% if categories is defined %}
+                    {% for category in categories %}
+                        <li>
+                            <a data-filter="{{ category.name }}" href="{{ path('app_base') }}#{{ category.name }}">
+                                {{ category.name|trans }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>{{ 'No Categories Found'|trans }}</li>
+                {% endif %}
+            </ul>
+        </div>
+</div>
+<!--//Aside-->
