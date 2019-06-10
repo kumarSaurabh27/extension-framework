@@ -1,12 +1,12 @@
 {
     "vendors": {
         "uvdesk": {
-            "path": "apps/uvdesk/",
-            "extensions": [
-                {
-                    "shopify-extension": "shopify/extension.json"
+            "path": "uvdesk/",
+            "extensions": {
+                "shopify-ecommerce": {
+                    "path": "shopify/extension.json"
                 }
-            ]
+            }
         }
     }
 }
