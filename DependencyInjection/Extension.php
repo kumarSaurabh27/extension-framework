@@ -4,10 +4,11 @@ namespace Webkul\UVDesk\ExtensionBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension as SymfonyExtension;
+use HelpdeskExtension\UVDesk\Shopify\ShopifyExtension;
 
-class HelpdeskExtension extends Extension
+class Extension extends SymfonyExtension
 {
     public function getAlias()
     {
@@ -37,6 +38,25 @@ class HelpdeskExtension extends Extension
             }
         }
 
-        // Compile packages
+        // Compile extensions
+        $extensions = [];
+        $extensionsJson = json_decode(file_get_contents($container->getParameter('uvdesk_extensions.dir') . "/extensions.json"), true);
+
+        foreach ($extensionsJson['vendors'] as $vendor => $vendorAttributes) {
+            foreach ($vendorAttributes['extensions'] as $vendorExtension => $vendorExtensionAttributes) {
+                if (!empty($vendorExtensionAttributes['ext'])) {
+                    // Raise a warning to dump composer autoload if class is not found
+                    try {
+                        $extensions[] = new \ReflectionClass($vendorExtensionAttributes['ext']);
+                    } catch (\Exception $e) {
+                        dump($e->getMessage());
+                        die;
+                    }
+                }
+            }
+        }
+
+        // dump($extensions);
+        // die;
     }
 }

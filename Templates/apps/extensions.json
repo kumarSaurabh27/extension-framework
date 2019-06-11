@@ -4,7 +4,8 @@
             "path": "uvdesk/",
             "extensions": {
                 "shopify-ecommerce": {
-                    "path": "shopify/extension.json"
+                    "cnf": "extension.json",
+                    "ext": "HelpdeskExtension\\UVDesk\\Shopify\\ShopifyExtension"
                 }
             }
         }

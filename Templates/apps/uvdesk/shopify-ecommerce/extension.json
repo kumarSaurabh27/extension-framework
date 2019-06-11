@@ -1,11 +1,11 @@
 {
-    "name": "uvdesk/shopify",
+    "name": "uvdesk/shopify-ecommerce",
     "description": "UVDesk Community Helpdesk Shopify Extension",
-    "type": "uvdesk-extension",
+    "type": "uvdesk-ecommerce-extension",
     "extension": "ticket-snippet",
     "autoload": {
         "psr-4": {
-            "HelpdeskExtension\\UVDesk\\Shopify\\": "setup/"
+            "HelpdeskExtension\\UVDesk\\Shopify\\": ""
         }
     }
 }
