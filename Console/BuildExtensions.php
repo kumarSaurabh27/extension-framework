@@ -62,7 +62,7 @@ class BuildExtensions extends Command
 
         foreach ($lockedExtensions['vendors'] as $vendor => $vendor_attributes) {
             foreach ($vendor_attributes['extensions'] as $vendor_extension => $extension_attributes) {
-                $extension_conf = $this->src_dir . "/" . $vendor . "/" . $vendor_extension . "/" . $extension_attributes['conf'];
+                $extension_conf = $this->src_dir . "/" . $vendor . "/" . $vendor_extension . "/" . $extension_attributes['cnf'];
 
                 if (!file_exists($extension_conf) || is_dir($extension_conf)) {
                     throw new \Exception("Unable to locate configuration file for extension " . $vendor . "/" . $vendor_extension  . " (Looked in at " . $extension_conf . ").");

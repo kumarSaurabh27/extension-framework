@@ -4,6 +4,7 @@ namespace Webkul\UVDesk\ExtensionBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Webkul\UVDesk\ExtensionBundle\DependencyInjection\Compilers;
 use Webkul\UVDesk\ExtensionBundle\DependencyInjection\Extension;
 
 class UVDeskExtensionBundle extends Bundle
@@ -16,5 +17,7 @@ class UVDeskExtensionBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
+
+        $container->addCompilerPass(new Compilers\ECommerce());
     }
 }

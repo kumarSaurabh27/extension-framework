@@ -4,15 +4,7 @@ services:
         autoconfigure: true
         public: false
     
-    Webkul\UVDesk\ExtensionBundle\:
-        resource: '../../*'
-        exclude: '../../{DependencyInjection,Extension,Package,Templates}'
-    
     Webkul\UVDesk\ExtensionBundle\EventListener\Console:
         tags:
             - { name: kernel.event_listener, event: console.command }
             - { name: kernel.event_listener, event: console.terminate }
-    
-    Webkul\UVDesk\ExtensionBundle\Hooks\ECommerceApplication:
-        tags:
-            - { name: uvdesk.hooks, type: 'ticket-apps' }
