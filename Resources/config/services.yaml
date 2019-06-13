@@ -4,6 +4,13 @@ services:
         autoconfigure: true
         public: false
     
+    _instanceof:
+        Webkul\UVDesk\CoreBundle\Extensibles\Tickets\SnippetInterface:
+            tags: ['uvdesk_core_extensions.ticket_snippet']
+        
+        Webkul\UVDesk\CoreBundle\Routing\RouterInterface:
+            tags: ['uvdesk_core.routing_definitions']
+    
     Webkul\UVDesk\ExtensionBundle\:
         resource: '../../*'
         exclude: '../../{DependencyInjection,Extension,Package,Templates}'

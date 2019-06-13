@@ -1,0 +1,104 @@
+helpdesk_member_extensions:
+    path:     /apps
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::listApplications
+    defaults: { panelId: 'apps' }
+
+ecommerce_channel_retrieve_order:
+    path:     /ticket/{ticketId}/addorder
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    methods: [POST,PUT]
+    requirements:
+        ticketId: '\d+'
+
+# # Base application routes
+# app_base:
+#     path:     /apps
+#     defaults: { _controller: WebkulAppBundle:Application:index }
+
+# app_list_xhr:
+#     path:     /apps/xhr
+#     defaults: { _controller: WebkulAppBundle:Application:listXhr }
+
+# app_install_xhr:
+#     path:     /apps/install
+#     defaults: { _controller: WebkulAppBundle:Application:installXhr }
+
+# app_uninstall_xhr:
+#     path:     /apps/uninstall
+#     defaults: { _controller: WebkulAppBundle:Application:uninstallXhr }
+
+# app_enable_xhr:
+#     path:     /apps/enable
+#     defaults: { _controller: WebkulAppBundle:Application:enableXhr }
+
+# app_save_application_channel:
+#     path:     /apps/{applicationRouteName}/channel/save/{channelId}
+#     defaults: { _controller: WebkulAppBundle:Application:createApplicationChannel, channelId: 0 }
+#     requirements:
+#         channelId: '\d+'
+
+# app_save_application_settings:
+#     path:     /apps/{applicationRouteName}/channel/save/settings/{channelId}
+#     defaults: { _controller: WebkulAppBundle:Application:saveApplicationChannelSetting, channelId: 0 }
+#     requirements:
+#         channelId: '\d+'
+
+# app_remove_application_channel:
+#     path:     /apps/{applicationRouteName}/channel/remove/{channelId}
+#     defaults: { _controller: WebkulAppBundle:Application:removeApplicationChannel, channelId: 0 }
+
+app_fetch_application_collection:
+    path:     /apps/{applicationRouteName}/collection/fetch
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    # defaults: { _controller: WebkulAppBundle:Application:getApplicationChannelCollectionXhr }
+
+todo_action:
+    path:     /ticket/todo/{id}
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    defaults: { id: 0 }
+    # defaults: { _controller: WebkulTicketBundle:Todo:todoXhr ,id: 0 }
+
+# app_process_application_external_redirect:
+#     path:     /apps/{applicationRouteName}/handle/redirect
+#     defaults: { _controller: WebkulAppBundle:Application:applicationExternalRedirect }
+
+# app_application_medium:
+#     path:     /apps/{applicationRouteName}/medium/{apiEndpoint}
+#     defaults: { _controller: WebkulAppBundle:Application:applicationAPIEndpoint }
+
+
+
+# # Application Routes
+# app_route_ecommerce:
+#     resource: "@WebkulAppBundle/Resources/config/route/ecommerce.yml"
+#     prefix:   /apps/
+
+# customer_tickets_xhr:
+#     path:   /apps/customer-tickets/xhr
+#     defaults: { _controller: WebkulAppBundle:Application:customerTicketsXhr }
+
+# search_company_articles:
+#     path:   /apps/articles/search
+#     defaults: { _controller: WebkulAppBundle:Application:searchCompanyArticles }
+
+# app_google_calendar_xhr:
+#     path:   /apps/google-calendar/{incrementId}/xhr
+#     defaults: { _controller: WebkulAppBundle:Application:customApiXhr }
+
+# app_google_calendar_edit_xhr:
+#     path:   /apps/google-calendar/{incrementId}/xhr/{eventId}
+#     defaults: { _controller: WebkulAppBundle:Application:customApiXhr }
+#     methods: [PUT, DELETE]
+
+# app_new_features_xhr:
+#     path:     /new-features
+#     defaults: { _controller: WebkulAppBundle:NewFeature:newFeaturesXhr, activeTab: '' }
+
+# app_data_xhr:
+#     path:     /apps/{applicationRouteName}/xhr
+#     defaults: { _controller: WebkulAppBundle:Application:getAppData }
+
+# # app load route , keep this at end of file
+# app_load_application:
+#     path:     /apps/{applicationRouteName}/{activeTab}
+#     defaults: { _controller: WebkulAppBundle:Application:loadApplication, activeTab: '' }

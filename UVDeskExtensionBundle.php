@@ -18,6 +18,6 @@ class UVDeskExtensionBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new Compilers\ECommerce());
+        $container->addCompilerPass(new Compilers\TicketSnippetExtensibles());
     }
 }

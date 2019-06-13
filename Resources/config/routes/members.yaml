@@ -1,4 +1,0 @@
-helpdesk_member_extensions:
-    path:     /apps
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::listApplications
-    defaults: { panelId: 'apps' }
