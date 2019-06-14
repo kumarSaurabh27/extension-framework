@@ -2,9 +2,9 @@
 
 namespace HelpdeskExtension\UVDesk\Shopify;
 
-use Webkul\UVDesk\ExtensionBundle\Extensions\ECommerce;
+// use Webkul\UVDesk\ExtensionBundle\Extensions\ECommerce;
 
-class ShopifyExtension extends ECommerce
+class ShopifyExtension
 {
     public function info()
     {
