@@ -9,7 +9,7 @@ class Composer extends ComposerPackageExtension
 {
     public function loadConfiguration()
     {
-        $composerPackage = new ComposerPackage(new UvdeskExtensionsConfiguration());
+        $composerPackage = new ComposerPackage();
         $composerPackage
             ->movePackageConfig('config/packages/uvdesk_extensions.yaml', 'Templates/config.yaml')
             ->movePackageConfig('config/routes/uvdesk_extensions.yaml', 'Templates/routes.yaml');

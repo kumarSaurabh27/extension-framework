@@ -7,6 +7,19 @@ services:
     _instanceof:
         Webkul\UVDesk\CoreBundle\Routing\RouterInterface:
             tags: ['uvdesk_core.routing_definitions']
+        
+        # Dashboard Extensible Components
+        Webkul\UVDesk\CoreBundle\Extensions\Type\NavigationInterface:
+            tags: ['uvdesk_core_extensions.navigation']
+        
+        Webkul\UVDesk\CoreBundle\Extensions\Type\SearchResultInterface:
+            tags: ['uvdesk_core_extensions.search_result']
+        
+        Webkul\UVDesk\CoreBundle\Extensions\Type\HomepageSectionInterface:
+            tags: ['uvdesk_core_extensions.homepage_section']
+        
+        Webkul\UVDesk\CoreBundle\Extensions\Type\HomepageSectionItemInterface:
+            tags: ['uvdesk_core_extensions.homepage_section_item']
     
     Webkul\UVDesk\ExtensionBundle\:
         resource: '../../*'
