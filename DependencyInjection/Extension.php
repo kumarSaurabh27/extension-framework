@@ -38,24 +38,20 @@ class Extension extends SymfonyExtension
         }
 
         // Compile extensions
-        $extensions = [];
-        $extensionsJson = json_decode(file_get_contents($container->getParameter('uvdesk_extensions.dir') . "/extensions.json"), true);
+        $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
 
-        foreach ($extensionsJson['vendors'] as $vendor => $vendorAttributes) {
-            foreach ($vendorAttributes['extensions'] as $vendorExtension => $vendorExtensionAttributes) {
-                if (!empty($vendorExtensionAttributes['ext'])) {
-                    // Raise a warning to dump composer autoload if class is not found
-                    try {
-                        $extensions[] = new \ReflectionClass($vendorExtensionAttributes['ext']);
-                    } catch (\Exception $e) {
-                        dump($e->getMessage());
-                        die;
+        if (file_exists($path)) {
+            $extensions = [];
+            $extensionsJson = json_decode(file_get_contents($container->getParameter('uvdesk_extensions.dir') . "/extensions.json"), true);
+
+            foreach ($extensionsJson['vendors'] as $vendor => $vendorAttributes) {
+                foreach ($vendorAttributes['extensions'] as $vendorExtension => $vendorExtensionAttributes) {
+                    if (!empty($vendorExtensionAttributes['ext'])) {
+                        // Raise a warning to dump composer autoload if class is not found
+                        // $extensions[] = new \ReflectionClass($vendorExtensionAttributes['ext']);
                     }
                 }
             }
         }
-
-        // dump($extensions);
-        // die;
     }
 }
