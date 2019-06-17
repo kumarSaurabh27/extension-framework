@@ -1,7 +1,15 @@
-helpdesk_member_extensions:
+uvdesk_extensions_dashboard:
     path:     /apps
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::listApplications
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::loadDashboard
     defaults: { panelId: 'apps' }
+
+uvdesk_extensions_load_application_collection_xhr:
+    path:     /apps/xhr/collection
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\ApplicationXHR::loadCollectionXHR
+
+uvdesk_extensions_load_application:
+    path:     /apps/{application}
+    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::loadApplication
 
 ecommerce_channel_retrieve_order:
     path:     /ticket/{ticketId}/addorder
@@ -97,8 +105,3 @@ todo_action:
 # app_data_xhr:
 #     path:     /apps/{applicationRouteName}/xhr
 #     defaults: { _controller: WebkulAppBundle:Application:getAppData }
-
-# # app load route , keep this at end of file
-# app_load_application:
-#     path:     /apps/{applicationRouteName}/{activeTab}
-#     defaults: { _controller: WebkulAppBundle:Application:loadApplication, activeTab: '' }

@@ -24,6 +24,6 @@ SVG;
 
     public static function getRouteName() : string
     {
-        return 'helpdesk_member_dashboard';
+        return 'uvdesk_extensions_dashboard';
     }
 }

@@ -1,0 +1,9 @@
+{
+    "name": "uvdesk/commons",
+    "description": "UVDesk Community Commons Extension",
+    "autoload": {
+        "psr-4": {
+            "UVDeskApps\\UVDesk\\Commons\\": ""
+        }
+    }
+}

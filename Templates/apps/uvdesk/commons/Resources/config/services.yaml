@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: false
     
-    UVDeskApps\UVDesk\ShopifyECommerce\:
+    UVDeskApps\UVDesk\Commons\:
         resource: '../../*'
-        exclude: '../../{ShopifyECommerce.php}'
+        exclude: '../../{Commons.php}'
     

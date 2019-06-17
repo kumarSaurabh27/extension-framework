@@ -1,12 +1,12 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Extensions\ECommerce;
+namespace UVDeskApps\UVDesk\ECommerce\Widgets;
 
 use Twig\Environment as TwigEnvironment;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Webkul\UVDesk\CoreBundle\Extensibles\Tickets\SnippetInterface;
+use Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface;
 
-class TicketOrders implements SnippetInterface
+class ECommerceOrders implements TicketWidgetInterface
 {
     CONST SVG = <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="18px">

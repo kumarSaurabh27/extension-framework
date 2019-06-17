@@ -1,0 +1,19 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+    
+    _instanceof:
+        # Applications
+        Webkul\UVDesk\ExtensionBundle\Apps\ApplicationInterface:
+            tags: ['uvdesk_extensions.app_extension']
+        
+        # Ticket Extensible Components
+        Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
+            tags: ['uvdesk_core_extensions.ticket_widget']
+    
+    UVDeskApps\UVDesk\ECommerce\:
+        resource: '../../*'
+        exclude: '../../{ECommerce.php}'
+    

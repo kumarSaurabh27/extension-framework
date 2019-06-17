@@ -8,7 +8,7 @@ class ExtensionRoutes implements RouterInterface
 {
     public static function getResourcePath()
     {
-        return __DIR__ . "/_routes/private.yaml";
+        return __DIR__ . "/_routes/extension.yaml";
     }
 
     public static function getResourceType()

@@ -1,0 +1,9 @@
+{
+    "name": "uvdesk/ecommerce",
+    "description": "UVDesk Community ECommerce Extension",
+    "autoload": {
+        "psr-4": {
+            "UVDeskApps\\UVDesk\\ECommerce\\": ""
+        }
+    }
+}

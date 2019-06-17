@@ -1,0 +1,15 @@
+# app_webhook_callback:
+#     path:    /{applicationRouteName}/webhook
+#     defaults: { _controller: WebkulAppBundle:Application:applicationWebhookCallback }
+
+# app_background_callback:
+#     path:    /{applicationRouteName}/background
+#     defaults: { _controller: WebkulAppBundle:Application:applicationBackgroundProcess }
+
+# app_public_callback:
+#     path:    /public-callback/{applicationRouteName}
+#     defaults: { _controller: WebkulAppBundle:Application:applicationPublicCallback }
+
+# app_public_intermediate:
+#     path:    /public-intermediate/{targetUrl}
+#     defaults: { _controller: WebkulAppBundle:Application:applicationPublicIntermediate }
