@@ -39,7 +39,7 @@ SVG;
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        return $this->twig->render('@UVDeskExtension//todo.html.twig', [
+        return $this->twig->render('@_uvdesk_extension_uvdesk_commons//todo.html.twig', [
             'id' => $request->get('ticketId')
         ]);
     }

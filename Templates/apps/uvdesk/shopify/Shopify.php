@@ -1,10 +1,10 @@
 <?php
 
-namespace UVDeskApps\UVDesk\ShopifyECommerce;
+namespace UVDeskApps\UVDesk\Shopify;
 
-use Webkul\UVDesk\ExtensionBundle\Apps\Application;
+use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
 
-class ShopifyECommerce extends Application
+class Shopify extends HelpdeskModule
 {
     public static function getTitle() : string
     {

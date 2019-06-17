@@ -2,9 +2,9 @@
 
 namespace UVDeskApps\UVDesk\Commons;
 
-use Webkul\UVDesk\ExtensionBundle\Apps\Application;
+use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
 
-class Commons extends Application
+class Commons extends HelpdeskModule
 {
     public static function getTitle() : string
     {

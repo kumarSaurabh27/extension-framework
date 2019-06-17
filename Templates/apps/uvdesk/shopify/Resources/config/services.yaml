@@ -20,6 +20,6 @@ services:
         Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
             tags: ['uvdesk_core.extension.ticket_widget']
     
-    UVDeskApps\UVDesk\Commons\:
+    UVDeskApps\UVDesk\Shopify\:
         resource: '../../*'
     

@@ -1,6 +1,6 @@
 {
     "name": "uvdesk/ecommerce",
-    "description": "UVDesk Community ECommerce Extension",
+    "description": "UVDesk Community ECommerce Module",
     "autoload": {
         "psr-4": {
             "UVDeskApps\\UVDesk\\ECommerce\\": ""

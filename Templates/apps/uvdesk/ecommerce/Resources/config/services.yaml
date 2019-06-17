@@ -5,15 +5,21 @@ services:
         public: false
     
     _instanceof:
-        # Applications
-        Webkul\UVDesk\ExtensionBundle\Apps\ApplicationInterface:
-            tags: ['uvdesk_extensions.app_extension']
+        # Packages
+        Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModuleInterface:
+            tags: ['uvdesk_extensions.helpdesk_module']
         
-        # Ticket Extensible Components
+        Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskComponentInterface:
+            tags: ['uvdesk_extensions.helpdesk_component']
+        
+        # Application Extensible Extensions
+        Webkul\UVDesk\ExtensionBundle\Extensions\Type\ApplicationInterface:
+            tags: ['uvdesk_extensions.extension.application']
+        
+        # Ticket Extensible Extensions
         Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
-            tags: ['uvdesk_core_extensions.ticket_widget']
+            tags: ['uvdesk_core.extension.ticket_widget']
     
     UVDeskApps\UVDesk\ECommerce\:
         resource: '../../*'
-        exclude: '../../{ECommerce.php}'
     

@@ -2,9 +2,9 @@
 
 namespace UVDeskApps\UVDesk\ECommerce;
 
-use Webkul\UVDesk\ExtensionBundle\Apps\Application;
+use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
 
-class ECommerce extends Application
+class ECommerce extends HelpdeskModule
 {
     public static function getTitle() : string
     {

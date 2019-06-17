@@ -1,0 +1,9 @@
+{
+    "name": "uvdesk/shopify",
+    "description": "UVDesk Community Helpdesk Shopify Module",
+    "autoload": {
+        "psr-4": {
+            "UVDeskApps\\UVDesk\\Shopify\\": ""
+        }
+    }
+}

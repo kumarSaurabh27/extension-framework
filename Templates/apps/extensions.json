@@ -11,9 +11,9 @@
                     "cnf": "extension.json",
                     "ext": "UVDeskApps\\UVDesk\\ECommerce\\ECommerce"
                 },
-                "shopify-ecommerce": {
+                "shopify": {
                     "cnf": "extension.json",
-                    "ext": "UVDeskApps\\UVDesk\\ShopifyECommerce\\ShopifyECommerce"
+                    "ext": "UVDeskApps\\UVDesk\\Shopify\\Shopify"
                 }
             }
         }

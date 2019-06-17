@@ -1,9 +1,0 @@
-{
-    "name": "uvdesk/shopify-ecommerce",
-    "description": "UVDesk Community Helpdesk Shopify Extension",
-    "autoload": {
-        "psr-4": {
-            "UVDeskApps\\UVDesk\\ShopifyECommerce\\": ""
-        }
-    }
-}

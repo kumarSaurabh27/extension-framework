@@ -39,7 +39,7 @@ SVG;
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        return $this->twig->render('@UVDeskExtension//ticketEcommerceOrders.html.twig', [
+        return $this->twig->render('@_uvdesk_extension_uvdesk_ecommerce//ticketEcommerceOrders.html.twig', [
             'id' => $request->get('ticketId')
         ]);
     }
