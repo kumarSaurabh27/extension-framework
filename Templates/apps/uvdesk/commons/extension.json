@@ -1,6 +1,12 @@
 {
     "name": "uvdesk/commons",
     "description": "UVDesk Community Commons Module",
+    "authors": [
+        {
+            "name": "Akshay Kumar",
+            "email": "akshay.kumar758@webkul.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "UVDeskApps\\UVDesk\\Commons\\": ""

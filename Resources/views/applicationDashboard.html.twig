@@ -1,0 +1,25 @@
+{% extends "@UVDeskCore//Templates//layout.html.twig" %}
+
+{% block title %}Application Dashboard{% endblock %}
+
+{% block templateCSS %}
+    <style>
+		.uv-mob-aside {
+			display: none;
+		}
+    </style>
+{% endblock %}
+
+{% block pageContent %}
+	<div class="uv-inner-section">
+		<div class="uv-view" style="padding-left: 20px;">
+			<h1 id="app-current-title">Application Dashboard</h1>
+            
+            <div class="uv-hr"></div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footer %}
+	{{ parent() }}
+{% endblock %}

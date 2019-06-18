@@ -6,14 +6,14 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreBundle\Extensibles\ExtendableComponentInterface;
-use Webkul\UVDesk\ExtensionBundle\Extensions\Type\ApplicationInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplicationInterface;
 
 /**
- * Extensibles: Homepage
+ * Extensibles: CommunityApplicationManager
  */
-class Application implements ExtendableComponentInterface
+class CommunityApplicationManager implements ExtendableComponentInterface
 {
-	private $segments = [];
+	private $collection = [];
 
 	public function __construct(ContainerInterface $container, RequestStack $requestStack, RouterInterface $router)
 	{
@@ -22,8 +22,16 @@ class Application implements ExtendableComponentInterface
 		$this->requestStack = $requestStack;
 	}
 
-	public function addSegment(ApplicationInterface $segment)
+	public function registerApplication(CommunityApplicationInterface $application, $vendor, $extension)
 	{
-		$this->segments[] = $segment;
+		$application::setVendor($vendor);
+		$application::setExtension($extension);
+
+		$this->collection[] = $application;
+	}
+
+	public function getApplicationCollection()
+	{
+		return $this->collection;
 	}
 }

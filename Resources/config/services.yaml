@@ -8,12 +8,9 @@ services:
         Webkul\UVDesk\CoreBundle\Routing\RouterInterface:
             tags: ['uvdesk_core.routing_definitions']
         
-        # Packages
-        Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModuleInterface:
-            tags: ['uvdesk_extensions.helpdesk_module']
-        
-        Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskComponentInterface:
-            tags: ['uvdesk_extensions.helpdesk_component']
+        # Extensibles
+        Webkul\UVDesk\CoreBundle\Extensibles\ExtendableComponentInterface:
+            tags: ['uvdesk.extendable_component']
         
         # Dashboard Extensible Extensions
         Webkul\UVDesk\CoreBundle\Extensions\Type\NavigationInterface:
@@ -31,22 +28,15 @@ services:
         # Ticket Extensible Extensions
         Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
             tags: ['uvdesk_core.extension.ticket_widget']
-        
-        # Application Extensible Extensions
-        Webkul\UVDesk\ExtensionBundle\Extensions\Type\ApplicationInterface:
-            tags: ['uvdesk_extensions.extension.application']
     
     Webkul\UVDesk\ExtensionBundle\:
         resource: '../../*'
         exclude: '../../{DependencyInjection,Templates,Package}'
     
-    # Webkul\UVDesk\ExtensionBundle\App\Configuration:
-    #     class: Webkul\UVDesk\ExtensionBundle\App\Configuration
-    
-    Webkul\UVDesk\ExtensionBundle\EventListener\Request:
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }
-            - { name: kernel.event_listener, event: kernel.response }
+    # Webkul\UVDesk\ExtensionBundle\EventListener\Request:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.request }
+    #         # - { name: kernel.event_listener, event: kernel.response }
     
     Webkul\UVDesk\ExtensionBundle\EventListener\Console:
         tags:

@@ -2,6 +2,23 @@
 
 {% block title %}Apps Dashboard{% endblock %}
 
+{% block templateCSS %}
+    <style>
+		.uv-mob-aside {
+			display: none;
+		}
+
+        .uv-app-banner {
+			width: 120px;
+			height: 120px;
+			padding: 30px;
+			border-radius: 50%;
+			margin: 0 auto 20px;
+			background-image: linear-gradient(to right, #7E91F0 0%, #7E91F0 100%);
+        }
+    </style>
+{% endblock %}
+
 {% block pageContent %}
 	<div class="uv-inner-section">
 		<div class="uv-view" style="padding-left: 20px;">
@@ -58,13 +75,13 @@
 	</script>
 
 	<script id="application_list_item_tmp" type="text/template">
-		<% configurePath = "{{ path('uvdesk_extensions_load_application', {'application': 'replaceAppName' }) }}" %>
-		<% configurePath = configurePath.replace('replaceAppName', name.toLowerCase().replace(new RegExp(' ', 'g'), '-')) %>
+		<% pathToApplication = "{{ path('uvdesk_extensions_load_application', {'vendor': 'rep_v', 'extension': 'rep_e', 'application': 'rep_a'}) }}" %>
+		<% pathToApplication = pathToApplication.replace('rep_v', reference.vendor).replace('rep_e', reference.extension).replace('rep_a', qname) %>
 
-		<a href="<%= configurePath %>">
-			<img src="<%= banner %>" alt="<%= name %>" style="min-height: 120px;" >
-			<h4><%= name %></h4>
-			<p><%= about %></p>
+		<a href="<%= pathToApplication %>">
+			<div class="uv-app-banner"><%= icon %></div>
+			<h4 style="color: #464646; line-height: 1.4em;"><%= name %></h4>
+			<p style="margin: unset; line-height: 1.4em; margin-top: 10px;"><%= summary %></p>
 		</a>
     </script>
 
@@ -93,7 +110,7 @@
 					"installed": "",
 				},
 				parseRecords: function (resp, options) {
-					return resp.applications;
+					return resp;
 				},
 				syncData : function() {
 					app.appView.showLoader();
@@ -104,21 +121,17 @@
 						success: function(model, response) {
 							app.appView.hideLoader();
 							var appListView = new ApplicationList();
-							app.pager.paginationData = response.pagination_data;
 
-							var url = app.pager.paginationData.url;
-							if(applicationCollection.length == 0 && app.pager.paginationData.current != "0")
-								router.navigate(url.replace('replacePage', app.pager.paginationData.last),{trigger: true});
-							else {
-								app.pager.render();
-							}
-							if(globalMessageResponse)
+							if (globalMessageResponse) {
 								app.appView.renderResponseAlert(globalMessageResponse);
+							}
+
 							globalMessageResponse = null;
 						},
 						error: function (model, xhr, options) {
-							if(url = xhr.getResponseHeader('Location'))
+							if (url = xhr.getResponseHeader('Location')) {
 								window.location = url;
+							}
 						}
 					});
 				}

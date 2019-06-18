@@ -3,18 +3,9 @@
         "uvdesk": {
             "path": "uvdesk/",
             "extensions": {
-                "commons": {
-                    "cnf": "extension.json",
-                    "ext": "UVDeskApps\\UVDesk\\Commons\\Commons"
-                },
-                "ecommerce": {
-                    "cnf": "extension.json",
-                    "ext": "UVDeskApps\\UVDesk\\ECommerce\\ECommerce"
-                },
-                "shopify": {
-                    "cnf": "extension.json",
-                    "ext": "UVDeskApps\\UVDesk\\Shopify\\Shopify"
-                }
+                "commons": "UVDeskApps\\UVDesk\\Commons\\Commons",
+                "ecommerce": "UVDeskApps\\UVDesk\\ECommerce\\ECommerce",
+                "shopify": "UVDeskApps\\UVDesk\\Shopify\\Shopify"
             }
         }
     }

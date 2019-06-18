@@ -2,24 +2,22 @@
 
 namespace UVDeskApps\UVDesk\Shopify;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
+use UVDeskApps\UVDesk\Shopify\Apps\OrderSyncronizer;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
 
-class Shopify extends HelpdeskModule
+final class Shopify extends CommunityModuleExtension
 {
-    public static function getTitle() : string
-    {
-        return "Shopify ECommerce";
-    }
-
-    public static function getDescription() : string
-    {
-        return "Shopify ECommerce Extension";
-    }
-
-    public static function services() : array
+    public static function getServices() : array
     {
         return [
-            '/Resources/config/services.yaml'
+            __DIR__ . "/Resources/config/services.yaml"
+        ];
+    }
+
+    public static function getApplications() : array
+    {
+        return [
+            OrderSyncronizer::class
         ];
     }
 }

@@ -2,24 +2,22 @@
 
 namespace UVDeskApps\UVDesk\ECommerce;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
+use UVDeskApps\UVDesk\ECommerce\Apps\ECommerceOrders;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
 
-class ECommerce extends HelpdeskModule
+final class ECommerce extends CommunityModuleExtension
 {
-    public static function getTitle() : string
-    {
-        return "ECommerce";
-    }
-
-    public static function getDescription() : string
-    {
-        return "ECommerce utilities";
-    }
-
-    public static function services() : array
+    public static function getServices() : array
     {
         return [
-            '/Resources/config/services.yaml'
+            __DIR__ . "/Resources/config/services.yaml"
+        ];
+    }
+
+    public static function getApplications() : array
+    {
+        return [
+            ECommerceOrders::class,
         ];
     }
 }

@@ -2,24 +2,24 @@
 
 namespace UVDeskApps\UVDesk\Commons;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModule;
+use UVDeskApps\UVDesk\Commons\Apps\Memo;
+use UVDeskApps\UVDesk\Commons\Apps\CustomerNotes;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
 
-class Commons extends HelpdeskModule
+final class Commons extends CommunityModuleExtension
 {
-    public static function getTitle() : string
-    {
-        return "UVDesk Commons";
-    }
-
-    public static function getDescription() : string
-    {
-        return "Common helpdesk utilities";
-    }
-
-    public static function services() : array
+    public static function getServices() : array
     {
         return [
-            '/Resources/config/services.yaml'
+            __DIR__ . "/Resources/config/services.yaml"
+        ];
+    }
+
+    public static function getApplications() : array
+    {
+        return [
+            CustomerNotes::class,
+            Memo::class,
         ];
     }
 }

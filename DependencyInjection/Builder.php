@@ -3,14 +3,19 @@
 namespace Webkul\UVDesk\ExtensionBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskModuleInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\HelpdeskComponentInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
+use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityApplicationManager;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplicationInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
 
 class Builder extends Extension
 {
+    private $extensions = [];
+
     public function getAlias()
     {
         return 'uvdesk_extensions';
@@ -39,47 +44,69 @@ class Builder extends Extension
             }
         }
 
-        // Compile extensions
+        // Automatically add service tags
+        $container->registerForAutoconfiguration(CommunityModuleExtensionInterface::class)->addTag(CommunityModuleExtensionInterface::class);
+
+        // Compile apps
         $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
-
+        
         if (file_exists($path)) {
-            $extensions = [];
-            $extensionsJson = json_decode(file_get_contents($container->getParameter('uvdesk_extensions.dir') . "/extensions.json"), true);
+            $this
+                ->compileExtensions($path)
+                ->autoConfigureExtensions($container, $loader);
+        }
+    }
 
-            foreach ($extensionsJson['vendors'] as $vendor => $vendorAttributes) {
-                foreach ($vendorAttributes['extensions'] as $vendorExtension => $vendorExtensionAttributes) {
-                    if (!empty($vendorExtensionAttributes['ext'])) {
-                        // Raise a warning to dump composer autoload if class is not found
-                        $reflectedExtension = new \ReflectionClass($vendorExtensionAttributes['ext']);
+    private function compileExtensions($path) : Builder
+    {
+        $json = json_decode(file_get_contents($path), true);
 
-                        if (!$reflectedExtension->implementsInterface(HelpdeskModuleInterface::class) && !$reflectedExtension->implementsInterface(HelpdeskComponentInterface::class)) {
-                            throw new \Exception('Invalid extension type');
-                        }
+        foreach ($json['vendors'] as $vendor => $attributes) {
+            foreach ($attributes['extensions'] as $extension => $extensionClassPath) {
+                $reflection = new \ReflectionClass($extensionClassPath);
 
-                        $extensions[] = $reflectedExtension;
+                if (!$reflection->implementsInterface(CommunityModuleExtensionInterface::class)) {
+                    $message = "Extension %s/%s [%s] is not supported.";
+
+                    throw new \Exception(sprintf($message, $vendor, $extension, $reflection->getName())); 
+                }
+
+                $this->extensions[] = [
+                    'vendor' => $vendor,
+                    'extension' => $extension,
+                    'reference' => $reflection,
+                ];
+            }
+        }
+
+        return $this;
+    }
+
+    private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Builder
+    {
+        if ($container->has(CommunityApplicationManager::class)) {
+            $applicationManagerDefinition = $container->findDefinition(CommunityApplicationManager::class);
+        
+            foreach ($this->extensions as $attributes) {
+                $extension = $attributes['reference']->newInstanceWithoutConstructor();
+
+                // Register extension services
+                foreach ($extension::getServices() as $resource) {
+                    $loader->load($resource);
+                }
+
+                // Register extension provided applications
+                foreach ($extension::getApplications() as $application) {
+                    // @TODO: Check if class is valid and accessible
+                    $reflection = new \ReflectionClass($application);
+
+                    if ($reflection->isSubclassOf(CommunityApplication::class)) {
+                        $applicationManagerDefinition->addMethodCall('registerApplication', array(new Reference($application), $attributes['vendor'], $attributes['extension']));
                     }
                 }
             }
         }
 
-        // Load extension services
-        // No routes will be loaded. Everything will be based on event driven arch.
-        $loader->load("/home/users/akshay.kumar/Workstation/www/html/community-skeleton/apps/uvdesk/commons/Resources/config/services.yaml");
-        $loader->load("/home/users/akshay.kumar/Workstation/www/html/community-skeleton/apps/uvdesk/ecommerce/Resources/config/services.yaml");
-        $loader->load("/home/users/akshay.kumar/Workstation/www/html/community-skeleton/apps/uvdesk/shopify/Resources/config/services.yaml");
-        
-        // foreach ($extensions as $reflectedExtension) {
-        //     $extension = $reflectedExtension->newInstanceWithoutConstructor();
-
-        //     if ($extension::services() != null) {
-        //         $dir = dirname($reflectedExtension->getFileName());
-
-        //         foreach ($extension::services() as $relativePath) {
-        //             dump($dir . $relativePath);
-
-        //             $extensionsLoader->load($dir . $relativePath);
-        //         }
-        //     }
-        // }
+        return $this;
     }
 }

@@ -27,10 +27,10 @@ class Console
 
         switch (true) {
             case $command instanceof SymfonyFrameworkCommand\CacheClearCommand:
-                $application = new Application($this->kernel);
+                // $application = new Application($this->kernel);
                 
-                $application->setAutoExit(false);
-                $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
+                // $application->setAutoExit(false);
+                // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
                 break;
             default:
                 break;

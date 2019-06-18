@@ -6,21 +6,28 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityApplicationManager;
 
 class ApplicationXHR extends Controller
 {
     public function loadCollectionXHR(Request $request)
     {
-        dump($this->get('uvdesk.extensibles'));
-        die;
-        
-        // $results = [];
-        // if($request->isXmlHttpRequest()) {
-        //     $em = $this->getDoctrine()->getManager();
-        //     $repository = $this->getDoctrine()->getRepository('WebkulAppBundle:Application');
-        //     $results = $repository->getAllApplications($request->query, $this->container);
-        // }
+        $collection = [];
+        $applicationExtension = $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityApplicationManager::class);
 
-        return new JsonResponse([]);
+        foreach ($applicationExtension->getApplicationCollection() as $application) {
+            $collection[] = [
+                'icon' => $application::getIcon(),
+                'name' => $application::getName(),
+                'summary' => $application::getSummary(),
+                'qname' => $application::getFullyQualifiedName(),
+                'reference' => [
+                    'vendor' => $application::getVendor(),
+                    'extension' => $application::getExtension(),
+                ],
+            ];
+        }
+
+        return new JsonResponse($collection);
     }
 }
