@@ -2,6 +2,8 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
+
 abstract class CommunityApplication implements CommunityApplicationInterface
 {
     CONST SVG = <<<SVG
@@ -10,32 +12,40 @@ abstract class CommunityApplication implements CommunityApplicationInterface
 </svg>
 SVG;
 
-    private static $vendor;
-    private static $extension;
+    protected $extension;
+    protected $extensionReference;
+
+    final public function setExtension(CommunityModuleExtensionInterface $extension) : CommunityApplicationInterface
+    {
+        if (null == $this->extension) {
+            $this->extension = $extension;
+        }
+
+        return $this;
+    }
+
+    final public function getExtension() : CommunityModuleExtensionInterface
+    {
+        return $this->extension;
+    }
+
+    final public function setExtensionReference($extensionReference) : CommunityApplicationInterface
+    {
+        if (null == $this->extensionReference) {
+            $this->extensionReference = $extensionReference;
+        }
+
+        return $this;
+    }
+
+    final public function getExtensionReference() : string
+    {
+        return $this->extensionReference;
+    }
 
     public static function getIcon() : string
     {
         return self::SVG;
-    }
-
-    final public static function setVendor($vendor) : void
-    {
-        self::$vendor = $vendor;
-    }
-
-    final public static function getVendor() : string
-    {
-        return self::$vendor;
-    }
-
-    final public static function setExtension($extension) : void
-    {
-        self::$extension = $extension;
-    }
-
-    final public static function getExtension() : string
-    {
-        return self::$extension;
     }
 
     public abstract static function getName() : string;
@@ -44,5 +54,5 @@ SVG;
 
     public abstract static function getDescription() : string;
 
-    public abstract static function getFullyQualifiedName() : string;
+    public abstract static function getQualifiedName() : string;
 }

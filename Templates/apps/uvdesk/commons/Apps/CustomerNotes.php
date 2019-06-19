@@ -21,7 +21,7 @@ class CustomerNotes extends CommunityApplication
         return "Write notes pertaining to customers which will be visible to all agents across your helpdesk. This provides an effective way of storing important details which may be vital in providing a better support to your customers.";
     }
 
-    public static function getFullyQualifiedName() : string
+    public static function getQualifiedName() : string
     {
         return "customer-notes";
     }

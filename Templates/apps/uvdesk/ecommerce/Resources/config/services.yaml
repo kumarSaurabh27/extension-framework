@@ -11,5 +11,5 @@ services:
     
     UVDeskApps\UVDesk\ECommerce\:
         resource: '../../*'
-        exclude: '../../{ECommerce.php}'
+        # exclude: '../../{ECommerce.php}'
     

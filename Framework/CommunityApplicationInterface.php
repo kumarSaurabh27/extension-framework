@@ -2,17 +2,13 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
+use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
+
 interface CommunityApplicationInterface
 {
+    public function getExtension() : CommunityModuleExtensionInterface;
+    
     public static function getIcon() : string;
-
-    public static function setVendor($vendor) : void;
-
-    public static function getVendor() : string;
-
-    public static function setExtension($extension) : void;
-
-    public static function getExtension() : string;
 
     public static function getName() : string;
 
@@ -20,5 +16,5 @@ interface CommunityApplicationInterface
 
     public static function getDescription() : string;
 
-    public static function getFullyQualifiedName() : string;
+    public static function getQualifiedName() : string;
 }

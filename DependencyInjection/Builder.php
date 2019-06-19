@@ -8,14 +8,12 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
-use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityApplicationManager;
+use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityExtensionsManager;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplicationInterface;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
 
 class Builder extends Extension
 {
-    private $extensions = [];
-
     public function getAlias()
     {
         return 'uvdesk_extensions';
@@ -45,7 +43,7 @@ class Builder extends Extension
         }
 
         // Automatically add service tags
-        $container->registerForAutoconfiguration(CommunityModuleExtensionInterface::class)->addTag(CommunityModuleExtensionInterface::class);
+        // $container->registerForAutoconfiguration(CommunityModuleExtensionInterface::class)->addTag(CommunityModuleExtensionInterface::class);
 
         // Compile apps
         $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
@@ -62,19 +60,19 @@ class Builder extends Extension
         $json = json_decode(file_get_contents($path), true);
 
         foreach ($json['vendors'] as $vendor => $attributes) {
-            foreach ($attributes['extensions'] as $extension => $extensionClassPath) {
-                $reflection = new \ReflectionClass($extensionClassPath);
+            foreach ($attributes['extensions'] as $package => $extensionConfiguration) {
+                $reflectedConfiguration = new \ReflectionClass($extensionConfiguration);
 
-                if (!$reflection->implementsInterface(CommunityModuleExtensionInterface::class)) {
+                if (!$reflectedConfiguration->implementsInterface(CommunityModuleExtensionInterface::class)) {
                     $message = "Extension %s/%s [%s] is not supported.";
 
-                    throw new \Exception(sprintf($message, $vendor, $extension, $reflection->getName())); 
+                    throw new \Exception(sprintf($message, $vendor, $extension, $reflectedConfiguration->getName())); 
                 }
 
-                $this->extensions[] = [
+                $this->collection[] = [
                     'vendor' => $vendor,
-                    'extension' => $extension,
-                    'reference' => $reflection,
+                    'package' => $package,
+                    'configuration' => $reflectedConfiguration,
                 ];
             }
         }
@@ -84,27 +82,45 @@ class Builder extends Extension
 
     private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Builder
     {
-        if ($container->has(CommunityApplicationManager::class)) {
-            $applicationManagerDefinition = $container->findDefinition(CommunityApplicationManager::class);
+        if ($container->has(CommunityExtensionsManager::class)) {
+            $extensionManagerDefinition = $container->findDefinition(CommunityExtensionsManager::class);
         
-            foreach ($this->extensions as $attributes) {
-                $extension = $attributes['reference']->newInstanceWithoutConstructor();
+            foreach ($this->collection as $attributes) {
+                $reflectedExtension = $attributes['configuration'];
 
-                // Register extension services
-                foreach ($extension::getServices() as $resource) {
+                // The first thing we want to do is ensure that the services have been loaded
+                foreach ($reflectedExtension->getMethod('getServices')->invoke(null) as $resource) {
                     $loader->load($resource);
                 }
 
-                // Register extension provided applications
-                foreach ($extension::getApplications() as $application) {
-                    // @TODO: Check if class is valid and accessible
-                    $reflection = new \ReflectionClass($application);
+                // Override configuration and register extension with the extension manager
+                $extensionDefinition = $container->findDefinition($reflectedExtension->getName());
+                $extensionDefinition
+                    ->setPrivate(true)
+                    ->setAutowired(false)
+                    ->setAutoconfigured(false)
+                    ->setArgument('$vendor', $attributes['vendor'])
+                    ->setArgument('$package', $attributes['package']);
+                
+                $extensionManagerDefinition->addMethodCall('registerExtension', array(new Reference($reflectedExtension->getName())));
 
-                    if ($reflection->isSubclassOf(CommunityApplication::class)) {
-                        $applicationManagerDefinition->addMethodCall('registerApplication', array(new Reference($application), $attributes['vendor'], $attributes['extension']));
+                // Register available applications with the extension manager for auto init.
+                foreach ($reflectedExtension->getMethod('getApplications')->invoke(null) as $application) {
+                    $reflectedApplication = new \ReflectionClass($application);
+
+                    if ($reflectedApplication->isSubclassOf(CommunityApplication::class)) {
+                        $applicationDefinition = $container->findDefinition($application);
+                        $applicationDefinition
+                            ->setPrivate(true)
+                            ->addMethodCall('setExtensionReference', [$reflectedExtension->getName()]);
+
+                        $extensionManagerDefinition->addMethodCall('registerApplication', array(new Reference($application)));
                     }
                 }
             }
+
+            // Delegate further configuration to service upon instantiation
+            $extensionManagerDefinition->addMethodCall('autoconfigure');
         }
 
         return $this;

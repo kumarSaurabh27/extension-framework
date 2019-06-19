@@ -21,7 +21,7 @@ class ECommerceOrders extends CommunityApplication
         return "Improve the efficiency of your support staff by displaying the order related details on the ticket system. It reduces the time spent by the support staff by fetching the order related details on the ticket system only. No need to leave ticket system to check the details.";
     }
 
-    public static function getFullyQualifiedName() : string
+    public static function getQualifiedName() : string
     {
         return "ecommerce-orders";
     }

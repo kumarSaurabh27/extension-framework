@@ -11,5 +11,5 @@ services:
     
     UVDeskApps\UVDesk\Shopify\:
         resource: '../../*'
-        exclude: '../../{Shopify.php}'
+        # exclude: '../../{Shopify.php}'
     

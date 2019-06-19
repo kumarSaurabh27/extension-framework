@@ -21,7 +21,7 @@ class Memo extends CommunityApplication
         return "Write memos pertaining to customers which will be visible to all agents across your helpdesk.";
     }
 
-    public static function getFullyQualifiedName() : string
+    public static function getQualifiedName() : string
     {
         return "memo";
     }

@@ -11,5 +11,5 @@ services:
     
     UVDeskApps\UVDesk\Commons\:
         resource: '../../*'
-        exclude: '../../{Commons.php}'
+        # exclude: '../../{Commons.php}'
     
