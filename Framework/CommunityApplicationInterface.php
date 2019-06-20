@@ -6,7 +6,13 @@ use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
 
 interface CommunityApplicationInterface
 {
+    public function setExtension(CommunityModuleExtensionInterface $extension) : CommunityApplicationInterface;
+
     public function getExtension() : CommunityModuleExtensionInterface;
+
+    public function setExtensionReference($extensionReference) : CommunityApplicationInterface;
+
+    public function getExtensionReference() : string;
     
     public static function getIcon() : string;
 

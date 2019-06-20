@@ -12,21 +12,18 @@ class ApplicationXHR extends Controller
 {
     public function loadCollectionXHR(Request $request)
     {
-        $collection = [];
-        $applicationExtension = $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class);
-
-        foreach ($applicationExtension->getApplicationCollection() as $application) {
-            $collection[] = [
+        $collection = array_map(function ($application) {
+            return [
                 'icon' => $application::getIcon(),
                 'name' => $application::getName(),
                 'summary' => $application::getSummary(),
                 'qname' => $application::getQualifiedName(),
                 'reference' => [
-                    'vendor' => $application->getVendor(),
-                    'extension' => $application->getExtension(),
+                    'vendor' => $application->getExtension()->getVendor(),
+                    'package' => $application->getExtension()->getPackage(),
                 ],
             ];
-        }
+        }, $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class)->getApplications());
 
         return new JsonResponse($collection);
     }

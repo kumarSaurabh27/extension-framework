@@ -100,7 +100,8 @@ class Builder extends Extension
                     ->setAutowired(false)
                     ->setAutoconfigured(false)
                     ->setArgument('$vendor', $attributes['vendor'])
-                    ->setArgument('$package', $attributes['package']);
+                    ->setArgument('$package', $attributes['package'])
+                    ->setArgument('$directory', dirname($reflectedExtension->getFileName()));
                 
                 $extensionManagerDefinition->addMethodCall('registerExtension', array(new Reference($reflectedExtension->getName())));
 
@@ -119,7 +120,7 @@ class Builder extends Extension
                 }
             }
 
-            // Delegate further configuration to service upon instantiation
+            // Delegate further configuration to service upon init.
             $extensionManagerDefinition->addMethodCall('autoconfigure');
         }
 

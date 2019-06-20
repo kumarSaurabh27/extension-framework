@@ -33,11 +33,6 @@ services:
         resource: '../../*'
         exclude: '../../{DependencyInjection,Templates,Package}'
     
-    # Webkul\UVDesk\ExtensionBundle\EventListener\Request:
-    #     tags:
-    #         - { name: kernel.event_listener, event: kernel.request }
-    #         # - { name: kernel.event_listener, event: kernel.response }
-    
     Webkul\UVDesk\ExtensionBundle\EventListener\Console:
         tags:
             - { name: kernel.event_listener, event: console.command }

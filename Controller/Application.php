@@ -6,6 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityExtensionsManager;
+use UVDeskApps\UVDesk\Shopify\Apps\OrderSyncronizer;
+use UVDeskApps\UVDesk\Shopify\Shopify;
 
 class Application extends Controller
 {
@@ -16,16 +18,7 @@ class Application extends Controller
 
     public function loadApplicationDashboard($vendor, $extension, $application, Request $request)
     {
-        $extensionsManager = $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class);
-
-        try {
-            $application = $extensionsManager->getRegisteredApplication($vendor, $extension, $application);
-            dump($application);
-        } catch (\Exception $e) {
-            dump('No result found');
-        }
-
-        die;
+        $application = $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class)->getApplicationByAttributes($vendor, $extension, $application);
 
         return $this->render('@UVDeskExtension//applicationDashboard.html.twig', [
             'application' => $application

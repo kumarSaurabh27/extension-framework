@@ -2,13 +2,21 @@
 
 namespace UVDeskApps\UVDesk\Shopify\Apps;
 
+use Twig\Environment as TwigEnvironment;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
 
 class OrderSyncronizer extends CommunityApplication
 {
+    public function __construct(RequestStack $requestStack, TwigEnvironment $twig)
+    {
+        $this->twig = $twig;
+        $this->requestStack = $requestStack;
+    }
+
     public static function getName() : string
     {
-        return "Shopify";
+        return "Shopify ECommerce";
     }
 
     public static function getSummary() : string
@@ -30,6 +38,6 @@ class OrderSyncronizer extends CommunityApplication
     {
         // $request = $this->requestStack->getCurrentRequest();
 
-        return $this->twig->render('@_uvdesk_extension_uvdesk_shopify//dashboard.html.twig');
+        return '@_uvdesk_extension_uvdesk_shopify//dashboard.html.twig';
     }
 }

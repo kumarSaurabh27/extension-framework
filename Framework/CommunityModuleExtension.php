@@ -6,21 +6,28 @@ abstract class CommunityModuleExtension implements CommunityModuleExtensionInter
 {
     protected $vendor;
     protected $package;
+    protected $directory;
 
-    final public function __construct($vendor, $package)
+    final public function __construct(string $vendor, string $package, string $directory)
     {
         $this->vendor = $vendor;
         $this->package = $package;
+        $this->directory = $directory;
     }
 
     final public function getVendor() : string
     {
-        return $this->vendor;
+        return strtolower($this->vendor);
     }
 
     final public function getPackage() : string
     {
-        return $this->package;
+        return strtolower($this->package);
+    }
+
+    final public function getDirectory() : string
+    {
+        return $this->directory;
     }
 
     public static function getServices() : array

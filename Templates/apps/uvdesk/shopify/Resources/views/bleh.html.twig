@@ -1,0 +1,209 @@
+<script type="text/template" id="app-splash-template"></script>
+<script type="text/template" id="channel-form-template"></script>
+<script type="text/template" id="channel-setting-template"></script>
+
+<script type="text/template" id="channel-list-template">
+    <div class="uv-app-list-channels">
+        <div class="uv-app-list-action">
+            <div class="uv-app-list-action-lt"><h1>Added Channels</h1></div>
+            <div class="uv-app-list-action-rt"><a class="uv-btn-action add-app-channel" href="#">New Channel</a></div>
+        </div>
+
+        <div id="channel-list"></div>
+    </div>
+</script>
+
+<script type="text/template" id="channel-template">
+    <div class="uv-app-list-brick-lt uv-amazon-color">
+        <span class="uv-channel-count">#<%= parseInt(document.getElementsByClassName('uv-app-list-brick').length)+1 %></span>
+    </div>
+
+    <div class="uv-app-list-brick-rt">
+        <p><%- title %></p>
+        <p>
+            <% if(isActive) { %>
+                <span class="uv-app-list-flag-active">Active</span>
+            <% } else { %>
+                <span class="uv-app-list-flag-inactive">Inactive</span>
+            <% } %>
+        </p>
+
+        <div class="uv-app-list-actions">
+            <a href class="edit-channel">Edit</a>
+            <a href class="uv-delete delete-channel">Delete</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var ChannelModel = Backbone.Model.extend({
+        idAttribute: "id",
+        validation: {
+            {% if formFields is defined %}
+                {% if application.dependencyName != "shopify extension" %}
+                    'title': {
+                        required: true,
+                        msg: '{{ "This field is mandatory"|trans }}',
+                    },
+                {% endif %}
+                {% for field in formFields %}
+                    '{{ field.name }}': {
+                        required: true,
+                        msg: '{{ "This field is mandatory"|trans }}',
+                    },
+                {% endfor %}
+            {% endif %}
+        }
+    });
+
+    var ChannelCollection = Backbone.Collection.extend({
+        url: "",
+        model: ChannelModel,
+        syncData : function() {
+            app.appView.showLoader();
+
+            this.fetch({
+                reset: true,
+                success: function(collection, response) {
+                    if (typeof(channelListView) == 'undefined') {
+                        channelListView = new ChannelListView();
+                    }
+
+                    channelListView.render(collection);
+                    app.appView.hideLoader();
+                },
+                error: function (response) {
+                    app.appView.hideLoader();
+                }
+            });
+        },
+    });
+
+    var ChannelListView = Backbone.View.extend({
+        el: $('#configure>.uv-app-screen'),
+        appSplashTemplate: _.template($('#app-splash-template').html()),
+        channelListTemplate: _.template($('#channel-list-template').html()),
+        channelListSelector: '#channel-list',
+        events: {
+            'click .add-app-channel': 'addChannelView',
+        },
+        render: function(channelCollection) {
+            if (channelCollection.length) {
+                this.$el.html(this.channelListTemplate());
+                _.each(channelCollection.models, function (item) {
+                    this.renderChannel(item);
+                }, this);
+            }  else {
+                this.$el.html(this.appSplashTemplate());
+            }
+        },
+        renderChannel: function(item) {
+            var channelView = new ChannelView({
+                model: item
+            });
+
+            $(this.channelListSelector).append(channelView.render().el);
+        },
+        addChannelView: function(e) {
+            channelForm.model.clear();
+            channelForm.render();
+            $('.uv-aside-back').addClass('edit-back');
+        },
+    });
+
+    var ChannelView = Backbone.View.extend({
+        template : _.template($('#channel-template').html()),
+        tagName: 'div',
+        className: 'uv-app-list-brick',
+        events: {
+            'click .edit-channel' : 'editChannel',
+            'click .edit-settings' : 'editSettings',
+            'click .delete-channel' : 'confirmRemove',
+        },
+        initialize: function() {},
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        },
+        editChannel: function(e) {
+            e.preventDefault();
+            item = this.model;
+
+            channelForm.model.clear().set(this.model.toJSON());
+            channelForm.render();
+            $('.uv-aside-back').addClass('edit-back');
+        },
+        editSettings: function(e) {
+            e.preventDefault();
+            item = this.model;
+
+            channelSetting.model.clear().set(this.model.toJSON());
+            {% if application.name == "Form Builder" %}
+                channelSetting.render("updateFormFields");
+            {% else %}
+                channelSetting.render();
+            {% endif %}
+            $('.uv-aside-back').addClass('edit-back');
+        },
+        confirmRemove: function(e) {
+            e.preventDefault();
+            app.appView.openConfirmModal(this);
+        },
+        removeItem : function (e) {
+            app.appView.showLoader();
+            self = this;
+        },
+    });
+
+    var ChannelFormView = Backbone.View.extend({
+        el: $('#configure>.uv-app-screen'),
+        ChannelFormTemplate: _.template($('#channel-form-template').html()),
+        events: {
+            'blur input': 'formChanged',
+            'change select': 'formChanged',
+            'click #save-channel': 'submitForm',
+        },
+        render: function(value) {
+            Backbone.Validation.bind(this);
+            $('.uv-app-add-channel').remove();
+            $('.uv-app-splash').hide();
+            $('.uv-app-list-channels').hide();
+            var currentTemplate, modelJson;
+            $(this.el).append(currentTemplate = this.ChannelFormTemplate(modelJson = this.model.toJSON()));
+            this.activateTabs();
+            if (typeof(this.AddChecked) == 'function') {
+                this.AddChecked();
+            }
+        },
+        activateTabs: function() {
+            $('.uv-box-tab ul li a').on('click', function(e){
+                e.preventDefault();
+                $('.uv-box-tab ul li a').removeClass('uv-box-tab-active');
+                $(this).addClass('uv-box-tab-active')
+
+                $('.uv-tab-view .uv-tab-view').removeClass('uv-tab-view-active');
+                $('#'+$(this).attr('data-href')).addClass('uv-tab-view-active')
+            });
+        },
+        formChanged: function(e) {
+            this.model.set(Backbone.$(e.currentTarget).attr('name'), Backbone.$(e.currentTarget).val())
+            this.model.isValid([Backbone.$(e.currentTarget).attr('name')])
+        },
+        submitForm: function(e) {
+            e.preventDefault();
+
+            form = $(e.target).closest('form');
+            this.model.set(form.serializeObject());
+            if (this.model.isValid(true)) {
+                $(e.target).attr('disabled', 'disabled');
+                form.attr("action", url);
+                form.submit();
+            }
+        },
+    });
+
+    $(function () {
+        channelCollection = new ChannelCollection();
+        channelForm = new ChannelFormView({model: new ChannelModel});
+    });
+</script>
