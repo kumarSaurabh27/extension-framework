@@ -2,9 +2,9 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Routes;
 
-use Webkul\UVDesk\CoreBundle\Routing\RouterInterface;
+use Webkul\UVDesk\CoreBundle\Routing\CoreRoutingInterface;
 
-class ExtensionRoutes implements RouterInterface
+class ExtensionRoutes implements CoreRoutingInterface
 {
     public static function getResourcePath()
     {

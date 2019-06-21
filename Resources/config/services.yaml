@@ -4,31 +4,6 @@ services:
         autoconfigure: true
         public: false
     
-    _instanceof:
-        Webkul\UVDesk\CoreBundle\Routing\RouterInterface:
-            tags: ['uvdesk_core.routing_definitions']
-        
-        # Extensibles
-        Webkul\UVDesk\CoreBundle\Extensibles\ExtendableComponentInterface:
-            tags: ['uvdesk.extendable_component']
-        
-        # Dashboard Extensible Extensions
-        Webkul\UVDesk\CoreBundle\Extensions\Type\NavigationInterface:
-            tags: ['uvdesk_core.extension.navigation']
-        
-        Webkul\UVDesk\CoreBundle\Extensions\Type\SearchResultInterface:
-            tags: ['uvdesk_core.extension.search_result']
-        
-        Webkul\UVDesk\CoreBundle\Extensions\Type\HomepageSectionInterface:
-            tags: ['uvdesk_core.extension.homepage_section']
-        
-        Webkul\UVDesk\CoreBundle\Extensions\Type\HomepageSectionItemInterface:
-            tags: ['uvdesk_core.extension.homepage_section_item']
-        
-        # Ticket Extensible Extensions
-        Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
-            tags: ['uvdesk_core.extension.ticket_widget']
-    
     Webkul\UVDesk\ExtensionBundle\:
         resource: '../../*'
         exclude: '../../{DependencyInjection,Templates,Package}'

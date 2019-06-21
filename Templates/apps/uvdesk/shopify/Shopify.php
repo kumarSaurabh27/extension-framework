@@ -2,7 +2,7 @@
 
 namespace UVDeskApps\UVDesk\Shopify;
 
-use UVDeskApps\UVDesk\Shopify\Apps\OrderSyncronizer;
+use UVDeskApps\UVDesk\Shopify\Apps\ECommerce\ECommerce;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
 
 final class Shopify extends CommunityModuleExtension
@@ -17,7 +17,7 @@ final class Shopify extends CommunityModuleExtension
     public static function getApplications() : array
     {
         return [
-            OrderSyncronizer::class
+            ECommerce::class
         ];
     }
 }

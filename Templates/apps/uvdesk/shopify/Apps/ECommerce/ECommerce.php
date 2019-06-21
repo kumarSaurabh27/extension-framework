@@ -1,12 +1,12 @@
 <?php
 
-namespace UVDeskApps\UVDesk\Shopify\Apps;
+namespace UVDeskApps\UVDesk\Shopify\Apps\ECommerce;
 
 use Twig\Environment as TwigEnvironment;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
 
-class OrderSyncronizer extends CommunityApplication
+class ECommerce extends CommunityApplication
 {
     public function __construct(RequestStack $requestStack, TwigEnvironment $twig)
     {
@@ -36,8 +36,6 @@ class OrderSyncronizer extends CommunityApplication
 
     public function getTemplate()
     {
-        // $request = $this->requestStack->getCurrentRequest();
-
         return '@_uvdesk_extension_uvdesk_shopify//dashboard.html.twig';
     }
 }

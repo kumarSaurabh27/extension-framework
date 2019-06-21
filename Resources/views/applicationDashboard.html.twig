@@ -13,13 +13,10 @@
 {% block pageContent %}
 	<div class="uv-inner-section">
 		<div class="uv-view" style="padding-left: 20px;">
-			<h1 id="app-current-title">{{ application.name }}</h1>
-
-			<div class="uv-hr"></div>
-
 			<!-- @TODO: add components to manage tabs dynamically -->
-            
-			{{ include(application.getTemplate()) }}
+            <div class="uv-app-screen">
+				{{ include(application.getTemplate()) }}
+			</div>
 		</div>
 	</div>
 {% endblock %}
