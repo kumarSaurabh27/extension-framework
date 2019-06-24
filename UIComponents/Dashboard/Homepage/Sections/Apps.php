@@ -1,10 +1,10 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\UIComponent\Dashboard;
+namespace Webkul\UVDesk\ExtensionBundle\UIComponents\Dashboard\Homepage\Sections;
 
-use Webkul\UVDesk\CoreBundle\Extensions\Type\HomepageSection;
+use Webkul\UVDesk\CoreBundle\Dashboard\Segments\HomepageSection;
 
-class HomepageApplicationSection extends HomepageSection
+class Apps extends HomepageSection
 {
     public static function getTitle() : string
     {

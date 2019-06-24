@@ -4,7 +4,7 @@ namespace UVDeskApps\UVDesk\Commons\Widgets;
 
 use Twig\Environment as TwigEnvironment;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface;
+use Webkul\UVDesk\CoreBundle\Widgets\TicketWidgetInterface;
 
 class CustomerNotes implements TicketWidgetInterface
 {

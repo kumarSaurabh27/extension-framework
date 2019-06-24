@@ -1,10 +1,11 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\UIComponent\Dashboard\HomepageItems;
+namespace Webkul\UVDesk\ExtensionBundle\UIComponents\Dashboard\Homepage\Items;
 
-use Webkul\UVDesk\ExtensionBundle\UIComponent\Dashboard\HomepageApplicationSectionItem;
+use Webkul\UVDesk\CoreBundle\Dashboard\Segments\HomepageSectionItem;
+use Webkul\UVDesk\ExtensionBundle\UIComponents\Dashboard\Homepage\Sections\Apps;
 
-class ExploreApps extends HomepageApplicationSectionItem
+class ExploreApps extends HomepageSectionItem
 {
     CONST SVG = <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60px" height="60px" viewBox="0 0 60 60">
@@ -25,5 +26,10 @@ SVG;
     public static function getRouteName() : string
     {
         return 'uvdesk_extensions_dashboard';
+    }
+
+    public static function getSectionReferenceId() : string
+    {
+        return Apps::class;
     }
 }

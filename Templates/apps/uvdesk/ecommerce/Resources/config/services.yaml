@@ -4,11 +4,6 @@ services:
         autoconfigure: true
         public: false
     
-    _instanceof:
-        # Ticket Extensible Extensions
-        Webkul\UVDesk\CoreBundle\Extensions\Type\TicketWidgetInterface:
-            tags: ['uvdesk_core.extension.ticket_widget']
-    
     UVDeskApps\UVDesk\ECommerce\:
         resource: '../../*'
         # exclude: '../../{ECommerce.php}'

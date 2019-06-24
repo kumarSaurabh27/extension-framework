@@ -1,5 +1,5 @@
 uvdesk_extensions_private_routing_resources:
-    resource: "extensions/private.yaml"
+    resource: "routes/private.yaml"
     prefix:   /{_locale}/%uvdesk_site_path.member_prefix%/
     requirements:
         _locale: %app_locales%
@@ -7,7 +7,7 @@ uvdesk_extensions_private_routing_resources:
         _locale: %locale%
 
 uvdesk_extensions_public_routing_resources:
-    resource: "extensions/public.yaml"
+    resource: "routes/public.yaml"
     prefix:   /
     requirements:
         _locale: %app_locales%

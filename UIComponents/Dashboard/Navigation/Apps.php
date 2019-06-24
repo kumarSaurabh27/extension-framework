@@ -1,8 +1,8 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\UIComponent\Navigation;
+namespace Webkul\UVDesk\ExtensionBundle\UIComponents\Dashboard\Navigation;
 
-use Webkul\UVDesk\CoreBundle\Extensions\Type\NavigationInterface;
+use Webkul\UVDesk\CoreBundle\Dashboard\Segments\NavigationInterface;
 
 class Apps implements NavigationInterface
 {
