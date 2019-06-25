@@ -2,9 +2,9 @@
 
 namespace UVDeskApps\UVDesk\Commons\Apps;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
+use Webkul\UVDesk\ExtensionBundle\Framework\Application;
 
-class Memo extends CommunityApplication
+class Memo extends Application
 {
     public static function getName() : string
     {

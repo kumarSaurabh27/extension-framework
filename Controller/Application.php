@@ -4,10 +4,11 @@ namespace Webkul\UVDesk\ExtensionBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityExtensionsManager;
-use UVDeskApps\UVDesk\Shopify\Apps\OrderSyncronizer;
-use UVDeskApps\UVDesk\Shopify\Shopify;
+use Webkul\UVDesk\ExtensionBundle\Events\ApplicationEvents;
+use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
 
 class Application extends Controller
 {
@@ -18,7 +19,22 @@ class Application extends Controller
 
     public function loadApplicationDashboard($vendor, $extension, $application, Request $request)
     {
-        $application = $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class)->getApplicationByAttributes($vendor, $extension, $application);
+        $dispatcher = new EventDispatcher();
+        $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplicationByAttributes($vendor, $extension, $application);
+
+        $dispatcher->addSubscriber($application->getEventSubscriber());
+
+        $event = new GenericEvent(ApplicationEvents::LOAD_DASHBOARD, [
+            'request' => $request,
+        ]);
+        
+        $dispatcher->dispatch(ApplicationEvents::LOAD_DASHBOARD, $event);
+        // die;
+
+        // $event = new ApplicationEvent($application);
+        // $dispatcher->disptach($event::NAME, $event);
+        // dump($event);
+        // die;
 
         return $this->render('@UVDeskExtension//applicationDashboard.html.twig', [
             'application' => $application

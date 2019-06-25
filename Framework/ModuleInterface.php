@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
-interface CommunityModuleExtensionInterface
+interface ModuleInterface
 {
     public function getVendor() : string;
 

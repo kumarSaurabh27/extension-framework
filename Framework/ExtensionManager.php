@@ -1,18 +1,15 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Extensions;
+namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\CoreBundle\Extensibles\ExtendableComponentInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplicationInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
+use Webkul\UVDesk\CoreBundle\Framework\ExtendableComponentInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\ApplicationInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
 
-/**
- * Extensibles: CommunityExtensionsManager
- */
-class CommunityExtensionsManager implements ExtendableComponentInterface
+class ExtensionManager implements ExtendableComponentInterface
 {
 	private $extensions = [];
 	private $applications = [];
@@ -39,14 +36,14 @@ class CommunityExtensionsManager implements ExtendableComponentInterface
 		}
 	}
 
-	public function registerExtension(CommunityModuleExtensionInterface $extension) : CommunityExtensionsManager
+	public function registerExtension(ModuleInterface $extension) : ExtensionManager
 	{
 		$this->extensions[get_class($extension)] = $extension;
 
 		return $this;
 	}
 
-	public function registerApplication(CommunityApplicationInterface $application)
+	public function registerApplication(ApplicationInterface $application)
 	{
 		$extension = $this->extensions[$application->getExtensionReference()];
 
@@ -61,7 +58,7 @@ class CommunityExtensionsManager implements ExtendableComponentInterface
 		return array_values($this->applications);
 	}
 
-	public function getApplicationByReference($reference) : CommunityApplicationInterface
+	public function getApplicationByReference($reference) : ApplicationInterface
 	{
 		if (empty($this->applications[$reference])) {
 			throw new \Exception('No application found');
@@ -70,7 +67,7 @@ class CommunityExtensionsManager implements ExtendableComponentInterface
 		return $this->applications[$reference];
 	}
 
-	public function getApplicationByAttributes($vendor, $extension, $qualifiedName) : CommunityApplicationInterface
+	public function getApplicationByAttributes($vendor, $extension, $qualifiedName) : ApplicationInterface
 	{
 		if (empty($this->organizedCollection[$vendor][$extension])) {
 			throw new \Exception(sprintf("No applications found under the %s/%s extension namespace", $vendor, $extension));

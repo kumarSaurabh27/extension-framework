@@ -7,12 +7,12 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
-use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityExtensionsManager;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplicationInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionBundle\Framework\Application;
+use Webkul\UVDesk\ExtensionBundle\Framework\ApplicationInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
 
-class Builder extends Extension
+class Extensions extends Extension
 {
     public function getAlias()
     {
@@ -43,7 +43,7 @@ class Builder extends Extension
         }
 
         // Automatically add service tags
-        // $container->registerForAutoconfiguration(CommunityModuleExtensionInterface::class)->addTag(CommunityModuleExtensionInterface::class);
+        // $container->registerForAutoconfiguration(ModuleInterface::class)->addTag(ModuleInterface::class);
 
         // Compile apps
         $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
@@ -55,7 +55,7 @@ class Builder extends Extension
         }
     }
 
-    private function compileExtensions($path) : Builder
+    private function compileExtensions($path) : Extensions
     {
         $json = json_decode(file_get_contents($path), true);
 
@@ -63,7 +63,7 @@ class Builder extends Extension
             foreach ($attributes['extensions'] as $package => $extensionConfiguration) {
                 $reflectedConfiguration = new \ReflectionClass($extensionConfiguration);
 
-                if (!$reflectedConfiguration->implementsInterface(CommunityModuleExtensionInterface::class)) {
+                if (!$reflectedConfiguration->implementsInterface(ModuleInterface::class)) {
                     $message = "Extension %s/%s [%s] is not supported.";
 
                     throw new \Exception(sprintf($message, $vendor, $extension, $reflectedConfiguration->getName())); 
@@ -80,10 +80,10 @@ class Builder extends Extension
         return $this;
     }
 
-    private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Builder
+    private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Extensions
     {
-        if ($container->has(CommunityExtensionsManager::class)) {
-            $extensionManagerDefinition = $container->findDefinition(CommunityExtensionsManager::class);
+        if ($container->has(ExtensionManager::class)) {
+            $extensionManagerDefinition = $container->findDefinition(ExtensionManager::class);
         
             foreach ($this->collection as $attributes) {
                 $reflectedExtension = $attributes['configuration'];
@@ -109,7 +109,7 @@ class Builder extends Extension
                 foreach ($reflectedExtension->getMethod('getApplications')->invoke(null) as $application) {
                     $reflectedApplication = new \ReflectionClass($application);
 
-                    if ($reflectedApplication->isSubclassOf(CommunityApplication::class)) {
+                    if ($reflectedApplication->isSubclassOf(Application::class)) {
                         $applicationDefinition = $container->findDefinition($application);
                         $applicationDefinition
                             ->setPrivate(true)

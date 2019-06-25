@@ -3,9 +3,9 @@
 namespace UVDeskApps\UVDesk\ECommerce;
 
 use UVDeskApps\UVDesk\ECommerce\Apps\ECommerceOrders;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
+use Webkul\UVDesk\ExtensionBundle\Framework\Module;
 
-final class ECommerce extends CommunityModuleExtension
+final class ECommerce extends Module
 {
     public static function getServices() : array
     {

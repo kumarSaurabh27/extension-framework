@@ -1,22 +1,20 @@
 <?php
 
-namespace UVDeskApps\UVDesk\Shopify\Apps\ECommerce;
+namespace UVDeskApps\UVDesk\Shopify\Apps;
 
-use Twig\Environment as TwigEnvironment;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
+use Webkul\UVDesk\ExtensionBundle\Framework\Application;
+use UVDeskApps\UVDesk\Shopify\EventListeners\ShopifyEventSubscriber;
 
-class ECommerce extends CommunityApplication
+class Shopify extends Application
 {
-    public function __construct(RequestStack $requestStack, TwigEnvironment $twig)
-    {
-        $this->twig = $twig;
-        $this->requestStack = $requestStack;
+    public function __construct(ShopifyEventSubscriber $subscriber)
+	{
+		$this->subscriber = $subscriber;
     }
 
     public static function getName() : string
     {
-        return "Shopify ECommerce";
+        return "Shopify";
     }
 
     public static function getSummary() : string
@@ -37,5 +35,10 @@ class ECommerce extends CommunityApplication
     public function getTemplate()
     {
         return '@_uvdesk_extension_uvdesk_shopify//dashboard.html.twig';
+    }
+
+    public function getEventSubscriber()
+    {
+        return $this->subscriber;
     }
 }

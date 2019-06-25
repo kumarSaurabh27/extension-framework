@@ -4,9 +4,9 @@ namespace UVDeskApps\UVDesk\Commons;
 
 use UVDeskApps\UVDesk\Commons\Apps\Memo;
 use UVDeskApps\UVDesk\Commons\Apps\CustomerNotes;
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtension;
+use Webkul\UVDesk\ExtensionBundle\Framework\Module;
 
-final class Commons extends CommunityModuleExtension
+final class Commons extends Module
 {
     public static function getServices() : array
     {

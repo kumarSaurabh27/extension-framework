@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\ExtensionBundle\Extensions\CommunityExtensionsManager;
+use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
 
 class ApplicationXHR extends Controller
 {
@@ -23,7 +23,7 @@ class ApplicationXHR extends Controller
                     'package' => $application->getExtension()->getPackage(),
                 ],
             ];
-        }, $this->get('uvdesk.extensibles')->getRegisteredExtension(CommunityExtensionsManager::class)->getApplications());
+        }, $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplications());
 
         return new JsonResponse($collection);
     }

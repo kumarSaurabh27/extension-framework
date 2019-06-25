@@ -2,9 +2,9 @@
 
 namespace UVDeskApps\UVDesk\ECommerce\Apps;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityApplication;
+use Webkul\UVDesk\ExtensionBundle\Framework\Application;
 
-class ECommerceOrders extends CommunityApplication
+class ECommerceOrders extends Application
 {
     public static function getName() : string
     {

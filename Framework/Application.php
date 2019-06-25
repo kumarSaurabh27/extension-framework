@@ -2,9 +2,9 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\CommunityModuleExtensionInterface;
+use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
 
-abstract class CommunityApplication implements CommunityApplicationInterface
+abstract class Application implements ApplicationInterface
 {
     CONST SVG = <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60px" height="60px" viewBox="0 0 60 60">
@@ -12,10 +12,11 @@ abstract class CommunityApplication implements CommunityApplicationInterface
 </svg>
 SVG;
 
+    protected $listeners;
     protected $extension;
     protected $extensionReference;
 
-    final public function setExtension(CommunityModuleExtensionInterface $extension) : CommunityApplicationInterface
+    final public function setExtension(ModuleInterface $extension) : ApplicationInterface
     {
         if (null == $this->extension) {
             $this->extension = $extension;
@@ -24,12 +25,12 @@ SVG;
         return $this;
     }
 
-    final public function getExtension() : CommunityModuleExtensionInterface
+    final public function getExtension() : ModuleInterface
     {
         return $this->extension;
     }
 
-    final public function setExtensionReference($extensionReference) : CommunityApplicationInterface
+    final public function setExtensionReference($extensionReference) : ApplicationInterface
     {
         if (null == $this->extensionReference) {
             $this->extensionReference = $extensionReference;

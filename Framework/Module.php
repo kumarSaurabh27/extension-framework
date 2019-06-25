@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionBundle\Framework;
 
-abstract class CommunityModuleExtension implements CommunityModuleExtensionInterface
+abstract class Module implements ModuleInterface
 {
     protected $vendor;
     protected $package;
