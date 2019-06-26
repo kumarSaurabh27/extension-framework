@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\UIComponents\Dashboard\Homepage\Sections;
 
-use Webkul\UVDesk\CoreBundle\Dashboard\Segments\HomepageSection;
+use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Segments\HomepageSection;
 
 class Apps extends HomepageSection
 {

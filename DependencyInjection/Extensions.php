@@ -28,15 +28,15 @@ class Extensions extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         // $configuration = $this->getConfiguration($configs, $container);
-        $configuration = new BundleConfiguration();
-        $shopifyConfiguration = new ShopifyConfiguration();
+        // $configuration = new BundleConfiguration();
+        // $shopifyConfiguration = new ShopifyConfiguration();
 
-        dump($configs);
-        dump($configuration);
-        dump($shopifyConfiguration);
+        // dump($configs);
+        // dump($configuration);
+        // dump($shopifyConfiguration);
 
-        dump($this->processConfiguration($shopifyConfiguration, $configs));
-        die;
+        // dump($this->processConfiguration($shopifyConfiguration, $configs));
+        // die;
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

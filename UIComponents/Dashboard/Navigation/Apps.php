@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\UIComponents\Dashboard\Navigation;
 
-use Webkul\UVDesk\CoreBundle\Dashboard\Segments\NavigationInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Segments\NavigationInterface;
 
 class Apps implements NavigationInterface
 {

@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\UIComponents\Dashboard\Homepage\Items;
 
-use Webkul\UVDesk\CoreBundle\Dashboard\Segments\HomepageSectionItem;
+use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Segments\HomepageSectionItem;
 use Webkul\UVDesk\ExtensionFrameworkBundle\UIComponents\Dashboard\Homepage\Sections\Apps;
 
 class ExploreApps extends HomepageSectionItem

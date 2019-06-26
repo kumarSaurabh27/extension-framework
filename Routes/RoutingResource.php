@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Routes;
 
-use Webkul\UVDesk\CoreBundle\Framework\RoutingResourceInterface;
+use Webkul\UVDesk\CoreFrameworkBundle\Framework\RoutingResourceInterface;
 
 class RoutingResource implements RoutingResourceInterface
 {

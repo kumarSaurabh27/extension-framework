@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Framework;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
 
 interface ModuleInterface
 {
