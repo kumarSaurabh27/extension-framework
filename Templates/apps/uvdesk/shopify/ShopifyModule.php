@@ -1,11 +1,12 @@
 <?php
 
-namespace UVDeskApps\UVDesk\Shopify;
+namespace UVDesk\CommunityExtension\UVDesk\Shopify;
 
-use UVDeskApps\UVDesk\Shopify\Apps;
-use Webkul\UVDesk\ExtensionBundle\Framework\Module;
+use UVDesk\CommunityExtension\UVDesk\Shopify\Apps;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Moudle\Module;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Application;
 
-final class Shopify extends Module
+class Shopify extends Application
 {
     public static function getServices() : array
     {

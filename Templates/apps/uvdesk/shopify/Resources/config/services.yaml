@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: false
     
-    UVDeskApps\UVDesk\Shopify\:
+    UVDesk\CommunityExtension\UVDesk\Shopify\:
         resource: '../../*'
         # exclude: '../../{Shopify.php}'
     

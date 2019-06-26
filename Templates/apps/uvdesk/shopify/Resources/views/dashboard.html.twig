@@ -1,7 +1,67 @@
+{# {{ include('@_uvdesk_extension_uvdesk_shopify//template.html.twig') }} #}
+
 <div class="uv-app-splash" style="text-align: center;">
     <img class="uv-app-splash-image" src="{{ asset('bundles/uvdeskextension/extensions/uvdesk/shopify/assets/ecommerce-splash-shopify.png') }}" alt="Shopify ECommerce">
 
     <h2>Shopify ECommerce</h2>
     <p>You haven't added any Shopify channel yet, Integrate your Shopify Seller Account as a channel to sync Customers and Orders to uvdesk</p>
-    <a class="uv-btn add-app-channel">New Channel</a>
+    <a class="uv-btn uv-app-shopify-cta-setup">Setup</a>
+</div>
+
+<div class="uv-app-shopify-form">
+    <div class="uv-app-add-channel">
+		{# Instructions #}
+		<div class="uv-instructions-block" style="">
+            <h3><span class="uv-icon-info uv-margin-right-5"></span>{{ 'Configuring your application:'|trans }}</h3>
+            <ul>
+                <li>Login to your store's <b>Admin Panel</b>.</li>
+                <li>Once logged in successfully, go to <b>Apps</b> and click on <b>Manage private apps</b>.</li>
+                <li>On your Private Apps page, click on <b>Create a new private app</b> to create a new app.</li>
+                <li>Fill out the necessary details as required.</li>
+                <li>Under <b>Admin API</b> section, provide <b>Read Access</b> to <b>Orders, transactions and fulfillments</b>.</li>
+                <li>Click on <b>Save</b> and under <b>Admin API</b> section you'll be provided with <b>API Key</b> and <b>Password</b> which will be required to connect with your store.</li>
+            </ul>
+		</div>
+        
+        {# Settings Form #}
+		<form class="uv-app-add-form" method="POST">
+			<h1>Shopify Channel Settings</h1>
+
+			<div class="uv-element-block">
+				<label class="uv-field-label">Name</label>
+				<div class="uv-field-block">
+					<input name="title" class="uv-field" type="text" placeholder="Channel Name" value="">
+				</div>
+				<span class="uv-field-info">It will be shown in the list of added channels for recognization purpose only</span>
+			</div>
+                
+            <div class="uv-element-block">
+                <label class="uv-field-label">Store Name</label>
+                <div class="uv-field-block">
+                    <input name="storename" class="uv-field" type="text" placeholder="" value="">
+                </div>
+                <span class="uv-field-info">Your Shopify Store Name</span>
+            </div>
+
+            <div class="uv-element-block">
+                <label class="uv-field-label">API Key</label>
+                <div class="uv-field-block">
+                    <input name="api_key" class="uv-field" type="password" placeholder="" value="">
+                </div>
+                <span class="uv-field-info">Your Shopify API Key</span>
+            </div>
+
+            <div class="uv-element-block">
+                <label class="uv-field-label">API Password</label>
+                <div class="uv-field-block">
+                    <input name="api_password" class="uv-field" type="password" placeholder="" value="">
+                </div>
+                <span class="uv-field-info">Your Shopify API Password</span>
+            </div>
+            
+			<div class="uv-action-buttons">
+				<input type="submit" class="uv-btn" id="save-channel" value="Save">
+			</div>
+		</form>
+	</div>
 </div>

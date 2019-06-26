@@ -11,6 +11,7 @@ use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
 use Webkul\UVDesk\ExtensionBundle\Framework\Application;
 use Webkul\UVDesk\ExtensionBundle\Framework\ApplicationInterface;
 use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
+use UVDesk\CommunityExtension\UVDesk\Shopify\DependencyInjection\ShopifyConfiguration;
 
 class Extensions extends Extension
 {
@@ -26,6 +27,17 @@ class Extensions extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
+        // $configuration = $this->getConfiguration($configs, $container);
+        $configuration = new BundleConfiguration();
+        $shopifyConfiguration = new ShopifyConfiguration();
+
+        dump($configs);
+        dump($configuration);
+        dump($shopifyConfiguration);
+
+        dump($this->processConfiguration($shopifyConfiguration, $configs));
+        die;
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
@@ -48,6 +60,7 @@ class Extensions extends Extension
         // Compile apps
         $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
         
+        // Check if autoloaded
         if (file_exists($path)) {
             $this
                 ->compileExtensions($path)

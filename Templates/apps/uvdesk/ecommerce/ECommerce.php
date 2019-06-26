@@ -1,8 +1,8 @@
 <?php
 
-namespace UVDeskApps\UVDesk\ECommerce;
+namespace UVDesk\CommunityExtension\UVDesk\ECommerce;
 
-use UVDeskApps\UVDesk\ECommerce\Apps\ECommerceOrders;
+use UVDesk\CommunityExtension\UVDesk\ECommerce\Apps\ECommerceOrders;
 use Webkul\UVDesk\ExtensionBundle\Framework\Module;
 
 final class ECommerce extends Module

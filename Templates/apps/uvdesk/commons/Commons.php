@@ -1,9 +1,9 @@
 <?php
 
-namespace UVDeskApps\UVDesk\Commons;
+namespace UVDesk\CommunityExtension\UVDesk\Commons;
 
-use UVDeskApps\UVDesk\Commons\Apps\Memo;
-use UVDeskApps\UVDesk\Commons\Apps\CustomerNotes;
+use UVDesk\CommunityExtension\UVDesk\Commons\Apps\Memo;
+use UVDesk\CommunityExtension\UVDesk\Commons\Apps\CustomerNotes;
 use Webkul\UVDesk\ExtensionBundle\Framework\Module;
 
 final class Commons extends Module

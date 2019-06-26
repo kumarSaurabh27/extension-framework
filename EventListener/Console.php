@@ -32,6 +32,12 @@ class Console
                 // $application->setAutoExit(false);
                 // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
                 break;
+            case $command instanceof SymfonyFrameworkCommand\AssetsInstallCommand:
+                // $application = new Application($this->kernel);
+                
+                // $application->setAutoExit(false);
+                // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
+                break;
             default:
                 break;
         }

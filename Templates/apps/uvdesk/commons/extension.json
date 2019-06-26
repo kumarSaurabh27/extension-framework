@@ -9,7 +9,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "UVDeskApps\\UVDesk\\Commons\\": ""
+            "UVDesk\\CommunityExtension\\UVDesk\\Commons\\": ""
         }
     }
 }

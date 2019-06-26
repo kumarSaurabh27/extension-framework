@@ -1,8 +1,8 @@
 <?php
 
-namespace UVDeskApps\UVDesk\Shopify\EventListeners;
+namespace UVDesk\CommunityExtension\UVDesk\Shopify\EventListeners;
 
-use UVDeskApps\UVDesk\Shopify\Apps\Shopify;
+use UVDesk\CommunityExtension\UVDesk\Shopify\Apps\Shopify;
 use Webkul\UVDesk\CoreBundle\Dashboard\Dashboard;
 use Webkul\UVDesk\ExtensionBundle\Events\ApplicationEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -31,5 +31,6 @@ class ShopifyEventSubscriber implements EventSubscriberInterface
 
         $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
         $dashboardTemplate->appendStylesheet('bundles/uvdeskextension/extensions/uvdesk/shopify/css/main.css');
+        $dashboardTemplate->appendJavascript('bundles/uvdeskextension/extensions/uvdesk/shopify/js/main.js');
     }
 }
