@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
 
 class ExtensionManager implements ExtendableComponentInterface
 {

@@ -14,7 +14,7 @@ class Application extends Controller
 {
     public function loadDashboard(Request $request)
     {
-        return $this->render('@UVDeskExtension//dashboard.html.twig', []);
+        return $this->render('@ExtensionFramework//dashboard.html.twig', []);
     }
 
     public function loadApplicationDashboard($vendor, $extension, $application, Request $request)
@@ -36,7 +36,7 @@ class Application extends Controller
         // dump($event);
         // die;
 
-        return $this->render('@UVDeskExtension//applicationDashboard.html.twig', [
+        return $this->render('@ExtensionFramework//applicationDashboard.html.twig', [
             'application' => $application
         ]);
     }

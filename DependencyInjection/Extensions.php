@@ -10,8 +10,9 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
-use UVDesk\CommunityExtension\UVDesk\Shopify\DependencyInjection\ShopifyConfiguration;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
+
+use UVDesk\CommunityExtension\UVDesk\ShopifyModule\DependencyInjection\ShopifyConfiguration;
 
 class Extensions extends Extension
 {

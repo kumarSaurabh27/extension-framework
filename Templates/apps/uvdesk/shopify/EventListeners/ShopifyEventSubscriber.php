@@ -30,7 +30,7 @@ class ShopifyEventSubscriber implements EventSubscriberInterface
         $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
 
         $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
-        $dashboardTemplate->appendStylesheet('bundles/uvdeskextension/extensions/uvdesk/shopify/css/main.css');
-        $dashboardTemplate->appendJavascript('bundles/uvdeskextension/extensions/uvdesk/shopify/js/main.js');
+        $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/uvdesk/shopify/css/main.css');
+        $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/uvdesk/shopify/js/main.js');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Framework;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
 
 interface ApplicationInterface
 {
