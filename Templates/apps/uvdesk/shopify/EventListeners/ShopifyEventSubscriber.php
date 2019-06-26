@@ -1,8 +1,8 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\Shopify\EventListeners;
+namespace UVDesk\CommunityExtension\UVDesk\ShopifyModule\EventListeners;
 
-use UVDesk\CommunityExtension\UVDesk\Shopify\Apps\Shopify;
+use UVDesk\CommunityExtension\UVDesk\ShopifyModule\Apps\Shopify;
 use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

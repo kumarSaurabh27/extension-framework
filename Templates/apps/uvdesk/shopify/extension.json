@@ -9,7 +9,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "UVDesk\\CommunityExtension\\UVDesk\\Shopify\\": ""
+            "UVDesk\\CommunityExtension\\UVDesk\\ShopifyModule\\": ""
         }
     }
 }

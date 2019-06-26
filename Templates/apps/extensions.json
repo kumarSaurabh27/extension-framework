@@ -3,9 +3,7 @@
         "uvdesk": {
             "path": "uvdesk/",
             "extensions": {
-                "commons": "UVDesk\\CommunityExtension\\UVDesk\\Commons\\Commons",
-                "ecommerce": "UVDesk\\CommunityExtension\\UVDesk\\ECommerce\\ECommerce",
-                "shopify": "UVDesk\\CommunityExtension\\UVDesk\\Shopify\\Shopify"
+                "shopify": "UVDesk\\CommunityExtension\\UVDesk\\ShopifyModule\\ShopifyModule"
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\Shopify\DependencyInjection;
+namespace UVDesk\CommunityExtension\UVDesk\ShopifyModule\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
