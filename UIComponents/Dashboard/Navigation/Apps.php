@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\UIComponents\Dashboard\Navigation;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\UIComponents\Dashboard\Navigation;
 
 use Webkul\UVDesk\CoreBundle\Dashboard\Segments\NavigationInterface;
 

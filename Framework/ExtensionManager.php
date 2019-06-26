@@ -1,13 +1,13 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Framework;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Framework;
 
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreBundle\Framework\ExtendableComponentInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\ApplicationInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
 
 class ExtensionManager implements ExtendableComponentInterface
 {

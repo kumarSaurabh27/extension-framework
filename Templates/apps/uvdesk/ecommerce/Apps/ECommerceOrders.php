@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityExtension\UVDesk\ECommerce\Apps;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 
 class ECommerceOrders extends Application
 {

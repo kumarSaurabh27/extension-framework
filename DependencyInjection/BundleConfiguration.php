@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\DependencyInjection;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

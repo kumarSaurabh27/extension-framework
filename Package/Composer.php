@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Package;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Package;
 
 use Webkul\UVDesk\PackageManager\Composer\ComposerPackage;
 use Webkul\UVDesk\PackageManager\Composer\ComposerPackageExtension;

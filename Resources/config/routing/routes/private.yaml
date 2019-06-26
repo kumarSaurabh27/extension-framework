@@ -1,19 +1,19 @@
 uvdesk_extensions_dashboard:
     path:     /apps
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::loadDashboard
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::loadDashboard
     defaults: { panelId: 'apps' }
 
 uvdesk_extensions_load_application_collection_xhr:
     path:     /apps/xhr/collection
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\ApplicationXHR::loadCollectionXHR
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\ApplicationXHR::loadCollectionXHR
 
 uvdesk_extensions_load_application:
     path:     /apps/{vendor}/{extension}/{application}
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\Application::loadApplicationDashboard
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::loadApplicationDashboard
 
 ecommerce_channel_retrieve_order:
     path:     /ticket/{ticketId}/addorder
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\ECommerce::fetchOrderDetails
     methods: [POST,PUT]
     requirements:
         ticketId: '\d+'
@@ -57,12 +57,12 @@ ecommerce_channel_retrieve_order:
 
 app_fetch_application_collection:
     path:     /apps/{applicationRouteName}/collection/fetch
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\ECommerce::fetchOrderDetails
     # defaults: { _controller: WebkulAppBundle:Application:getApplicationChannelCollectionXhr }
 
 todo_action:
     path:     /ticket/todo/{id}
-    controller: Webkul\UVDesk\ExtensionBundle\Controller\ECommerce::fetchOrderDetails
+    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\ECommerce::fetchOrderDetails
     defaults: { id: 0 }
     # defaults: { _controller: WebkulTicketBundle:Todo:todoXhr ,id: 0 }
 

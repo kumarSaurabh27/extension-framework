@@ -1,16 +1,16 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\DependencyInjection;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
-use Webkul\UVDesk\ExtensionBundle\Framework\Application;
-use Webkul\UVDesk\ExtensionBundle\Framework\ApplicationInterface;
-use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
 use UVDesk\CommunityExtension\UVDesk\Shopify\DependencyInjection\ShopifyConfiguration;
 
 class Extensions extends Extension

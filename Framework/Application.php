@@ -1,8 +1,8 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Framework;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Framework;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ModuleInterface;
 
 abstract class Application implements ApplicationInterface
 {

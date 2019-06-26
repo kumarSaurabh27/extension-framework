@@ -4,10 +4,10 @@ namespace UVDesk\CommunityExtension\UVDesk\Shopify\EventListeners;
 
 use UVDesk\CommunityExtension\UVDesk\Shopify\Apps\Shopify;
 use Webkul\UVDesk\CoreBundle\Dashboard\Dashboard;
-use Webkul\UVDesk\ExtensionBundle\Events\ApplicationEvents;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\CoreBundle\Framework\ExtendableComponentManager;
-use Webkul\UVDesk\ExtensionBundle\Events\ApplicationSubscriberInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationSubscriberInterface;
 
 class ShopifyEventSubscriber implements EventSubscriberInterface
 {

@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityExtension\UVDesk\Commons\Apps;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 
 class Memo extends Application
 {

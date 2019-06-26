@@ -3,7 +3,7 @@
 namespace UVDesk\CommunityExtension\UVDesk\ECommerce;
 
 use UVDesk\CommunityExtension\UVDesk\ECommerce\Apps\ECommerceOrders;
-use Webkul\UVDesk\ExtensionBundle\Framework\Module;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Module;
 
 final class ECommerce extends Module
 {

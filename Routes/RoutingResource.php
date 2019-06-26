@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Routes;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Routes;
 
 use Webkul\UVDesk\CoreBundle\Framework\RoutingResourceInterface;
 

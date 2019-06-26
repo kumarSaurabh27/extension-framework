@@ -4,11 +4,11 @@ services:
         autoconfigure: true
         public: false
     
-    Webkul\UVDesk\ExtensionBundle\:
+    Webkul\UVDesk\ExtensionFrameworkBundle\:
         resource: '../../*'
         exclude: '../../{DependencyInjection,Templates,Package}'
     
-    Webkul\UVDesk\ExtensionBundle\EventListener\Console:
+    Webkul\UVDesk\ExtensionFrameworkBundle\EventListener\Console:
         tags:
             - { name: kernel.event_listener, event: console.command }
             - { name: kernel.event_listener, event: console.terminate }

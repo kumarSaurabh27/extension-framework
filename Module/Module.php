@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Framework;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Framework;
 
 abstract class Module implements ModuleInterface
 {

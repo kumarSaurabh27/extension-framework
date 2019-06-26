@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\EventListener;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\EventListener;
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\HttpKernel\KernelInterface;

@@ -1,5 +1,5 @@
 {
-    "name": "uvdesk/extensions",
+    "name": "uvdesk/extension-framework",
     "description": "Extension Bundle",
     "type": "symfony-bundle",
     "license": "MIT",
@@ -16,10 +16,10 @@
         "uvdesk/core-framework": "0.1.*"
     },
     "autoload": {
-        "psr-4": { "Webkul\\UVDesk\\ExtensionBundle\\": "" }
+        "psr-4": { "Webkul\\UVDesk\\ExtensionFrameworkBundle\\": "" }
     },
     "extra": {
-        "uvdesk-package-extension": "Webkul\\UVDesk\\ExtensionBundle\\Package\\Composer"
+        "uvdesk-package-extension": "Webkul\\UVDesk\\ExtensionFrameworkBundle\\Package\\Composer"
     },
     "minimum-stability": "dev"
 }

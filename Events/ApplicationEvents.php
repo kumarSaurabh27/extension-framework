@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Events;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Events;
 
 class ApplicationEvents
 {

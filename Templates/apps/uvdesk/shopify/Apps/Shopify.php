@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityExtension\UVDesk\Shopify\Apps;
 
-use Webkul\UVDesk\ExtensionBundle\Framework\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 use UVDesk\CommunityExtension\UVDesk\Shopify\EventListeners\ShopifyEventSubscriber;
 
 class Shopify extends Application

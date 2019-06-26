@@ -1,12 +1,12 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionBundle\Controller;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\ExtensionBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
 
 class ApplicationXHR extends Controller
 {
