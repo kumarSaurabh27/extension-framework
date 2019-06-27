@@ -28,15 +28,28 @@ class Console
         switch (true) {
             case $command instanceof SymfonyFrameworkCommand\CacheClearCommand:
                 // $application = new Application($this->kernel);
-                
+
                 // $application->setAutoExit(false);
                 // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
                 break;
             case $command instanceof SymfonyFrameworkCommand\AssetsInstallCommand:
-                // $application = new Application($this->kernel);
-                
-                // $application->setAutoExit(false);
-                // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
+                // uvdesk apps root directory
+                $uvdeskAppsRootDirectory = $this->container->get('kernel')->getProjectDir() . '/apps/uvdesk/';
+
+                // get all apps installed
+                $uvdeskAppsCollection = scandir($uvdeskAppsRootDirectory);
+                $validUVDeskAppsCollection = array_diff($uvdeskAppsCollection, ['.', '..']);
+
+                // get all the assets of uvdesk apps
+                foreach ($validUVDeskAppsCollection as $uvdeskApp) {
+                    // create Symbolic link if public directory exists
+                    $appAssetsPath = $uvdeskAppsRootDirectory . $uvdeskApp . '/Resources/public';
+
+                    if (is_dir($appAssetsPath)) {
+                        $uvdeskAppsExtensionDirectory = $this->container->get('kernel')->getProjectDir() . '/vendor/uvdesk/extensions/Resources/public/extensions/uvdesk/' . $uvdeskApp;
+                        symlink($appAssetsPath, $uvdeskAppsExtensionDirectory);
+                    }
+                }
                 break;
             default:
                 break;

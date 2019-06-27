@@ -1,6 +1,7 @@
 {
     "name": "uvdesk/commons",
     "description": "UVDesk Community Commons Module",
+    "type": "uvdesk-module",
     "authors": [
         {
             "name": "Akshay Kumar",
@@ -8,8 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "UVDesk\\CommunityExtension\\UVDesk\\Commons\\": ""
-        }
+        "psr-4": { "UVDesk\\CommunityPackages\\UVDesk\\Commons\\": "" }
     }
 }

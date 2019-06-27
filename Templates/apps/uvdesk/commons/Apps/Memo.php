@@ -1,6 +1,6 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\Commons\Apps;
+namespace UVDesk\CommunityPackages\UVDesk\Commons\Apps;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 

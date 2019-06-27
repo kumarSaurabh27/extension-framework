@@ -1,6 +1,7 @@
 {
     "name": "uvdesk/ecommerce",
     "description": "UVDesk Community ECommerce Module",
+    "type": "uvdesk-module",
     "authors": [
         {
             "name": "Akshay Kumar",
@@ -8,8 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "UVDesk\\CommunityExtension\\UVDesk\\ECommerce\\": ""
-        }
+        "psr-4": { "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": "" }
     }
 }

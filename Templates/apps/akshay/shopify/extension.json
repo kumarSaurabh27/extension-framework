@@ -1,6 +1,7 @@
 {
-    "name": "uvdesk/shopify",
+    "name": "akshay/shopify",
     "description": "UVDesk Community Helpdesk Shopify Module",
+    "type": "uvdesk-module",
     "authors": [
         {
             "name": "Akshay Kumar",
@@ -8,8 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": {
-            "UVDesk\\CommunityExtension\\UVDesk\\ShopifyModule\\": ""
-        }
+        "psr-4": { "UVDesk\\CommunityPackages\\Akshay\\Shopify\\": "" }
     }
 }

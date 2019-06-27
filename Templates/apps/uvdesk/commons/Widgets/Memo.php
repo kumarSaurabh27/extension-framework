@@ -1,6 +1,6 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\Commons\Widgets;
+namespace UVDesk\CommunityPackages\UVDesk\Commons\Widgets;
 
 use Twig\Environment as TwigEnvironment;
 use Symfony\Component\HttpFoundation\RequestStack;

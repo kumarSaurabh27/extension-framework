@@ -1,10 +1,9 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\ShopifyModule;
+namespace UVDesk\CommunityPackages\Akshay\Shopify;
 
-use UVDesk\CommunityExtension\UVDesk\ShopifyModule\Apps;
+use UVDesk\CommunityPackages\Akshay\Shopify\Apps;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
-// use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Application;
 
 class ShopifyModule extends Module
 {

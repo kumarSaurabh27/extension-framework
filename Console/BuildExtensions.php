@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
 
 class BuildExtensions extends Command
 {
@@ -34,15 +35,15 @@ class BuildExtensions extends Command
         $this->src_ext = $this->src_dir . '/extensions.json';
         $this->src_composer = $this->container->get('kernel')->getProjectDir() . '/composer.json';
 
-        // Check if extension.json exists
-        if (!file_exists($this->src_ext) || is_dir($this->src_ext)) {
-            throw new \Exception("Unable to locate extensions.json (Looked in at " . $this->src_ext . "). Helpdesk extensions will be disabled.");
-        }
+        // // Check if extension.json exists
+        // if (!file_exists($this->src_ext) || is_dir($this->src_ext)) {
+        //     throw new \Exception("Unable to locate extensions.json (Looked in at " . $this->src_ext . "). Helpdesk extensions will be disabled.");
+        // }
 
-        // Check if composer.json exists
-        if (!file_exists($this->src_composer) || is_dir($this->src_composer)) {
-            throw new \Exception("Unable to locate composer.json (Looked in at " . $this->src_composer . ").");
-        }
+        // // Check if composer.json exists
+        // if (!file_exists($this->src_composer) || is_dir($this->src_composer)) {
+        //     throw new \Exception("Unable to locate composer.json (Looked in at " . $this->src_composer . ").");
+        // }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -52,7 +53,13 @@ class BuildExtensions extends Command
 
             return;
         }
-        
+
+        // Compile collection to valid packages
+
+
+        $this->processApplicationsNamespaces();
+        die;
+
         // Check autoloader state
         $composerJson = json_decode(file_get_contents($this->src_composer), true);
         $autoloadedNamespaceCollection = !empty($composerJson['autoload']['psr-4']) ? $composerJson['autoload']['psr-4'] : [];
@@ -84,6 +91,9 @@ class BuildExtensions extends Command
             $output->writeln("New extensions have been found and added to composer.json. Please run 'composer dump-autoload' to update your composer autloading schematic.");
         }
 
+        // Check if all the vendor directories are autoloaded
+        $this->processApplicationsNamespaces();
+
         // @TODO:
         // - Check if all the vendor directories are autoloaded
         // - Depending on the state, dump composer autoloaders to reflect the new state
@@ -98,7 +108,7 @@ class BuildExtensions extends Command
         //     foreach ($vendor_attributes['extensions'] as $vendor_extension => $extension_attributes) {
         //         $qualifiedExtensionName = $vendor . "/" . $vendor_extension;
         //         $pathToExtensionConfigurationFile = $this->src_ext . "/" . $vendor . "/" . $vendor_extension . "/" . $extension_attributes['conf'];
-                
+
         //         if (!file_exists($pathToExtensionConfigurationFile) || is_dir($pathToExtensionConfigurationFile)) {
         //             throw new \Exception("Unable to locate configuration file for extension " . $qualifiedExtensionName . ".");
         //         }
@@ -112,5 +122,88 @@ class BuildExtensions extends Command
         //         }
         //     }
         // }
+    }
+
+    public function processApplicationsNamespaces()
+    {
+        $packages = [];
+        $extensionsDirectory = $this->container->getParameter('uvdesk_extensions.dir');
+
+        foreach (array_diff(scandir($extensionsDirectory), ['.', '..']) as $vendor) {
+            $vendorDirectory = $extensionsDirectory . "/" . $vendor;
+
+            // Only proceed if path is a non-empty directory
+            if (!file_exists($vendorDirectory) || !is_dir($vendorDirectory)) {
+                continue;
+            }
+            
+            $directories = array_diff(scandir($vendorDirectory), ['.', '..']);
+            $vendorPackages = array_filter($directories, function ($directory) use ($vendorDirectory) {
+                $path = "$vendorDirectory/$directory";
+                $extensionJson = "$path/extension.json";
+
+                return (file_exists($path) && is_dir($path) && file_exists($extensionJson) && !is_dir($extensionJson));
+            });
+
+            foreach ($vendorPackages as $package) {
+                $package = Package::createFromAttributes($vendor, $package, "$vendorDirectory/$package/extension.json");
+
+                if ($package->isValid()) {
+                    if (null == $package->getExtension()) {
+                        continue;
+                    }
+                    
+                    $packages[] = $package;
+                }
+            }
+        }
+
+        dump($packages);
+        die;
+
+        // {
+        //     "vendors": {
+        //         "uvdesk": {
+        //             "path": "uvdesk/",
+        //             "extensions": {
+        //                 "shopify": "UVDesk\\CommunityExtension\\UVDesk\\ShopifyModule\\ShopifyModule"
+        //             }
+        //         }
+        //     }
+        // }
+        
+        // $vendors = array_values(array_diff(scandir($this->src_dir), ['.', '..']));
+
+        // // get all apps installed
+        // $uvdeskAppsCollection = scandir($uvdeskAppsRootDirectory);
+        // $validUVDeskAppsCollection = array_diff($uvdeskAppsCollection, array('.', '..'));
+
+        // // get all the assets of uvdesk apps
+        // foreach ($validUVDeskAppsCollection as $uvdeskApp) {
+        //     $componentExtensionFilePath = $uvdeskAppsRootDirectory . $uvdeskApp . '/extension.json';
+
+        //     // get existing active extensions
+        //     $extensionsListFilePath = $this->src_ext;
+        //     $extensionJSONContent = json_decode(file_get_contents($extensionsListFilePath), true);
+        //     $loadedExtensions = $extensionJSONContent['vendors']['uvdesk']['extensions'];
+
+        //     if (is_file($componentExtensionFilePath)) {
+        //         $componentExtensionJSONContent = json_decode(file_get_contents($componentExtensionFilePath), true);
+        //         $contentToAutoload = $componentExtensionJSONContent['autoload']['psr-4'];
+
+        //         foreach ($contentToAutoload as $namespace => $directory) {
+        //             if (!isset($loadedExtensions[$uvdeskApp])) {
+        //                 // add new extension if not already added
+        //                 $loadedExtensions[$uvdeskApp] = $namespace . ucfirst($uvdeskApp);
+        //             }
+        //         }
+        //     }
+        // }
+
+        // // update content
+        // $extensionJSONContent['vendors']['uvdesk']['extensions'] =  $loadedExtensions;
+        // file_put_contents($extensionsListFilePath, json_encode($extensionJSONContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        // return true;
     }
 }

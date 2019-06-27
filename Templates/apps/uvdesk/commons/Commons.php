@@ -1,10 +1,9 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\Commons;
+namespace UVDesk\CommunityPackages\UVDesk\Commons;
 
-use UVDesk\CommunityExtension\UVDesk\Commons\Apps\Memo;
-use UVDesk\CommunityExtension\UVDesk\Commons\Apps\CustomerNotes;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Module;
+use UVDesk\CommunityPackages\UVDesk\Commons\Apps;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
 
 final class Commons extends Module
 {
@@ -18,8 +17,8 @@ final class Commons extends Module
     public static function getApplications() : array
     {
         return [
-            CustomerNotes::class,
-            Memo::class,
+            Apps\CustomerNotes::class,
+            Apps\Memo::class,
         ];
     }
 }

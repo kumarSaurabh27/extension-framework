@@ -1,9 +1,9 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\ECommerce;
+namespace UVDesk\CommunityPackages\UVDesk\ECommerce;
 
-use UVDesk\CommunityExtension\UVDesk\ECommerce\Apps\ECommerceOrders;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Module;
+use UVDesk\CommunityPackages\UVDesk\ECommerce\Apps;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
 
 final class ECommerce extends Module
 {
@@ -17,7 +17,7 @@ final class ECommerce extends Module
     public static function getApplications() : array
     {
         return [
-            ECommerceOrders::class,
+            Apps\ECommerceOrders::class,
         ];
     }
 }

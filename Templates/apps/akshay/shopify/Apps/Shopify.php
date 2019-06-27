@@ -1,9 +1,9 @@
 <?php
 
-namespace UVDesk\CommunityExtension\UVDesk\ShopifyModule\Apps;
+namespace UVDesk\CommunityPackages\UVDesk\ShopifyModule\Apps;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
-use UVDesk\CommunityExtension\UVDesk\ShopifyModule\EventListeners\ShopifyEventSubscriber;
+use UVDesk\CommunityPackages\UVDesk\ShopifyModule\EventListeners\ShopifyEventSubscriber;
 
 class Shopify extends Application
 {
