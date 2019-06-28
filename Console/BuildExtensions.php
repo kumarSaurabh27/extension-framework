@@ -26,13 +26,14 @@ class BuildExtensions extends Command
 
     protected function configure()
     {
-        $this->setName('uvdesk_extensions:build');
+        $this->setName('uvdesk:apps:update-lock');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $this->src_dir = $this->container->getParameter('uvdesk_extensions.dir');
         $this->src_ext = $this->src_dir . '/extensions.json';
+        $this->src_uvdesk_lock = $this->container->get('kernel')->getProjectDir() . '/uvdesk.lock';
         $this->src_composer = $this->container->get('kernel')->getProjectDir() . '/composer.json';
 
         // // Check if extension.json exists
@@ -54,14 +55,15 @@ class BuildExtensions extends Command
             return;
         }
 
-        // Compile collection to valid packages
+        // Parse vendor directories and update lock file
+        $this->updateExtensionLockFile();
+        $packages = json_decode(file_get_contents($this->src_uvdesk_lock), true);
 
-
-        $this->processApplicationsNamespaces();
+        dump($packages);
         die;
 
         // Check autoloader state
-        $composerJson = json_decode(file_get_contents($this->src_composer), true);
+        $composerJson = json_decode(file_get_contents($this->src_uvdesk), true);
         $autoloadedNamespaceCollection = !empty($composerJson['autoload']['psr-4']) ? $composerJson['autoload']['psr-4'] : [];
 
         $lockedExtensions = json_decode(file_get_contents($this->src_ext), true);
@@ -90,9 +92,6 @@ class BuildExtensions extends Command
 
             $output->writeln("New extensions have been found and added to composer.json. Please run 'composer dump-autoload' to update your composer autloading schematic.");
         }
-
-        // Check if all the vendor directories are autoloaded
-        $this->processApplicationsNamespaces();
 
         // @TODO:
         // - Check if all the vendor directories are autoloaded
@@ -124,10 +123,14 @@ class BuildExtensions extends Command
         // }
     }
 
-    public function processApplicationsNamespaces()
+    public function updateExtensionLockFile()
     {
         $packages = [];
         $extensionsDirectory = $this->container->getParameter('uvdesk_extensions.dir');
+
+        if (!file_exists($extensionsDirectory) || !is_dir($extensionsDirectory)) {
+            throw new \Exception("No apps directory found. Looked in $extensionsDirectory");
+        }
 
         foreach (array_diff(scandir($extensionsDirectory), ['.', '..']) as $vendor) {
             $vendorDirectory = $extensionsDirectory . "/" . $vendor;
@@ -148,62 +151,30 @@ class BuildExtensions extends Command
             foreach ($vendorPackages as $package) {
                 $package = Package::createFromAttributes($vendor, $package, "$vendorDirectory/$package/extension.json");
 
-                if ($package->isValid()) {
-                    if (null == $package->getExtension()) {
-                        continue;
-                    }
-                    
+                if ($package->isValid() && null != $package->getExtension()) {
                     $packages[] = $package;
                 }
             }
         }
 
-        dump($packages);
-        die;
-
-        // {
-        //     "vendors": {
-        //         "uvdesk": {
-        //             "path": "uvdesk/",
-        //             "extensions": {
-        //                 "shopify": "UVDesk\\CommunityExtension\\UVDesk\\ShopifyModule\\ShopifyModule"
-        //             }
-        //         }
-        //     }
-        // }
+        // Sort packages alphabetically
+        usort($packages, function($package_1, $package_2) {
+			return strcasecmp($package_1->getName(), $package_2->getName());
+        });
         
-        // $vendors = array_values(array_diff(scandir($this->src_dir), ['.', '..']));
+        // Prepare dataset for lock file
+        $json['packages'] = array_map(function ($package) {
+            return [
+                'name' => $package->getName(),
+                'description' => $package->getDescription(),
+                'type' => $package->getType(),
+                'autoload' => $package->getDefinedNamespaces(),
+                'suggest' => [
+                    'uvdesk/ecommerce' => "Integrate orders sync. to tickets"
+                ],
+            ];
+        }, $packages);
 
-        // // get all apps installed
-        // $uvdeskAppsCollection = scandir($uvdeskAppsRootDirectory);
-        // $validUVDeskAppsCollection = array_diff($uvdeskAppsCollection, array('.', '..'));
-
-        // // get all the assets of uvdesk apps
-        // foreach ($validUVDeskAppsCollection as $uvdeskApp) {
-        //     $componentExtensionFilePath = $uvdeskAppsRootDirectory . $uvdeskApp . '/extension.json';
-
-        //     // get existing active extensions
-        //     $extensionsListFilePath = $this->src_ext;
-        //     $extensionJSONContent = json_decode(file_get_contents($extensionsListFilePath), true);
-        //     $loadedExtensions = $extensionJSONContent['vendors']['uvdesk']['extensions'];
-
-        //     if (is_file($componentExtensionFilePath)) {
-        //         $componentExtensionJSONContent = json_decode(file_get_contents($componentExtensionFilePath), true);
-        //         $contentToAutoload = $componentExtensionJSONContent['autoload']['psr-4'];
-
-        //         foreach ($contentToAutoload as $namespace => $directory) {
-        //             if (!isset($loadedExtensions[$uvdeskApp])) {
-        //                 // add new extension if not already added
-        //                 $loadedExtensions[$uvdeskApp] = $namespace . ucfirst($uvdeskApp);
-        //             }
-        //         }
-        //     }
-        // }
-
-        // // update content
-        // $extensionJSONContent['vendors']['uvdesk']['extensions'] =  $loadedExtensions;
-        // file_put_contents($extensionsListFilePath, json_encode($extensionJSONContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-        // return true;
+        file_put_contents($this->src_uvdesk_lock, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }

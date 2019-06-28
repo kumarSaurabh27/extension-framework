@@ -11,7 +11,7 @@ class Package
     private $vendor;
     private $package;
     private $description;
-    private $packageType;
+    private $type;
     private $definedNamespaces = [];
     private $extension;
     private static $supportedTypes = ['uvdesk-module'];
@@ -76,16 +76,16 @@ class Package
         return $this->description;
     }
 
-    private function setPackageType(string $packageType) : Package
+    private function setType(string $type) : Package
     {
-        $this->packageType = $packageType;
+        $this->type = $type;
 
         return $this;
     }
 
-    public function getPackageType() : string
+    public function getType() : string
     {
-        return $this->packageType;
+        return $this->type;
     }
 
     private function setDefinedNamespaces(array $definedNamespaces)
@@ -102,7 +102,7 @@ class Package
 
     public function isValid() : bool
     {
-        if (in_array($this->getPackageType(), self::$supportedTypes) && $this->getName() != null) {
+        if (in_array($this->getType(), self::$supportedTypes) && $this->getName() != null) {
             return true;
         }
 
@@ -111,31 +111,33 @@ class Package
 
     private function searchPackageExtensionClassIteratively() : ?\ReflectionClass
     {
-        foreach ($this->getDefinedNamespaces() as $namespace => $relativePath) {
-            $path = $this->getSource() . "/" . $relativePath;
+        foreach ($this->getDefinedNamespaces() as $type => $namespaces) {
+            foreach ($namespaces as $namespace => $relativePath) {
+                $path = $this->getSource() . "/" . $relativePath;
 
-            foreach (array_diff(scandir($path), ['.', '..']) as $item) {
-                $resource = "$path$item";
+                foreach (array_diff(scandir($path), ['.', '..']) as $item) {
+                    $resource = "$path$item";
 
-                if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
-                    $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
-                    
-                    try {
-                        include_once $resource;
-                        $reflectionClass = new \ReflectionClass($className);
-                    } catch (\Exception $e) {
-                        continue;
-                    }
+                    if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
+                        $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
+                        
+                        try {
+                            include_once $resource;
+                            $reflectionClass = new \ReflectionClass($className);
+                        } catch (\Exception $e) {
+                            continue;
+                        }
 
-                    switch ($this->getPackageType()) {
-                        case 'uvdesk-module':
-                            if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
-                                return $reflectionClass;
-                            }
-                            
-                            break;
-                        default:
-                            break;
+                        switch ($this->getType()) {
+                            case 'uvdesk-module':
+                                if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
+                                    return $reflectionClass;
+                                }
+                                
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -171,7 +173,7 @@ class Package
             ->setPackage($package)
             ->setSource(dirname($source))
             ->setDescription($attributes['description'])
-            ->setPackageType($attributes['type'])
-            ->setDefinedNamespaces($attributes['autoload']['psr-4']);
+            ->setType($attributes['type'])
+            ->setDefinedNamespaces($attributes['autoload']);
     }
 }
