@@ -2,32 +2,30 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
 
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
+
 abstract class Module implements ModuleInterface
 {
-    protected $vendor;
+    CONST EXTENSION_TYPE = 'uvdesk-module';
+
     protected $package;
-    protected $directory;
 
-    final public function __construct(string $vendor, string $package, string $directory)
+    final public function __construct($name, $description, $source)
     {
-        $this->vendor = $vendor;
-        $this->package = $package;
-        $this->directory = $directory;
+        list($vendor, $package) = explode('/', $name);
+
+        ($this->package = new Package())
+            ->setName($name)
+            ->setVendor($vendor)
+            ->setPackage($package)
+            ->setDescription($description)
+            ->setType(self::EXTENSION_TYPE)
+            ->setSource($source);
     }
 
-    final public function getVendor() : string
+    final public function getPackage() : Package
     {
-        return strtolower($this->vendor);
-    }
-
-    final public function getPackage() : string
-    {
-        return strtolower($this->package);
-    }
-
-    final public function getDirectory() : string
-    {
-        return $this->directory;
+        return $this->package;
     }
 
     public static function getServices() : array

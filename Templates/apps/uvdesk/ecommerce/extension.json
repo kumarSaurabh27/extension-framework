@@ -9,6 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": { "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": "" }
+        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": ""
     }
 }

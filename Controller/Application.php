@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
 
@@ -22,7 +23,9 @@ class Application extends Controller
         $dispatcher = new EventDispatcher();
         $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplicationByAttributes($vendor, $extension, $application);
 
-        $dispatcher->addSubscriber($application->getEventSubscriber());
+        if ($application instanceof EventSubscriberInterface) {
+            $dispatcher->addSubscriber($application);
+        }
 
         $event = new GenericEvent(ApplicationEvents::LOAD_DASHBOARD, [
             'request' => $request,

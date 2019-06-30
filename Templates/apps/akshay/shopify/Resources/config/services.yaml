@@ -4,7 +4,7 @@ services:
         autoconfigure: true
         public: false
     
-    UVDesk\CommunityPackages\UVDesk\ShopifyModule\:
+    UVDesk\CommunityPackages\Akshay\Shopify\:
         resource: '../../*'
         # exclude: '../../{Shopify.php}'
     

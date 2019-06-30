@@ -9,6 +9,6 @@
         }
     ],
     "autoload": {
-        "psr-4": { "UVDesk\\CommunityPackages\\Akshay\\Shopify\\": "" }
+        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\": ""
     }
 }

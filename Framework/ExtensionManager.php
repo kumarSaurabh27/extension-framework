@@ -28,12 +28,29 @@ class ExtensionManager implements ExtendableComponentInterface
 		$twigLoader = $this->container->get('uvdesk_extension.twig_loader');
 
 		foreach ($this->extensions as $extension) {
-			$pathToExtensionsTwigResources = $extension->getDirectory() . "/Resources/views";
+			$package = $extension->getPackage();
+			$pathToExtensionsTwigResources = $package->getSource() . "/Resources/views";
 
 			if (is_dir($pathToExtensionsTwigResources)) {
-				$twigLoader->addPath($pathToExtensionsTwigResources, sprintf("_uvdesk_extension_%s_%s", $extension->getVendor(), $extension->getPackage()));
+				$twigLoader->addPath($pathToExtensionsTwigResources, sprintf("_uvdesk_extension_%s_%s", $package->getVendor(), $package->getPackage()));
 			}
 		}
+	}
+
+	public function getExtensionResources() : array
+	{
+		$resources = [];
+		
+		foreach ($this->extensions as $extension) {
+			$package = $extension->getPackage();
+			$pathToExtensionsTwigResources = $package->getSource() . "/Resources/public";
+			
+			if (is_dir($pathToExtensionsTwigResources)) {
+				$resources[] = $pathToExtensionsTwigResources;
+			}
+		}
+
+		return $resources;
 	}
 
 	public function registerExtension(ModuleInterface $extension) : ExtensionManager
@@ -46,9 +63,10 @@ class ExtensionManager implements ExtendableComponentInterface
 	public function registerApplication(ApplicationInterface $application)
 	{
 		$extension = $this->extensions[$application->getExtensionReference()];
+		$package = $extension->getPackage();
 
 		$this->applications[get_class($application)] = $application->setExtension($extension);
-		$this->organizedCollection[$extension->getVendor()][$extension->getPackage()][$application->getQualifiedName()] = $application;
+		$this->organizedCollection[$package->getVendor()][$package->getPackage()][$application->getQualifiedName()] = $application;
 
 		return $this;
 	}

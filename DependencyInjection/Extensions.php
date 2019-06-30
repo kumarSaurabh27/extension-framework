@@ -12,6 +12,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
 
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
 use UVDesk\CommunityExtension\UVDesk\ShopifyModule\DependencyInjection\ShopifyConfiguration;
 
 class Extensions extends Extension
@@ -59,84 +60,58 @@ class Extensions extends Extension
         // $container->registerForAutoconfiguration(ModuleInterface::class)->addTag(ModuleInterface::class);
 
         // Compile apps
-        $path = $container->getParameter('uvdesk_extensions.dir') . "/extensions.json";
-        
-        // Check if autoloaded
-        if (file_exists($path)) {
-            $this
-                ->compileExtensions($path)
-                ->autoConfigureExtensions($container, $loader);
-        }
-    }
-
-    private function compileExtensions($path) : Extensions
-    {
-        $json = json_decode(file_get_contents($path), true);
-
-        foreach ($json['vendors'] as $vendor => $attributes) {
-            foreach ($attributes['extensions'] as $package => $extensionConfiguration) {
-                $reflectedConfiguration = new \ReflectionClass($extensionConfiguration);
-
-                if (!$reflectedConfiguration->implementsInterface(ModuleInterface::class)) {
-                    $message = "Extension %s/%s [%s] is not supported.";
-
-                    throw new \Exception(sprintf($message, $vendor, $extension, $reflectedConfiguration->getName())); 
-                }
-
-                $this->collection[] = [
-                    'vendor' => $vendor,
-                    'package' => $package,
-                    'configuration' => $reflectedConfiguration,
-                ];
-            }
-        }
-
-        return $this;
+        $this->autoConfigureExtensions($container, $loader);
     }
 
     private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Extensions
     {
-        if ($container->has(ExtensionManager::class)) {
-            $extensionManagerDefinition = $container->findDefinition(ExtensionManager::class);
-        
-            foreach ($this->collection as $attributes) {
-                $reflectedExtension = $attributes['configuration'];
+        $lockfile = dirname($container->getParameter("uvdesk_extensions.dir")) . "/uvdesk.lock";
 
-                // The first thing we want to do is ensure that the services have been loaded
-                foreach ($reflectedExtension->getMethod('getServices')->invoke(null) as $resource) {
-                    $loader->load($resource);
-                }
+        if (!file_exists($lockfile) || !$container->has(ExtensionManager::class)) {
+            return $this;
+        }
 
-                // Override configuration and register extension with the extension manager
-                $extensionDefinition = $container->findDefinition($reflectedExtension->getName());
-                $extensionDefinition
-                    ->setPrivate(true)
-                    ->setAutowired(false)
-                    ->setAutoconfigured(false)
-                    ->setArgument('$vendor', $attributes['vendor'])
-                    ->setArgument('$package', $attributes['package'])
-                    ->setArgument('$directory', dirname($reflectedExtension->getFileName()));
-                
-                $extensionManagerDefinition->addMethodCall('registerExtension', array(new Reference($reflectedExtension->getName())));
+        // $packages = Package::readPackagesFromLockFile($lockfile);
+        $uvdesk = json_decode(file_get_contents($lockfile), true);
+        $extensionManagerDefinition = $container->findDefinition(ExtensionManager::class);
 
-                // Register available applications with the extension manager for auto init.
-                foreach ($reflectedExtension->getMethod('getApplications')->invoke(null) as $application) {
-                    $reflectedApplication = new \ReflectionClass($application);
+        foreach ($uvdesk['packages'] as $attributes) {
+            $extension = new \ReflectionClass($attributes['extension']);
 
-                    if ($reflectedApplication->isSubclassOf(Application::class)) {
-                        $applicationDefinition = $container->findDefinition($application);
-                        $applicationDefinition
-                            ->setPrivate(true)
-                            ->addMethodCall('setExtensionReference', [$reflectedExtension->getName()]);
-
-                        $extensionManagerDefinition->addMethodCall('registerApplication', array(new Reference($application)));
-                    }
-                }
+            // The first thing we want to do is ensure that the services have been loaded
+            foreach ($extension->getMethod('getServices')->invoke(null) as $resource) {
+                $loader->load($resource);
             }
 
-            // Delegate further configuration to service upon init.
-            $extensionManagerDefinition->addMethodCall('autoconfigure');
+            // Override configuration and register extension with the extension manager
+            $extensionDefinition = $container->findDefinition($extension->getName());
+            $extensionDefinition
+                ->setPrivate(true)
+                ->setAutowired(false)
+                ->setAutoconfigured(false)
+                ->setArgument('$name', $attributes['name'])
+                ->setArgument('$description', $attributes['description'])
+                ->setArgument('$source', dirname($extension->getFileName()));
+            
+            $extensionManagerDefinition->addMethodCall('registerExtension', array(new Reference($extension->getName())));
+
+            // Register available applications with the extension manager for auto init.
+            foreach ($extension->getMethod('getApplications')->invoke(null) as $application) {
+                $reflectedApplication = new \ReflectionClass($application);
+
+                if ($reflectedApplication->isSubclassOf(Application::class)) {
+                    $applicationDefinition = $container->findDefinition($application);
+                    $applicationDefinition
+                        ->setPrivate(true)
+                        ->addMethodCall('setExtensionReference', [$extension->getName()]);
+
+                    $extensionManagerDefinition->addMethodCall('registerApplication', array(new Reference($application)));
+                }
+            }
         }
+
+        // Delegate further configuration to service upon init.
+        $extensionManagerDefinition->addMethodCall('autoconfigure');
 
         return $this;
     }

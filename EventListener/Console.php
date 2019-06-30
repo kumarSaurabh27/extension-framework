@@ -9,16 +9,18 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Command as SymfonyFrameworkCommand;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
 
 class Console
 {
     private $kernel;
     private $container;
 
-    public function __construct(ContainerInterface $container, KernelInterface $kernel)
+    public function __construct(ContainerInterface $container, KernelInterface $kernel, ExtensionManager $extensionManager)
     {
         $this->kernel = $kernel;
         $this->container = $container;
+        $this->extensionManager = $extensionManager;
     }
 
     public function onConsoleCommand(ConsoleCommandEvent $event)
@@ -33,23 +35,33 @@ class Console
                 // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
                 break;
             case $command instanceof SymfonyFrameworkCommand\AssetsInstallCommand:
-                // // uvdesk apps root directory
-                // $uvdeskAppsRootDirectory = $this->container->get('kernel')->getProjectDir() . '/apps/uvdesk/';
+                $prefix = dirname(__DIR__) . '/Resources/public/extensions';
+                $public_directory = $this->container->getParameter("uvdesk_extensions.dir");
 
-                // // get all apps installed
-                // $uvdeskAppsCollection = scandir($uvdeskAppsRootDirectory);
-                // $validUVDeskAppsCollection = array_diff($uvdeskAppsCollection, ['.', '..']);
+                $collection = [];
 
-                // // get all the assets of uvdesk apps
-                // foreach ($validUVDeskAppsCollection as $uvdeskApp) {
-                //     // create Symbolic link if public directory exists
-                //     $appAssetsPath = $uvdeskAppsRootDirectory . $uvdeskApp . '/Resources/public';
+                foreach ($this->extensionManager->getExtensionResources() as $path) {
+                    $postfix = str_ireplace("$public_directory/", '', $path);
+                    $postfix = str_ireplace("/Resources/public", "", $postfix);
 
-                //     if (is_dir($appAssetsPath)) {
-                //         $uvdeskAppsExtensionDirectory = $this->container->get('kernel')->getProjectDir() . '/vendor/uvdesk/extensions/Resources/public/extensions/uvdesk/' . $uvdeskApp;
-                //         symlink($appAssetsPath, $uvdeskAppsExtensionDirectory);
-                //     }
-                // }
+                    $collection["$prefix/$postfix"] = $path;
+                }
+
+                foreach ($collection as $symlink => $original_path) {
+                    if (!is_dir($original_path)) {
+                        continue;
+                    }
+
+                    $path = substr($symlink, 0, strrpos($symlink, '/'));
+
+                    if (!is_dir($path)) {
+                        mkdir($path, 0777, true);
+                        symlink($original_path, $symlink);
+                    } else if (is_dir($symlink)) {
+                        // Remove directory
+                        symlink($original_path, $symlink);
+                    }
+                }
                 break;
             default:
                 break;

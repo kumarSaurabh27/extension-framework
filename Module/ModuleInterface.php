@@ -2,13 +2,11 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
 
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
+
 interface ModuleInterface
 {
-    public function getVendor() : string;
-
-    public function getPackage() : string;
-
-    public function getDirectory() : string;
+    public function getPackage() : Package;
 
     public static function getServices() : array;
 

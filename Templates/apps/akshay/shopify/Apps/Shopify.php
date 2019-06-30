@@ -1,15 +1,19 @@
 <?php
 
-namespace UVDesk\CommunityPackages\UVDesk\ShopifyModule\Apps;
+namespace UVDesk\CommunityPackages\Akshay\Shopify\Apps;
 
+use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
-use UVDesk\CommunityPackages\UVDesk\ShopifyModule\EventListeners\ShopifyEventSubscriber;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
+use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
+use UVDesk\CommunityPackages\Akshay\Shopify\EventListeners\ShopifyEventSubscriber;
 
-class Shopify extends Application
+class Shopify extends Application implements EventSubscriberInterface
 {
-    public function __construct(ShopifyEventSubscriber $subscriber)
+    public function __construct(ExtendableComponentManager $extendableComponentManager)
 	{
-		$this->subscriber = $subscriber;
+		$this->extendableComponentManager = $extendableComponentManager;
     }
 
     public static function getName() : string
@@ -34,11 +38,24 @@ class Shopify extends Application
 
     public function getTemplate()
     {
-        return '@_uvdesk_extension_uvdesk_shopify//dashboard.html.twig';
+        return '@_uvdesk_extension_akshay_shopify//dashboard.html.twig';
     }
 
-    public function getEventSubscriber()
+    public static function getSubscribedEvents()
     {
-        return $this->subscriber;
+        return [
+            ApplicationEvents::LOAD_DASHBOARD => [
+                ['injectAssets'],
+            ],
+        ];
+    }
+
+    public function injectAssets()
+    {
+        $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
+
+        $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
+        $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/uvdesk/shopify/css/main.css');
+        $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/uvdesk/shopify/js/main.js');
     }
 }

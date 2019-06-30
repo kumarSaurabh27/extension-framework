@@ -16,7 +16,7 @@ class Package
     private $extension;
     private static $supportedTypes = ['uvdesk-module'];
     
-    private function setName(string $name) : Package
+    public function setName(string $name) : Package
     {
         $this->name = $name;
 
@@ -28,7 +28,7 @@ class Package
         return $this->name;
     }
 
-    private function setSource(string $source) : Package
+    public function setSource(string $source) : Package
     {
         $this->source = $source;
 
@@ -40,7 +40,7 @@ class Package
         return $this->source;
     }
 
-    private function setVendor(string $vendor) : Package
+    public function setVendor(string $vendor) : Package
     {
         $this->vendor = $vendor;
 
@@ -52,7 +52,7 @@ class Package
         return $this->vendor;
     }
 
-    private function setPackage(string $package) : Package
+    public function setPackage(string $package) : Package
     {
         $this->package = $package;
 
@@ -64,7 +64,7 @@ class Package
         return $this->package;
     }
 
-    private function setDescription(string $description) : Package
+    public function setDescription(string $description) : Package
     {
         $this->description = $description;
 
@@ -76,7 +76,7 @@ class Package
         return $this->description;
     }
 
-    private function setType(string $type) : Package
+    public function setType(string $type) : Package
     {
         $this->type = $type;
 
@@ -88,7 +88,7 @@ class Package
         return $this->type;
     }
 
-    private function setDefinedNamespaces(array $definedNamespaces)
+    public function setDefinedNamespaces(array $definedNamespaces)
     {
         $this->definedNamespaces = $definedNamespaces;
 
@@ -111,33 +111,31 @@ class Package
 
     private function searchPackageExtensionClassIteratively() : ?\ReflectionClass
     {
-        foreach ($this->getDefinedNamespaces() as $type => $namespaces) {
-            foreach ($namespaces as $namespace => $relativePath) {
-                $path = $this->getSource() . "/" . $relativePath;
+        foreach ($this->getDefinedNamespaces() as $namespace => $relativePath) {
+            $path = $this->getSource() . "/" . $relativePath;
 
-                foreach (array_diff(scandir($path), ['.', '..']) as $item) {
-                    $resource = "$path$item";
+            foreach (array_diff(scandir($path), ['.', '..']) as $item) {
+                $resource = "$path$item";
 
-                    if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
-                        $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
-                        
-                        try {
-                            include_once $resource;
-                            $reflectionClass = new \ReflectionClass($className);
-                        } catch (\Exception $e) {
-                            continue;
-                        }
+                if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
+                    $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
+                    
+                    try {
+                        include_once $resource;
+                        $reflectionClass = new \ReflectionClass($className);
+                    } catch (\Exception $e) {
+                        continue;
+                    }
 
-                        switch ($this->getType()) {
-                            case 'uvdesk-module':
-                                if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
-                                    return $reflectionClass;
-                                }
-                                
-                                break;
-                            default:
-                                break;
-                        }
+                    switch ($this->getType()) {
+                        case 'uvdesk-module':
+                            if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
+                                return $reflectionClass;
+                            }
+                            
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -175,5 +173,31 @@ class Package
             ->setDescription($attributes['description'])
             ->setType($attributes['type'])
             ->setDefinedNamespaces($attributes['autoload']);
+    }
+
+    public static function readPackagesFromLockFile($lockfile)
+    {
+        $packages = [];
+        $uvdesk = json_decode(file_get_contents($lockfile), true);
+
+        foreach ($uvdesk['packages'] as $attributes) {
+            list($vendorName, $packageName) = explode('/', $attributes['name']);
+
+            $package = new Package();
+            $extension = new \ReflectionClass($attributes['extension']);
+
+            $package
+                ->setName($attributes['name'])
+                ->setVendor($vendorName)
+                ->setPackage($packageName)
+                ->setDescription($attributes['description'])
+                ->setSource(dirname($extension->getFileName()))
+                ->setType($attributes['type']);
+
+            $package->extension = $extension;
+            $packages[] = $package;
+        }
+
+        return $packages;
     }
 }

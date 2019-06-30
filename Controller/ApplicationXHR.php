@@ -19,8 +19,8 @@ class ApplicationXHR extends Controller
                 'summary' => $application::getSummary(),
                 'qname' => $application::getQualifiedName(),
                 'reference' => [
-                    'vendor' => $application->getExtension()->getVendor(),
-                    'package' => $application->getExtension()->getPackage(),
+                    'vendor' => $application->getExtension()->getPackage()->getVendor(),
+                    'package' => $application->getExtension()->getPackage()->getPackage(),
                 ],
             ];
         }, $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplications());
