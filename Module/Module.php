@@ -3,6 +3,7 @@
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 abstract class Module implements ModuleInterface
 {
@@ -36,5 +37,10 @@ abstract class Module implements ModuleInterface
     public static function getApplications() : array
     {
         return [];
+    }
+
+    public static function getConfiguration() : ?ConfigurationInterface
+    {
+        return null;
     }
 }

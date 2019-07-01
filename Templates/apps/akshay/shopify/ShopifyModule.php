@@ -4,6 +4,8 @@ namespace UVDesk\CommunityPackages\Akshay\Shopify;
 
 use UVDesk\CommunityPackages\Akshay\Shopify\Apps;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use UVDesk\CommunityPackages\Akshay\Shopify\DependencyInjection\ShopifyConfiguration;
 
 class ShopifyModule extends Module
 {
@@ -19,5 +21,15 @@ class ShopifyModule extends Module
         return [
             Apps\Shopify::class
         ];
+    }
+
+    public static function getConfiguration() : ?ConfigurationInterface
+    {
+        return new ShopifyConfiguration();
+    }
+
+    public function load()
+    {
+
     }
 }

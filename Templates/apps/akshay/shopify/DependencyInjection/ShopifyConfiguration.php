@@ -10,9 +10,9 @@ class ShopifyConfiguration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('uvdesk_extension_uvdesk_shopify')
+        $treeBuilder->root('uvdesk_extension_akshay_shopify')
             ->children()
-                ->node('dir', 'scalar')->defaultValue('%kernel.project_dir%/apps')->end()
+                ->node('something', 'scalar')->end()
             ->end();
 
         return $treeBuilder;

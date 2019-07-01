@@ -12,6 +12,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ApplicationInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
 
+use Symfony\Component\Yaml\Yaml;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
 use UVDesk\CommunityExtension\UVDesk\ShopifyModule\DependencyInjection\ShopifyConfiguration;
 
@@ -29,17 +30,6 @@ class Extensions extends Extension
 
     public function load(array $configs, ContainerBuilder $container)
     {
-        // $configuration = $this->getConfiguration($configs, $container);
-        // $configuration = new BundleConfiguration();
-        // $shopifyConfiguration = new ShopifyConfiguration();
-
-        // dump($configs);
-        // dump($configuration);
-        // dump($shopifyConfiguration);
-
-        // dump($this->processConfiguration($shopifyConfiguration, $configs));
-        // die;
-
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
@@ -63,20 +53,51 @@ class Extensions extends Extension
         $this->autoConfigureExtensions($container, $loader);
     }
 
+    private function readExtensionConfigurations($prefix) : array
+    {
+        $configs = [];
+
+        if (file_exists($prefix) && is_dir($prefix)) {
+            foreach (array_diff(scandir($prefix), ['.', '..']) as $extensionConfig) {
+                $path = "$prefix/$extensionConfig";
+    
+                if (!is_dir($path) && 'yaml' === pathinfo($path, PATHINFO_EXTENSION)) {
+                    $configs[pathinfo($path, PATHINFO_FILENAME)] = Yaml::parseFile($path);
+                }
+            }
+        }
+
+        return $configs;
+    }
+
     private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Extensions
     {
-        $lockfile = dirname($container->getParameter("uvdesk_extensions.dir")) . "/uvdesk.lock";
+        $lockfile = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";
 
         if (!file_exists($lockfile) || !$container->has(ExtensionManager::class)) {
             return $this;
         }
 
-        // $packages = Package::readPackagesFromLockFile($lockfile);
         $uvdesk = json_decode(file_get_contents($lockfile), true);
         $extensionManagerDefinition = $container->findDefinition(ExtensionManager::class);
+        $configs = $this->readExtensionConfigurations($container->getParameter("kernel.project_dir") . "/config/apps");
 
         foreach ($uvdesk['packages'] as $attributes) {
             $extension = new \ReflectionClass($attributes['extension']);
+            $extensionConfig = $extension->getMethod('getConfiguration')->invoke(null);
+
+            if (!empty($extensionConfig)) {
+                $filename = str_replace('/', '_', $attributes['name']);
+
+                if (empty($configs[$filename])) {
+                    throw new \Exception('Unable to parse config.');
+                }
+
+                dump($extensionConfig->getConfigTreeBuilder());
+                dump($this->processConfiguration($extensionConfig, $configs[$filename]));
+
+                die;
+            }
 
             // The first thing we want to do is ensure that the services have been loaded
             foreach ($extension->getMethod('getServices')->invoke(null) as $resource) {
