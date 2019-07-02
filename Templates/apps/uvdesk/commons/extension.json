@@ -9,6 +9,12 @@
         }
     ],
     "autoload": {
-        "UVDesk\\CommunityPackages\\UVDesk\\Commons\\": ""
-    }
+        "UVDesk\\CommunityPackages\\UVDesk\\Commons\\": "src/"
+    },
+    "extensions": {
+        "UVDesk\\CommunityPackages\\UVDesk\\Commons\\Commons": ["all"]
+    },
+    "scripts": [
+        "UVDesk\\CommunityPackages\\UVDesk\\Commons\\CommonsPackage"
+    ]
 }

@@ -9,6 +9,12 @@
         }
     ],
     "autoload": {
-        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": ""
-    }
+        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": "src/"
+    },
+    "extensions": {
+        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommerce": ["all"]
+    },
+    "scripts": [
+        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommercePackage"
+    ]
 }

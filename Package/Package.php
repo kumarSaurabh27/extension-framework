@@ -6,19 +6,66 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
 
 class Package
 {
-    private $name;
-    private $source;
-    private $vendor;
-    private $package;
-    private $description;
-    private $type;
-    private $definedNamespaces = [];
-    private $extension;
+    private $source = '';
     private static $supportedTypes = ['uvdesk-module'];
     
+    public function __construct($path = '')
+    {
+        if (!empty($path)) {
+            if (!file_exists($path) || is_dir($path)) {
+                throw new \Exception("Unable to initialize package. File '$path' does not exists.");
+            }
+
+            $this->source = dirname($path);
+
+            foreach (json_decode(file_get_contents($path), true) as $attribute => $value) {
+                switch ($attribute) {
+                    case 'name':
+                        $this->setName($value);
+                        break;
+                    case 'description':
+                        $this->setDescription($value);
+                        break;
+                    case 'type':
+                        $this->setType($value);
+                        break;
+                    case 'authors':
+                        // $this->setName($value);
+                        break;
+                    case 'autoload':
+                        $this->setDefinedNamespaces($value);
+                        break;
+                    case 'extensions':
+                        foreach ($value as $extensionReference => $env) {
+                            $this->addExtensionReference($extensionReference, $env);
+                        }
+
+                        break;
+                    case 'scripts':
+                        foreach ($value as $script) {
+                            $this->addScript($script);
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    public function getRootDirectory()
+    {
+        return $this->source;
+    }
+
     public function setName(string $name) : Package
     {
+        list($vendor, $package) = explode('/', $name);
+
         $this->name = $name;
+        $this->vendor = $vendor;
+        $this->package = $package;
 
         return $this;
     }
@@ -28,35 +75,9 @@ class Package
         return $this->name;
     }
 
-    public function setSource(string $source) : Package
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    public function getSource() : string
-    {
-        return $this->source;
-    }
-
-    public function setVendor(string $vendor) : Package
-    {
-        $this->vendor = $vendor;
-
-        return $this;
-    }
-
     public function getVendor() : string
     {
         return $this->vendor;
-    }
-
-    public function setPackage(string $package) : Package
-    {
-        $this->package = $package;
-
-        return $this;
     }
 
     public function getPackage() : string
@@ -78,6 +99,10 @@ class Package
 
     public function setType(string $type) : Package
     {
+        if (!in_array($type, self::$supportedTypes)) {
+            throw new \Exception("Invalid package type " . $type . ". Supported types are [" . implode(", ", self::$supportedTypes) . "]");
+        }
+
         $this->type = $type;
 
         return $this;
@@ -100,104 +125,62 @@ class Package
         return $this->definedNamespaces;
     }
 
-    public function isValid() : bool
+    public function addExtensionReference($extensionReference, $env)
     {
-        if (in_array($this->getType(), self::$supportedTypes) && $this->getName() != null) {
-            return true;
-        }
+        $this->extensionReference[$extensionReference] = $env;
 
-        return false;
+        return $this;
     }
 
-    private function searchPackageExtensionClassIteratively() : ?\ReflectionClass
+    public function getExtensionReferences()
     {
-        foreach ($this->getDefinedNamespaces() as $namespace => $relativePath) {
-            $path = $this->getSource() . "/" . $relativePath;
+        return $this->extensionReference;
+    }
 
-            foreach (array_diff(scandir($path), ['.', '..']) as $item) {
-                $resource = "$path$item";
+    public function addScript($script)
+    {
+        $this->scripts[] = $script;
 
-                if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
-                    $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
+        return $this;
+    }
+
+    public function getScripts()
+    {
+        return $this->scripts;
+    }
+
+    // private function searchPackageExtensionClassIteratively() : ?\ReflectionClass
+    // {
+    //     foreach ($this->getDefinedNamespaces() as $namespace => $relativePath) {
+    //         $path = $this->getSource() . "/" . $relativePath;
+
+    //         foreach (array_diff(scandir($path), ['.', '..']) as $item) {
+    //             $resource = "$path$item";
+
+    //             if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
+    //                 $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
                     
-                    try {
-                        include_once $resource;
-                        $reflectionClass = new \ReflectionClass($className);
-                    } catch (\Exception $e) {
-                        continue;
-                    }
+    //                 try {
+    //                     include_once $resource;
+    //                     $reflectionClass = new \ReflectionClass($className);
+    //                 } catch (\Exception $e) {
+    //                     continue;
+    //                 }
 
-                    switch ($this->getType()) {
-                        case 'uvdesk-module':
-                            if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
-                                return $reflectionClass;
-                            }
+    //                 switch ($this->getType()) {
+    //                     case 'uvdesk-module':
+    //                         if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
+    //                             return $reflectionClass;
+    //                         }
                             
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
+    //                         break;
+    //                     default:
+    //                         break;
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        return null;
-    }
-
-    public function getExtension() : ?\ReflectionClass
-    {
-        if (empty($this->extension)) {
-            $this->extension = $this->searchPackageExtensionClassIteratively();
-        }
-        
-        return $this->extension;
-    }
-
-    public static function createFromAttributes($vendor, $package, $source) : Package
-    {
-        if (!file_exists($source) || is_dir($source)) {
-            throw new \Exception("Unable to initialize package. File '$source' does not exists.");
-        } else {
-            $attributes = json_decode(file_get_contents($source), true);
-    
-            if ("$vendor/$package" != $attributes['name']) {
-                throw new \Exception("Invalid package extension.json file. The qualified package name should be '$vendor/$package' but the specified name is '" . $attributes['name'] . "' in '$source'");
-            }
-        }
-
-        return (new Package())
-            ->setName($attributes['name'])
-            ->setVendor($vendor)
-            ->setPackage($package)
-            ->setSource(dirname($source))
-            ->setDescription($attributes['description'])
-            ->setType($attributes['type'])
-            ->setDefinedNamespaces($attributes['autoload']);
-    }
-
-    public static function readPackagesFromLockFile($lockfile)
-    {
-        $packages = [];
-        $uvdesk = json_decode(file_get_contents($lockfile), true);
-
-        foreach ($uvdesk['packages'] as $attributes) {
-            list($vendorName, $packageName) = explode('/', $attributes['name']);
-
-            $package = new Package();
-            $extension = new \ReflectionClass($attributes['extension']);
-
-            $package
-                ->setName($attributes['name'])
-                ->setVendor($vendorName)
-                ->setPackage($packageName)
-                ->setDescription($attributes['description'])
-                ->setSource(dirname($extension->getFileName()))
-                ->setType($attributes['type']);
-
-            $package->extension = $extension;
-            $packages[] = $package;
-        }
-
-        return $packages;
-    }
+    //     return null;
+    // }
 }

@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\ExecutablePackage;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\ExecutablePackageInterface;
 
 class BuildExtensions extends Command
 {
@@ -22,7 +24,7 @@ class BuildExtensions extends Command
 
     protected function configure()
     {
-        $this->setName('uvdesk:apps:update-lock');
+        $this->setName('uvdesk:extensions:build');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -33,63 +35,38 @@ class BuildExtensions extends Command
             return;
         }
 
-        $root = $this->container->get('kernel')->getProjectDir();
+        $packages = $this->searchPackages();
+        $lockfile = $this->updateLockfile($packages);
 
-        // Parse vendor directories and update lock file
-        $uvdesk = $this->updateExtensionLockFile("$root/uvdesk.lock");
-
-        if (!empty($uvdesk['packages'])) {
-            $prefix = str_ireplace("$root/", "", $this->container->getParameter('uvdesk_extensions.dir'));
-
-            // Check autoloader state
-            $composer = json_decode(file_get_contents("$root/composer.json"), true);
-            $extensionAutoloadedNamespaceCollection = $autoloadedNamespaceCollection = !empty($composer['autoload']['psr-4']) ? $composer['autoload']['psr-4'] : [];
-
-            foreach ($uvdesk['packages'] as $package) {
-                foreach ($package['autoload'] as $namespace => $relativePath) {
-                    $extensionAutoloadedNamespaceCollection[$namespace] = "$prefix/" . $package['name'] . "/" . $relativePath;
-                }
-            }
-
-            if (array_diff($extensionAutoloadedNamespaceCollection, $autoloadedNamespaceCollection) != null) {
-                $composer['autoload']['psr-4'] = $extensionAutoloadedNamespaceCollection;
-                file_put_contents("$root/composer.json", json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-                
-                $output->writeln("New extensions have been found and added to composer.json. Please run 'composer dump-autoload' to update your composer autloading schematic.");
-            }
-        }
+        $this->updateComposerJson($lockfile, $output);
+        $this->autoconfigurePackages($packages, $output);
     }
 
-    private function updateExtensionLockFile()
+    private function searchPackages()
     {
         $packages = [];
-        $extensionsDirectory = $this->container->getParameter('uvdesk_extensions.dir');
+        $path = $this->container->getParameter('uvdesk_extensions.dir');
 
-        if (!file_exists($extensionsDirectory) || !is_dir($extensionsDirectory)) {
-            throw new \Exception("No apps directory found. Looked in $extensionsDirectory");
+        if (!file_exists($path) || !is_dir($path)) {
+            throw new \Exception("No apps directory found. Looked in $path");
         }
 
-        foreach (array_diff(scandir($extensionsDirectory), ['.', '..']) as $vendor) {
-            $vendorDirectory = $extensionsDirectory . "/" . $vendor;
+        foreach (array_diff(scandir($path), ['.', '..']) as $vendorName) {
+            $vendorDirectory = "$path/$vendorName";
 
-            // Only proceed if path is a non-empty directory
-            if (!file_exists($vendorDirectory) || !is_dir($vendorDirectory)) {
-                continue;
-            }
-            
-            $directories = array_diff(scandir($vendorDirectory), ['.', '..']);
-            $vendorPackages = array_filter($directories, function ($directory) use ($vendorDirectory) {
-                $path = "$vendorDirectory/$directory";
-                $extensionJson = "$path/extension.json";
+            if (file_exists($vendorDirectory) && is_dir($vendorDirectory)) {
+                foreach (array_diff(scandir($vendorDirectory), ['.', '..']) as $packageName) {
+                    $extensionJson = "$vendorDirectory/$packageName/extension.json";
+    
+                    if (file_exists($extensionJson) && !is_dir($extensionJson)) {
+                        $package = new Package($extensionJson);
 
-                return (file_exists($path) && is_dir($path) && file_exists($extensionJson) && !is_dir($extensionJson));
-            });
+                        if ($vendorName != $package->getVendor() || $packageName != $package->getPackage()) {
+                            throw new \Exception("Invalid package extension.json file. The qualified package name should be '$vendorName/$packageName' but the specified name is '" . $package->getName() . "' in '$extensionJson'");
+                        }
 
-            foreach ($vendorPackages as $package) {
-                $package = Package::createFromAttributes($vendor, $package, "$vendorDirectory/$package/extension.json");
-
-                if ($package->isValid() && null != $package->getExtension()) {
-                    $packages[] = $package;
+                        $packages[] = $package;
+                    }
                 }
             }
         }
@@ -98,23 +75,118 @@ class BuildExtensions extends Command
         usort($packages, function($package_1, $package_2) {
 			return strcasecmp($package_1->getName(), $package_2->getName());
         });
+
+        return $packages;
+    }
+
+    private function updateLockfile(array $packages = [])
+    {
+        $lockfile = [
+            '_readme' => [
+                "This file locks the dependencies of your project to a known state",
+                "This file is @generated automatically. Avoid making changes to this file directly.",
+            ],
+            'packages' => array_map(function ($package) {
+                $json = [
+                    'name' => $package->getName(),
+                    'description' => $package->getDescription(),
+                    'autoload' => $package->getDefinedNamespaces(),
+                    'extensions' => $package->getExtensionReferences(),
+                ];
+    
+                if (null != $package->getScripts()) {
+                    $json['scripts'] = $package->getScripts();
+                }
+
+                return $json;
+            }, $packages),
+        ];
+
+        $path = $this->container->getParameter('kernel.project_dir') . "/uvdesk.lock";
+        file_put_contents($path, json_encode($lockfile, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        return $lockfile;
+    }
+
+    private function updateComposerJson(array $lockfile = [], $output)
+    {
+        $path = $this->container->getParameter('kernel.project_dir') . "/composer.json";
+        $prefix = str_ireplace($this->container->getParameter('kernel.project_dir') . "/", "", $this->container->getParameter('uvdesk_extensions.dir'));
         
-        // Prepare dataset for lock file
-        $json['packages'] = array_map(function ($package) {
-            return [
-                'name' => $package->getName(),
-                'description' => $package->getDescription(),
-                'type' => $package->getType(),
-                "extension" => $package->getExtension()->getName(),
-                'autoload' => $package->getDefinedNamespaces(),
-                'suggest' => [
-                    'uvdesk/ecommerce' => "Integrate orders sync. to tickets"
-                ],
-            ];
-        }, $packages);
+        $json = json_decode(file_get_contents($path), true);
+        $psr4_current = $psr4_modified = $json['autoload']['psr-4'] ?? [];
 
-        file_put_contents($this->container->get('kernel')->getProjectDir() . "/uvdesk.lock", json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        foreach ($lockfile['packages'] as $package) {
+            foreach ($package['autoload'] as $namespace => $relativePath) {
+                $psr4_modified[$namespace] = "$prefix/" . $package['name'] . "/" . $relativePath;
+            }
+        }
 
-        return $json;
+        if (array_diff($psr4_modified, $psr4_current) != null) {
+            $json['autoload']['psr-4'] = $psr4_modified;
+            file_put_contents($path, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+            $output->writeln("New extensions have been found and added to composer.json. Please run 'composer dump-autoload' to update your composer autloading schematic.");
+        }
+    }
+
+    private function autoconfigurePackages(array $packages = [], $output)
+    {
+        $pathToConfig = $this->container->getParameter('kernel.project_dir') . "/config/extensions";
+
+        if (!file_exists($pathToConfig) || !is_dir($pathToConfig)) {
+            mkdir($pathToConfig, 0755, true);
+        }
+
+        foreach ($packages as $package) {
+            $scripts = $package->getScripts();
+
+            foreach ($package->getScripts() as $script) {
+                $reflectionClass = null;
+
+                try {
+                    $reflectionClass = new \ReflectionClass($script);
+                } catch (\ReflectionException $e) {
+                    $file = null;
+                    $iterations = explode('\\', $script);
+
+                    foreach ($package->getDefinedNamespaces() as $namespace => $relativePath) {
+                        $depth = 1;
+                        $namespaceIterations = explode('\\', $namespace);
+
+                        foreach ($iterations as $index => $iteration) {
+                            if (empty($namespaceIterations[$index]) || $namespaceIterations[$index] != $iteration) {
+                                break;
+                            }
+
+                            $depth++;
+                        }
+
+                        if (0 === (count($namespaceIterations) - $depth)) {
+                            $relativePath .= str_ireplace([$namespace, "\\"], ["", "/"], $script);
+                            $file = $package->getRootDirectory() . "/$relativePath.php";
+                            break;
+                        }
+                    }
+                } finally {
+                    if (empty($reflectionClass)) {
+                        if (empty($file)) {
+                            throw new \Exception("Class $script does not exist");
+                        } else {
+                            include_once $file;
+
+                            $reflectionClass = new \ReflectionClass($script);
+
+                            if (false == $reflectionClass->implementsInterface(ExecutablePackageInterface::class)) {
+                                throw new \Exception("Class $script needs to implement " . ExecutablePackageInterface::class);
+                            }
+                        }
+                    }
+                }
+                
+                $reflectionClass->setStaticPropertyValue('directory', $pathToConfig);
+                $reflectionClass->newInstance($package)->install();
+            }
+        }
     }
 }

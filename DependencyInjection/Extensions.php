@@ -72,18 +72,28 @@ class Extensions extends Extension
 
     private function autoConfigureExtensions(ContainerBuilder $container, YamlFileLoader $loader) : Extensions
     {
+        $env = $container->getParameter('kernel.environment');
+        $extensionsDirectory = $container->getParameter("uvdesk_extensions.dir");
         $lockfile = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";
 
         if (!file_exists($lockfile) || !$container->has(ExtensionManager::class)) {
             return $this;
         }
 
-        $uvdesk = json_decode(file_get_contents($lockfile), true);
+        $lockfile = json_decode(file_get_contents($lockfile), true);
         $extensionManagerDefinition = $container->findDefinition(ExtensionManager::class);
-        $configs = $this->readExtensionConfigurations($container->getParameter("kernel.project_dir") . "/config/apps");
+        $configs = $this->readExtensionConfigurations($container->getParameter("kernel.project_dir") . "/config/extensions");
 
-        foreach ($uvdesk['packages'] as $attributes) {
-            $extension = new \ReflectionClass($attributes['extension']);
+        foreach ($lockfile['packages'] as $attributes) {
+            $extensionReference = current(array_keys($attributes['extensions']));
+            $supportedEnvironments = $attributes['extensions'][$extensionReference];
+
+            if (!in_array($env, $supportedEnvironments) && !in_array('all', $supportedEnvironments)) {
+                // Extension is not supported in current environment
+                continue;
+            }
+
+            $extension = new \ReflectionClass($extensionReference);
             $extensionConfig = $extension->getMethod('getConfiguration')->invoke(null);
 
             if (!empty($extensionConfig)) {
@@ -93,10 +103,10 @@ class Extensions extends Extension
                     throw new \Exception('Unable to parse config.');
                 }
 
-                dump($extensionConfig->getConfigTreeBuilder());
-                dump($this->processConfiguration($extensionConfig, $configs[$filename]));
+                // @TODO: Check if we can access the root node
+                // dump($extensionConfig->getConfigTreeBuilder()->getRootNode());
 
-                die;
+                $this->processConfiguration($extensionConfig, $configs[$filename]);
             }
 
             // The first thing we want to do is ensure that the services have been loaded
@@ -110,9 +120,7 @@ class Extensions extends Extension
                 ->setPrivate(true)
                 ->setAutowired(false)
                 ->setAutoconfigured(false)
-                ->setArgument('$name', $attributes['name'])
-                ->setArgument('$description', $attributes['description'])
-                ->setArgument('$source', dirname($extension->getFileName()));
+                ->setArgument('$source', $extensionsDirectory . "/" . $attributes['name'] . "/extension.json");
             
             $extensionManagerDefinition->addMethodCall('registerExtension', array(new Reference($extension->getName())));
 

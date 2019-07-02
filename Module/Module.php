@@ -11,17 +11,9 @@ abstract class Module implements ModuleInterface
 
     protected $package;
 
-    final public function __construct($name, $description, $source)
+    final public function __construct($source)
     {
-        list($vendor, $package) = explode('/', $name);
-
-        ($this->package = new Package())
-            ->setName($name)
-            ->setVendor($vendor)
-            ->setPackage($package)
-            ->setDescription($description)
-            ->setType(self::EXTENSION_TYPE)
-            ->setSource($source);
+        $this->package = new Package($source);
     }
 
     final public function getPackage() : Package

@@ -9,6 +9,12 @@
         }
     ],
     "autoload": {
-        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\": ""
-    }
+        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\": "src/"
+    },
+    "extensions": {
+        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\Shopify": ["all"]
+    },
+    "scripts": [
+        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\ShopifyPackage"
+    ]
 }

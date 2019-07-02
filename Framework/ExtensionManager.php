@@ -28,8 +28,10 @@ class ExtensionManager implements ExtendableComponentInterface
 		$twigLoader = $this->container->get('uvdesk_extension.twig_loader');
 
 		foreach ($this->extensions as $extension) {
+			$extensionReflection = new \ReflectionClass($extension);
+
 			$package = $extension->getPackage();
-			$pathToExtensionsTwigResources = $package->getSource() . "/Resources/views";
+			$pathToExtensionsTwigResources = dirname($extensionReflection->getFileName()) . "/Resources/views";
 
 			if (is_dir($pathToExtensionsTwigResources)) {
 				$twigLoader->addPath($pathToExtensionsTwigResources, sprintf("_uvdesk_extension_%s_%s", $package->getVendor(), $package->getPackage()));
@@ -42,11 +44,16 @@ class ExtensionManager implements ExtendableComponentInterface
 		$resources = [];
 		
 		foreach ($this->extensions as $extension) {
+			$extensionReflection = new \ReflectionClass($extension);
+
 			$package = $extension->getPackage();
-			$pathToExtensionsTwigResources = $package->getSource() . "/Resources/public";
+			$pathToExtensionsTwigResources = dirname($extensionReflection->getFileName()) . "/Resources/public";
 			
 			if (is_dir($pathToExtensionsTwigResources)) {
-				$resources[] = $pathToExtensionsTwigResources;
+				$resources[] = [
+					'package' => $package->getName(),
+					'path' => $pathToExtensionsTwigResources,
+				];
 			}
 		}
 

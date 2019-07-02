@@ -7,7 +7,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use UVDesk\CommunityPackages\Akshay\Shopify\DependencyInjection\ShopifyConfiguration;
 
-class ShopifyModule extends Module
+class Shopify extends Module
 {
     public static function getServices() : array
     {

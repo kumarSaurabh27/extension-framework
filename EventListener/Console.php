@@ -39,12 +39,8 @@ class Console
                 $public_directory = $this->container->getParameter("uvdesk_extensions.dir");
 
                 $collection = [];
-
-                foreach ($this->extensionManager->getExtensionResources() as $path) {
-                    $postfix = str_ireplace("$public_directory/", '', $path);
-                    $postfix = str_ireplace("/Resources/public", "", $postfix);
-
-                    $collection["$prefix/$postfix"] = $path;
+                foreach ($this->extensionManager->getExtensionResources() as $info) {
+                    $collection[$prefix . "/" . $info['package']] = $info['path'];
                 }
 
                 foreach ($collection as $symlink => $original_path) {
@@ -55,7 +51,7 @@ class Console
                     $path = substr($symlink, 0, strrpos($symlink, '/'));
 
                     if (!is_dir($path)) {
-                        mkdir($path, 0777, true);
+                        mkdir($path, 0755, true);
                         symlink($original_path, $symlink);
                     } else if (is_dir($symlink)) {
                         // Remove directory
