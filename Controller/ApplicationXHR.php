@@ -6,24 +6,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 
 class ApplicationXHR extends Controller
 {
     public function loadCollectionXHR(Request $request)
     {
         $collection = array_map(function ($application) {
+            $metadata = $application->getMetadata();
+            $packageMetadata = $application->getPackage()->getMetadata();
+
             return [
-                'icon' => $application::getIcon(),
-                'name' => $application::getName(),
-                'summary' => $application::getSummary(),
-                'qname' => $application::getQualifiedName(),
+                'icon' => $metadata->getIcon(),
+                'name' => $metadata->getName(),
+                'summary' => $metadata->getSummary(),
+                'qname' => $metadata->getQualifiedName(),
                 'reference' => [
-                    'vendor' => $application->getExtension()->getPackage()->getVendor(),
-                    'package' => $application->getExtension()->getPackage()->getPackage(),
+                    'vendor' => $packageMetadata->getVendor(),
+                    'package' => $packageMetadata->getPackage(),
                 ],
             ];
-        }, $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplications());
+        }, $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplications());
 
         return new JsonResponse($collection);
     }

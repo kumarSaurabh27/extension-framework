@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 
 class Application extends Controller
 {
@@ -20,24 +20,20 @@ class Application extends Controller
 
     public function loadApplicationDashboard($vendor, $extension, $application, Request $request)
     {
-        $dispatcher = new EventDispatcher();
-        $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(ExtensionManager::class)->getApplicationByAttributes($vendor, $extension, $application);
-
-        if ($application instanceof EventSubscriberInterface) {
-            $dispatcher->addSubscriber($application);
-        }
-
-        $event = new GenericEvent(ApplicationEvents::LOAD_DASHBOARD, [
-            'request' => $request,
-        ]);
+        dump($request);
+        die;
         
-        $dispatcher->dispatch(ApplicationEvents::LOAD_DASHBOARD, $event);
-        // die;
+        $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplicationByAttributes($vendor, $extension, $application);
 
-        // $event = new ApplicationEvent($application);
-        // $dispatcher->disptach($event::NAME, $event);
-        // dump($event);
-        // die;
+        if (empty($application)) {
+            return new Response('', 404);
+        }
+        
+        $dispatcher = new EventDispatcher();
+        $event = new GenericEvent(ApplicationEvents::LOAD_DASHBOARD, array('request' => $request));
+
+        $dispatcher->addSubscriber($application);
+        $dispatcher->dispatch(ApplicationEvents::LOAD_DASHBOARD, $event);
 
         return $this->render('@ExtensionFramework//applicationDashboard.html.twig', [
             'application' => $application

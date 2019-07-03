@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 

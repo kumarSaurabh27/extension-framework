@@ -4,13 +4,13 @@ namespace Webkul\UVDesk\ExtensionFrameworkBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Extensions;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\BundleExtension;
 
 class ExtensionFrameworkBundle extends Bundle
 {
     public function getContainerExtension()
     {
-        return new Extensions();
+        return new BundleExtension();
     }
 
     public function build(ContainerBuilder $container)

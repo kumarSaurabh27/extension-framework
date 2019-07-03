@@ -1,20 +1,19 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Package;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition;
 
 class PackageMetadata
 {
-    private $source = '';
     private static $supportedTypes = ['uvdesk-module'];
     
-    public function __construct($path = '')
+    public function __construct($root = '')
     {
-        if (!empty($path)) {
+        if (!empty($root)) {
+            $path = "$root/extension.json";
+
             if (!file_exists($path) || is_dir($path)) {
                 throw new \Exception("Unable to initialize package. File '$path' does not exists.");
             }
-
-            $this->source = dirname($path);
 
             foreach (json_decode(file_get_contents($path), true) as $attribute => $value) {
                 switch ($attribute) {
@@ -52,12 +51,19 @@ class PackageMetadata
         }
     }
 
-    public function getRootDirectory()
+    public function setRoot(string $root) : PackageMetadata
     {
-        return $this->source;
+        $this->root = $root;
+
+        return $this;
     }
 
-    public function setName(string $name) : Package
+    public function getRoot() : string
+    {
+        return $this->root;
+    }
+
+    public function setName(string $name) : PackageMetadata
     {
         list($vendor, $package) = explode('/', $name);
 
@@ -83,7 +89,7 @@ class PackageMetadata
         return $this->package;
     }
 
-    public function setDescription(string $description) : Package
+    public function setDescription(string $description) : PackageMetadata
     {
         $this->description = $description;
 
@@ -95,7 +101,7 @@ class PackageMetadata
         return $this->description;
     }
 
-    public function setType(string $type) : Package
+    public function setType(string $type) : PackageMetadata
     {
         if (!in_array($type, self::$supportedTypes)) {
             throw new \Exception("Invalid package type " . $type . ". Supported types are [" . implode(", ", self::$supportedTypes) . "]");

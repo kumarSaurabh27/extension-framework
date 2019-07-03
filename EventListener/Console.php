@@ -9,18 +9,18 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Command as SymfonyFrameworkCommand;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\ExtensionManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 
 class Console
 {
     private $kernel;
     private $container;
 
-    public function __construct(ContainerInterface $container, KernelInterface $kernel, ExtensionManager $extensionManager)
+    public function __construct(ContainerInterface $container, KernelInterface $kernel, PackageManager $packageManager)
     {
         $this->kernel = $kernel;
         $this->container = $container;
-        $this->extensionManager = $extensionManager;
+        $this->packageManager = $packageManager;
     }
 
     public function onConsoleCommand(ConsoleCommandEvent $event)
@@ -39,7 +39,7 @@ class Console
                 $public_directory = $this->container->getParameter("uvdesk_extensions.dir");
 
                 $collection = [];
-                foreach ($this->extensionManager->getExtensionResources() as $info) {
+                foreach ($this->packageManager->getExtensionResources() as $info) {
                     $collection[$prefix . "/" . $info['package']] = $info['path'];
                 }
 

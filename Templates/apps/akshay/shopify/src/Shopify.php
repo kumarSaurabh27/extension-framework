@@ -2,20 +2,15 @@
 
 namespace UVDesk\CommunityPackages\Akshay\Shopify;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Module;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use UVDesk\CommunityPackages\Akshay\Shopify\DependencyInjection\Configuration;
 
 class Shopify extends Module
 {
-    public function __construct()
-    {
-
-    }
-
     public function getConfiguration() : ?ConfigurationInterface
     {
-        return new DependencyInjection\Configuration();
+        return new Configuration();
     }
 
     public function getServices()
@@ -30,6 +25,6 @@ class Shopify extends Module
 
     public function getApplicationReferences() : array
     {
-        return array(Applications\Shopify::class);
+        return array(Applications\ECommerce::class);
     }
 }

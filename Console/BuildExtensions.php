@@ -9,9 +9,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Package\ExecutablePackage;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Package\ExecutablePackageInterface;
+
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackage;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackageInterface;
 
 class BuildExtensions extends Command
 {
@@ -39,44 +40,49 @@ class BuildExtensions extends Command
         $lockfile = $this->updateLockfile($packages);
 
         $this->updateComposerJson($lockfile, $output);
+        
+        dump($packages);
+        dump($lockfile);
+        die;
+
         $this->autoconfigurePackages($packages, $output);
     }
 
     private function searchPackages()
     {
-        $packages = [];
+        $collection = [];
         $path = $this->container->getParameter('uvdesk_extensions.dir');
 
         if (!file_exists($path) || !is_dir($path)) {
             throw new \Exception("No apps directory found. Looked in $path");
         }
 
-        foreach (array_diff(scandir($path), ['.', '..']) as $vendorName) {
-            $vendorDirectory = "$path/$vendorName";
+        foreach (array_diff(scandir($path), ['.', '..']) as $vendor) {
+            $directory = "$path/$vendor";
 
-            if (file_exists($vendorDirectory) && is_dir($vendorDirectory)) {
-                foreach (array_diff(scandir($vendorDirectory), ['.', '..']) as $packageName) {
-                    $extensionJson = "$vendorDirectory/$packageName/extension.json";
+            if (file_exists($directory) && is_dir($directory)) {
+                foreach (array_diff(scandir($directory), ['.', '..']) as $package) {
+                    $root = "$directory/$package";
     
-                    if (file_exists($extensionJson) && !is_dir($extensionJson)) {
-                        $package = new Package($extensionJson);
+                    if (file_exists($root) && is_dir($root)) {
+                        $packageMetadata = new PackageMetadata($root);
 
-                        if ($vendorName != $package->getVendor() || $packageName != $package->getPackage()) {
-                            throw new \Exception("Invalid package extension.json file. The qualified package name should be '$vendorName/$packageName' but the specified name is '" . $package->getName() . "' in '$extensionJson'");
+                        if ($vendor != $packageMetadata->getVendor() || $package != $packageMetadata->getPackage()) {
+                            throw new \Exception("Invalid package extension.json file. The qualified package name should be '$vendor/$package' but the specified name is '" . $packageMetadata->getName() . "'");
                         }
 
-                        $packages[] = $package;
+                        $collection[] = $packageMetadata;
                     }
                 }
             }
         }
 
         // Sort packages alphabetically
-        usort($packages, function($package_1, $package_2) {
+        usort($collection, function($package_1, $package_2) {
 			return strcasecmp($package_1->getName(), $package_2->getName());
         });
 
-        return $packages;
+        return $collection;
     }
 
     private function updateLockfile(array $packages = [])
