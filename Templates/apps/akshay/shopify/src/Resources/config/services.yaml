@@ -6,5 +6,5 @@ services:
     
     UVDesk\CommunityPackages\Akshay\Shopify\:
         resource: '../../*'
-        exclude: '../../{Scripts}'
+        # exclude: '../../{Scripts}'
     

@@ -2,34 +2,34 @@
 
 namespace UVDesk\CommunityPackages\Akshay\Shopify;
 
-use UVDesk\CommunityPackages\Akshay\Shopify\Apps;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use UVDesk\CommunityPackages\Akshay\Shopify\DependencyInjection\ShopifyConfiguration;
 
 class Shopify extends Module
 {
-    public static function getServices() : array
+    public function __construct()
     {
-        return [
-            __DIR__ . "/Resources/config/services.yaml"
-        ];
+
     }
 
-    public static function getApplications() : array
+    public function getConfiguration() : ?ConfigurationInterface
     {
-        return [
-            Apps\Shopify::class
-        ];
+        return new DependencyInjection\Configuration();
     }
 
-    public static function getConfiguration() : ?ConfigurationInterface
+    public function getServices()
     {
-        return new ShopifyConfiguration();
+        return __DIR__ . "/Resources/config/services.yaml";
     }
 
-    public function load()
+    public function getPackageReference() : string
     {
+        return ShopifyPackage::class;
+    }
 
+    public function getApplicationReferences() : array
+    {
+        return array(Applications\Shopify::class);
     }
 }

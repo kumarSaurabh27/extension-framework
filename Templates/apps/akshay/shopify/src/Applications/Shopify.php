@@ -1,8 +1,9 @@
 <?php
 
-namespace UVDesk\CommunityPackages\Akshay\Shopify\Apps;
+namespace UVDesk\CommunityPackages\Akshay\Shopify\Applications;
 
 use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Framework\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
@@ -11,8 +12,9 @@ use UVDesk\CommunityPackages\Akshay\Shopify\EventListeners\ShopifyEventSubscribe
 
 class Shopify extends Application implements EventSubscriberInterface
 {
-    public function __construct(ExtendableComponentManager $extendableComponentManager)
+    public function __construct(ContainerInterface $container, ExtendableComponentManager $extendableComponentManager)
 	{
+        $this->container = $container;
 		$this->extendableComponentManager = $extendableComponentManager;
     }
 

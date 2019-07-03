@@ -2,13 +2,13 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Module;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Package\Package;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 interface ModuleInterface
 {
-    public function getPackage() : Package;
+    public function getServices();
 
-    public static function getServices() : array;
+    public function getApplications();
 
-    public static function getApplications() : array;
+    public function getConfiguration() : ?ConfigurationInterface;
 }

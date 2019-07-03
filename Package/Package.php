@@ -2,185 +2,42 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Package;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Module\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Package\PackageMetadata;
 
-class Package
+abstract class Package
 {
-    private $source = '';
-    private static $supportedTypes = ['uvdesk-module'];
+    public function setMetadata(PackageMetadata $metadata)
+	{
+        $this->metadata = $metadata;
+    }
     
-    public function __construct($path = '')
+    public function getMetadata()
     {
-        if (!empty($path)) {
-            if (!file_exists($path) || is_dir($path)) {
-                throw new \Exception("Unable to initialize package. File '$path' does not exists.");
-            }
+        return $this->metadata;
+    }
 
-            $this->source = dirname($path);
+    protected function copyConfiguration($src, $env = 'all')
+    {
+        if (!file_exists($src) || is_dir($src)) {
+            throw new \Exception("File '$src' nout found");
+        }
 
-            foreach (json_decode(file_get_contents($path), true) as $attribute => $value) {
-                switch ($attribute) {
-                    case 'name':
-                        $this->setName($value);
-                        break;
-                    case 'description':
-                        $this->setDescription($value);
-                        break;
-                    case 'type':
-                        $this->setType($value);
-                        break;
-                    case 'authors':
-                        // $this->setName($value);
-                        break;
-                    case 'autoload':
-                        $this->setDefinedNamespaces($value);
-                        break;
-                    case 'extensions':
-                        foreach ($value as $extensionReference => $env) {
-                            $this->addExtensionReference($extensionReference, $env);
-                        }
+        $content = file_get_contents($src);
+        $name = str_replace('/', '_', $this->package->getName()) . ".yaml";
+        $path = self::$directory . ((empty($env) || $env === 'all') ? "/" : "/$env/") . $name;
 
-                        break;
-                    case 'scripts':
-                        foreach ($value as $script) {
-                            $this->addScript($script);
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-            }
+        if (!file_exists($path) || is_dir($path)) {
+            file_put_contents($path, $content);
         }
     }
 
-    public function getRootDirectory()
+    public function load()
     {
-        return $this->source;
+        
     }
 
-    public function setName(string $name) : Package
+    public function install()
     {
-        list($vendor, $package) = explode('/', $name);
-
-        $this->name = $name;
-        $this->vendor = $vendor;
-        $this->package = $package;
-
-        return $this;
+        return;
     }
-
-    public function getName() : string
-    {
-        return $this->name;
-    }
-
-    public function getVendor() : string
-    {
-        return $this->vendor;
-    }
-
-    public function getPackage() : string
-    {
-        return $this->package;
-    }
-
-    public function setDescription(string $description) : Package
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDescription() : string
-    {
-        return $this->description;
-    }
-
-    public function setType(string $type) : Package
-    {
-        if (!in_array($type, self::$supportedTypes)) {
-            throw new \Exception("Invalid package type " . $type . ". Supported types are [" . implode(", ", self::$supportedTypes) . "]");
-        }
-
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getType() : string
-    {
-        return $this->type;
-    }
-
-    public function setDefinedNamespaces(array $definedNamespaces)
-    {
-        $this->definedNamespaces = $definedNamespaces;
-
-        return $this;
-    }
-
-    public function getDefinedNamespaces() : array
-    {
-        return $this->definedNamespaces;
-    }
-
-    public function addExtensionReference($extensionReference, $env)
-    {
-        $this->extensionReference[$extensionReference] = $env;
-
-        return $this;
-    }
-
-    public function getExtensionReferences()
-    {
-        return $this->extensionReference;
-    }
-
-    public function addScript($script)
-    {
-        $this->scripts[] = $script;
-
-        return $this;
-    }
-
-    public function getScripts()
-    {
-        return $this->scripts;
-    }
-
-    // private function searchPackageExtensionClassIteratively() : ?\ReflectionClass
-    // {
-    //     foreach ($this->getDefinedNamespaces() as $namespace => $relativePath) {
-    //         $path = $this->getSource() . "/" . $relativePath;
-
-    //         foreach (array_diff(scandir($path), ['.', '..']) as $item) {
-    //             $resource = "$path$item";
-
-    //             if (is_file($resource) && !is_dir($resource) && 'php' === pathinfo($resource, PATHINFO_EXTENSION)) {
-    //                 $className = $namespace . pathinfo($resource, PATHINFO_FILENAME);
-                    
-    //                 try {
-    //                     include_once $resource;
-    //                     $reflectionClass = new \ReflectionClass($className);
-    //                 } catch (\Exception $e) {
-    //                     continue;
-    //                 }
-
-    //                 switch ($this->getType()) {
-    //                     case 'uvdesk-module':
-    //                         if ($reflectionClass->implementsInterface(ModuleInterface::class)) {
-    //                             return $reflectionClass;
-    //                         }
-                            
-    //                         break;
-    //                     default:
-    //                         break;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return null;
-    // }
 }
