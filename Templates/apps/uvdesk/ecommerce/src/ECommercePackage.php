@@ -2,8 +2,8 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Package\ExecutablePackage;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package;
 
-class ECommercePackage extends ExecutablePackage
+class ECommercePackage extends Package
 {
 }

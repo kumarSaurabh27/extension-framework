@@ -8,18 +8,25 @@ abstract class Module implements ModuleInterface
 {
     CONST EXTENSION_TYPE = 'uvdesk-module';
 
-    public function getServices()
+    final public function __construct()
     {
-        return [];
-    }
-
-    public function getApplications()
-    {
-        return [];
+        return;
     }
 
     public function getConfiguration() : ?ConfigurationInterface
     {
         return null;
+    }
+
+    public function getServices()
+    {
+        return array();
+    }
+
+    public abstract function getPackageReference() : string;
+
+    public function getApplicationReferences() : array
+    {
+        return array();
     }
 }

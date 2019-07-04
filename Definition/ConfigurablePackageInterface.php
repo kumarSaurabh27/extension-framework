@@ -2,7 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition;
 
-interface ConfigurablePackageInterface
+interface ConfigurablePackageInterface extends PackageInterface
 {
-    public function install();
+    public static function install(PackageMetadata $metadata);
 }

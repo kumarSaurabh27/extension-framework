@@ -38,26 +38,26 @@ class Console
                 $prefix = dirname(__DIR__) . '/Resources/public/extensions';
                 $public_directory = $this->container->getParameter("uvdesk_extensions.dir");
 
-                $collection = [];
-                foreach ($this->packageManager->getExtensionResources() as $info) {
-                    $collection[$prefix . "/" . $info['package']] = $info['path'];
-                }
+                // $collection = [];
+                // foreach ($this->packageManager->getExtensionResources() as $info) {
+                //     $collection[$prefix . "/" . $info['package']] = $info['path'];
+                // }
 
-                foreach ($collection as $symlink => $original_path) {
-                    if (!is_dir($original_path)) {
-                        continue;
-                    }
+                // foreach ($collection as $symlink => $original_path) {
+                //     if (!is_dir($original_path)) {
+                //         continue;
+                //     }
 
-                    $path = substr($symlink, 0, strrpos($symlink, '/'));
+                //     $path = substr($symlink, 0, strrpos($symlink, '/'));
 
-                    if (!is_dir($path)) {
-                        mkdir($path, 0755, true);
-                        symlink($original_path, $symlink);
-                    } else if (is_dir($symlink)) {
-                        // Remove directory
-                        symlink($original_path, $symlink);
-                    }
-                }
+                //     if (!is_dir($path)) {
+                //         mkdir($path, 0755, true);
+                //         symlink($original_path, $symlink);
+                //     } else if (is_dir($symlink)) {
+                //         // Remove directory
+                //         symlink($original_path, $symlink);
+                //     }
+                // }
                 break;
             default:
                 break;

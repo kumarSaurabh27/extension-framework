@@ -13,8 +13,5 @@
     },
     "extensions": {
         "UVDesk\\CommunityPackages\\UVDesk\\Commons\\Commons": ["all"]
-    },
-    "scripts": [
-        "UVDesk\\CommunityPackages\\UVDesk\\Commons\\CommonsPackage"
-    ]
+    }
 }

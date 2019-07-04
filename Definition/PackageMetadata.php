@@ -15,6 +15,8 @@ class PackageMetadata
                 throw new \Exception("Unable to initialize package. File '$path' does not exists.");
             }
 
+            $this->setRoot($root);
+
             foreach (json_decode(file_get_contents($path), true) as $attribute => $value) {
                 switch ($attribute) {
                     case 'name':
@@ -35,12 +37,6 @@ class PackageMetadata
                     case 'extensions':
                         foreach ($value as $extensionReference => $env) {
                             $this->addExtensionReference($extensionReference, $env);
-                        }
-
-                        break;
-                    case 'scripts':
-                        foreach ($value as $script) {
-                            $this->addScript($script);
                         }
 
                         break;
@@ -139,17 +135,5 @@ class PackageMetadata
     public function getExtensionReferences()
     {
         return $this->extensionReference;
-    }
-
-    public function addScript($script)
-    {
-        $this->scripts[] = $script;
-
-        return $this;
-    }
-
-    public function getScripts()
-    {
-        return $this->scripts;
     }
 }

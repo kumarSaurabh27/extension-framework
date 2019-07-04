@@ -2,22 +2,22 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce;
 
-use UVDesk\CommunityPackages\UVDesk\ECommerce\Apps;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Module\Module;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Module;
 
 final class ECommerce extends Module
 {
-    public static function getServices() : array
+    public function getServices()
     {
-        return [
-            __DIR__ . "/Resources/config/services.yaml"
-        ];
+        return __DIR__ . "/Resources/config/services.yaml";
     }
 
-    public static function getApplications() : array
+    public function getPackageReference() : string
     {
-        return [
-            Apps\ECommerceOrders::class,
-        ];
+        return ECommercePackage::class;
+    }
+
+    public function getApplicationReferences() : array
+    {
+        return array(Apps\ECommerceOrders::class);
     }
 }

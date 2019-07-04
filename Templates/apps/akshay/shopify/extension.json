@@ -13,8 +13,5 @@
     },
     "extensions": {
         "UVDesk\\CommunityPackages\\Akshay\\Shopify\\Shopify": ["all"]
-    },
-    "scripts": [
-        "UVDesk\\CommunityPackages\\Akshay\\Shopify\\ShopifyPackage"
-    ]
+    }
 }

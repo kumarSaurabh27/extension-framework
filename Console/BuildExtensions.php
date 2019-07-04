@@ -11,8 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackage;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackageInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 
 class BuildExtensions extends Command
 {
@@ -36,21 +38,16 @@ class BuildExtensions extends Command
             return;
         }
 
-        $packages = $this->searchPackages();
-        $lockfile = $this->updateLockfile($packages);
+        $metadata = $this->prepareMetadata();
+        $lockfile = $this->updateLockfile($metadata);
 
         $this->updateComposerJson($lockfile, $output);
-        
-        dump($packages);
-        dump($lockfile);
-        die;
-
-        $this->autoconfigurePackages($packages, $output);
+        $this->autoconfigurePackages($metadata, $output);
     }
 
-    private function searchPackages()
+    private function prepareMetadata()
     {
-        $collection = [];
+        $metadata = [];
         $path = $this->container->getParameter('uvdesk_extensions.dir');
 
         if (!file_exists($path) || !is_dir($path)) {
@@ -71,41 +68,35 @@ class BuildExtensions extends Command
                             throw new \Exception("Invalid package extension.json file. The qualified package name should be '$vendor/$package' but the specified name is '" . $packageMetadata->getName() . "'");
                         }
 
-                        $collection[] = $packageMetadata;
+                        $metadata[] = $packageMetadata;
                     }
                 }
             }
         }
 
         // Sort packages alphabetically
-        usort($collection, function($package_1, $package_2) {
-			return strcasecmp($package_1->getName(), $package_2->getName());
+        usort($metadata, function($data_a, $data_b) {
+			return strcasecmp($data_a->getName(), $data_b->getName());
         });
 
-        return $collection;
+        return $metadata;
     }
 
-    private function updateLockfile(array $packages = [])
+    private function updateLockfile(array $metadata = [])
     {
         $lockfile = [
             '_readme' => [
                 "This file locks the dependencies of your project to a known state",
                 "This file is @generated automatically. Avoid making changes to this file directly.",
             ],
-            'packages' => array_map(function ($package) {
-                $json = [
-                    'name' => $package->getName(),
-                    'description' => $package->getDescription(),
-                    'autoload' => $package->getDefinedNamespaces(),
-                    'extensions' => $package->getExtensionReferences(),
-                ];
-    
-                if (null != $package->getScripts()) {
-                    $json['scripts'] = $package->getScripts();
-                }
-
-                return $json;
-            }, $packages),
+            'packages' => array_map(function ($packageMetadata) {
+                return [
+                    'name' => $packageMetadata->getName(),
+                    'description' => $packageMetadata->getDescription(),
+                    'autoload' => $packageMetadata->getDefinedNamespaces(),
+                    'extensions' => $packageMetadata->getExtensionReferences(),
+                ];;
+            }, $metadata),
         ];
 
         $path = $this->container->getParameter('kernel.project_dir') . "/uvdesk.lock";
@@ -136,7 +127,46 @@ class BuildExtensions extends Command
         }
     }
 
-    private function autoconfigurePackages(array $packages = [], $output)
+    private function getUnloadedReflectionClass(string $class, PackageMetadata $metadata) : \ReflectionClass
+    {
+        try {
+            $reflectionClass = new \ReflectionClass($class);
+        } catch (\ReflectionException $e) {
+            $classPath = null;
+            $iterations = explode('\\', $class);
+
+            foreach ($metadata->getDefinedNamespaces() as $namespace => $path) {
+                $depth = 1;
+                $namespaceIterations = explode('\\', $namespace);
+
+                foreach ($iterations as $index => $iteration) {
+                    if (empty($namespaceIterations[$index]) || $namespaceIterations[$index] != $iteration) {
+                        break;
+                    }
+
+                    $depth++;
+                }
+
+                if (0 === (count($namespaceIterations) - $depth)) {
+                    $path .= str_ireplace([$namespace, "\\"], ["", "/"], $class);
+                    $classPath = $metadata->getRoot() . "/$path.php";
+                    break;
+                }
+            }
+        } finally {
+            if (empty($reflectionClass) && !empty($classPath)) {
+                include_once $classPath;
+
+                $reflectionClass = new \ReflectionClass($class);
+            } else if (empty($reflectionClass)) {
+                throw new \Exception("Class $class does not exist");
+            }
+        }
+
+        return $reflectionClass;
+    }
+
+    private function autoconfigurePackages(array $metadata = [], $output)
     {
         $pathToConfig = $this->container->getParameter('kernel.project_dir') . "/config/extensions";
 
@@ -144,54 +174,20 @@ class BuildExtensions extends Command
             mkdir($pathToConfig, 0755, true);
         }
 
-        foreach ($packages as $package) {
-            $scripts = $package->getScripts();
+        foreach ($metadata as $packageMetadata) {
+            $class = current(array_keys($packageMetadata->getExtensionReferences()));
+            $reflectionClass = $this->getUnloadedReflectionClass($class, $packageMetadata);
+            
+            if (!$reflectionClass->implementsInterface(ModuleInterface::class)) {
+                throw new \Exception("Class $class could not be registered as an extension. Please check that it implements the " . ModuleInterface::class . " interface.");
+            }
 
-            foreach ($package->getScripts() as $script) {
-                $reflectionClass = null;
+            $extension = $reflectionClass->newInstance();
+            $packageReflectionClass = $this->getUnloadedReflectionClass($extension->getPackageReference(), $packageMetadata);
 
-                try {
-                    $reflectionClass = new \ReflectionClass($script);
-                } catch (\ReflectionException $e) {
-                    $file = null;
-                    $iterations = explode('\\', $script);
-
-                    foreach ($package->getDefinedNamespaces() as $namespace => $relativePath) {
-                        $depth = 1;
-                        $namespaceIterations = explode('\\', $namespace);
-
-                        foreach ($iterations as $index => $iteration) {
-                            if (empty($namespaceIterations[$index]) || $namespaceIterations[$index] != $iteration) {
-                                break;
-                            }
-
-                            $depth++;
-                        }
-
-                        if (0 === (count($namespaceIterations) - $depth)) {
-                            $relativePath .= str_ireplace([$namespace, "\\"], ["", "/"], $script);
-                            $file = $package->getRootDirectory() . "/$relativePath.php";
-                            break;
-                        }
-                    }
-                } finally {
-                    if (empty($reflectionClass)) {
-                        if (empty($file)) {
-                            throw new \Exception("Class $script does not exist");
-                        } else {
-                            include_once $file;
-
-                            $reflectionClass = new \ReflectionClass($script);
-
-                            if (false == $reflectionClass->implementsInterface(ExecutablePackageInterface::class)) {
-                                throw new \Exception("Class $script needs to implement " . ExecutablePackageInterface::class);
-                            }
-                        }
-                    }
-                }
-                
-                $reflectionClass->setStaticPropertyValue('directory', $pathToConfig);
-                $reflectionClass->newInstance($package)->install();
+            if ($packageReflectionClass->implementsInterface(ConfigurablePackageInterface::class)) {
+                $packageReflectionClass->setStaticPropertyValue('root', $pathToConfig);
+                $packageReflectionClass->getMethod('install')->invoke(null, $packageMetadata);
             }
         }
     }

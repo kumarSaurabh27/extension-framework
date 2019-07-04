@@ -13,8 +13,5 @@
     },
     "extensions": {
         "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommerce": ["all"]
-    },
-    "scripts": [
-        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommercePackage"
-    ]
+    }
 }
