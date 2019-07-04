@@ -116,6 +116,16 @@ $(function () {
         },
         initialize: function() {
             console.log('init shopify view');
+
+            $.ajax({
+                url: "./../../api/akshay/shopify/ecommerce-connector",
+                success: function (response) {
+                    console.log('success:', response);
+                },
+                error: function (model, xhr, options) {
+                    console.log('error:', model, xhr, options);
+                }
+            });
         },
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));

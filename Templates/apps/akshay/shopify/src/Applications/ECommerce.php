@@ -49,12 +49,14 @@ class ECommerce extends Application implements EventSubscriberInterface
         $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
     }
 
-    public function handleApiRequest()
+    public function handleApiRequest($event)
     {
         dump($event);
+        dump($this->package->getConfigurations());
+        die;
     }
 
-    public function handleCallbackRequest()
+    public function handleCallbackRequest($event)
     {
         dump($event);
     }

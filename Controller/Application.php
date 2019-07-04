@@ -32,8 +32,20 @@ class Application extends Controller
         ]);
     }
 
-    public function apiEndpointXHR(Request $request)
+    public function apiEndpointXHR($vendor, $extension, $application, Request $request)
     {
+        $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplicationByAttributes($vendor, $extension, $application);
+
+        if (empty($application)) {
+            return new JsonResponse([], 404);
+        }
+
+        $dispatcher = new EventDispatcher();
+        $event = new GenericEvent(Routine::HANDLE_API_REQUEST, array('request' => $request));
+
+        $dispatcher->addSubscriber($application);
+        $dispatcher->dispatch(Routine::HANDLE_API_REQUEST, $event);
+
         return new JsonResponse([]);
     }
 
