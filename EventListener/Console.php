@@ -56,7 +56,9 @@ class Console
                 }
                 
                 // Clear existing resources from extensions directory
-                $this->emptyDirectory($base);
+                if (file_exists($base) && is_dir($base)) {
+                    $this->emptyDirectory($base);
+                }
 
                 // Link package assets within bundle assets
                 foreach ($assets as $asset) {
@@ -79,16 +81,42 @@ class Console
         return;
     }
 
-    private function emptyDirectory($path)
+    private function scanDirectory(string $path, bool $return_full_path = true)
     {
-        $iterator = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $collection = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+        if (!file_exists($path) || !is_dir($path)) {
+            throw new \Exception("Not a directory : '$path'");
+        }
 
-        foreach ($collection as $info) {
-            if ($info->isDir()) {
-                rmdir($info->getRealPath());
-            } else {
-                unlink($info->getRealPath());
+        $scannedFiles = array_diff(scandir($path), ['.', '..']);
+
+        if ($return_full_path) {
+            $scannedFiles = array_map(function ($file) use ($path) {
+                return "$path/$file";
+            }, $scannedFiles);    
+        }
+
+        return $scannedFiles;
+    }
+
+    private function emptyDirectory(string $path)
+    {
+        if (!file_exists($path) || !is_dir($path)) {
+            throw new \Exception("Not a directory : '$path'");
+        }
+        
+        $scannedFiles = $this->scanDirectory($path);
+
+        if (!empty($scannedFiles)) {
+            foreach ($scannedFiles as $filepath) {
+                if (!is_dir($filepath) || is_link($filepath)) {
+                    unlink($filepath);
+                } else {
+                    if (null != $this->scanDirectory($filepath)) {
+                        $this->emptyDirectory($filepath);
+                    }
+
+                    rmdir($filepath);
+                }
             }
         }
     }

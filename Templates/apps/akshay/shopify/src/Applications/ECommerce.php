@@ -29,17 +29,33 @@ class ECommerce extends Application implements EventSubscriberInterface
     {
         return array(
             Routine::PREPARE_DASHBOARD => array(
-                array('injectAssets'),
+                array('prepareDashboard'),
+            ),
+            Routine::HANDLE_API_REQUEST => array(
+                array('handleApiRequest'),
+            ),
+            Routine::HANDLE_CALLBACK_REQUEST => array(
+                array('handleCallbackRequest'),
             ),
         );
     }
 
-    public function injectAssets()
+    public function prepareDashboard($event)
     {
         $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
 
         $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
         $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/main.css');
         $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
+    }
+
+    public function handleApiRequest()
+    {
+        dump($event);
+    }
+
+    public function handleCallbackRequest()
+    {
+        dump($event);
     }
 }
