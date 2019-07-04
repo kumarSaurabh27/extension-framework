@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackage;
@@ -93,6 +92,7 @@ class BuildExtensions extends Command
                 return [
                     'name' => $packageMetadata->getName(),
                     'description' => $packageMetadata->getDescription(),
+                    'type' => $packageMetadata->getType(),
                     'autoload' => $packageMetadata->getDefinedNamespaces(),
                     'extensions' => $packageMetadata->getExtensionReferences(),
                 ];;

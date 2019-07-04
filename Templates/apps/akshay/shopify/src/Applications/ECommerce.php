@@ -6,17 +6,18 @@ use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Events\Application\Routine;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Events\ApplicationEvents;
 use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
-use UVDesk\CommunityPackages\Akshay\Shopify\EventListeners\ShopifyEventSubscriber;
+use UVDesk\CommunityPackages\Akshay\Shopify\ShopifyPackage;
 
 class ECommerce extends Application implements EventSubscriberInterface
 {
-    public function __construct(ContainerInterface $container, ExtendableComponentManager $extendableComponentManager)
+    public function __construct(ContainerInterface $container, ExtendableComponentManager $extendableComponentManager, ShopifyPackage $package)
 	{
+        $this->package = $package;
         $this->container = $container;
-		$this->extendableComponentManager = $extendableComponentManager;
+        $this->extendableComponentManager = $extendableComponentManager;
     }
 
     public static function getMetadata() : ApplicationMetadata
@@ -26,11 +27,11 @@ class ECommerce extends Application implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return [
-            ApplicationEvents::LOAD_DASHBOARD => [
-                ['injectAssets'],
-            ],
-        ];
+        return array(
+            Routine::PREPARE_DASHBOARD => array(
+                array('injectAssets'),
+            ),
+        );
     }
 
     public function injectAssets()
@@ -38,7 +39,7 @@ class ECommerce extends Application implements EventSubscriberInterface
         $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
 
         $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
-        $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/uvdesk/shopify/css/main.css');
-        $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/uvdesk/shopify/js/main.js');
+        $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/main.css');
+        $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
     }
 }

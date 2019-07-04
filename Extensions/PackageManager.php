@@ -39,27 +39,6 @@ class PackageManager implements ExtendableComponentInterface
 		}
 	}
 
-	// public function getExtensionResources() : array
-	// {
-	// 	$resources = [];
-		
-	// 	foreach ($this->extensions as $extension) {
-	// 		$extensionReflection = new \ReflectionClass($extension);
-
-	// 		$package = $extension->getPackage();
-	// 		$pathToExtensionsTwigResources = dirname($extensionReflection->getFileName()) . "/Resources/public";
-			
-	// 		if (is_dir($pathToExtensionsTwigResources)) {
-	// 			$resources[] = [
-	// 				'package' => $package->getName(),
-	// 				'path' => $pathToExtensionsTwigResources,
-	// 			];
-	// 		}
-	// 	}
-
-	// 	return $resources;
-	// }
-
 	public function configurePackage($root, array $attributes, array $configs, PackageInterface $package)
 	{
 		($metadata = new PackageMetadata())
@@ -71,10 +50,6 @@ class PackageManager implements ExtendableComponentInterface
 		
 		foreach ($attributes['extensions'] as $reference => $env) {
 			$metadata->addExtensionReference($reference, $env);
-		}
-
-		foreach ($attributes['scripts'] as $reference) {
-			$metadata->addScript($reference);
 		}
 
 		$package->setMetadata($metadata);
@@ -92,6 +67,11 @@ class PackageManager implements ExtendableComponentInterface
 		
 		$this->applications[] = $application;
 		$this->organizedCollection[$packageMetadata->getVendor()][$packageMetadata->getPackage()][$metadata->getQualifiedName()] = $application;
+	}
+
+	public function getPackages()
+	{
+		return $this->packages;
 	}
 
 	public function getApplications() : array

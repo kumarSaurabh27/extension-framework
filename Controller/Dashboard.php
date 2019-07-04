@@ -8,9 +8,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 
-class ApplicationXHR extends Controller
+class Dashboard extends Controller
 {
-    public function loadCollectionXHR(Request $request)
+    public function applications(Request $request)
+    {
+        return $this->render('@ExtensionFramework//dashboard.html.twig', []);
+    }
+
+    public function applicationsXHR(Request $request)
     {
         $collection = array_map(function ($application) {
             $metadata = $application->getMetadata();

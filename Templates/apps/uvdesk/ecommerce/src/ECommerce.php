@@ -18,6 +18,6 @@ final class ECommerce extends Module
 
     public function getApplicationReferences() : array
     {
-        return array(Apps\ECommerceOrders::class);
+        return array(Applications\ECommerceOrders::class);
     }
 }

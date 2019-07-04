@@ -35,29 +35,37 @@ class Console
                 // $application->run(new ArrayInput(['command' => 'uvdesk_extensions:build']), $event->getOutput());
                 break;
             case $command instanceof SymfonyFrameworkCommand\AssetsInstallCommand:
-                $prefix = dirname(__DIR__) . '/Resources/public/extensions';
-                $public_directory = $this->container->getParameter("uvdesk_extensions.dir");
+                $assets = [];
+                $base = dirname(__DIR__) . '/Resources/public/extensions';
 
-                // $collection = [];
-                // foreach ($this->packageManager->getExtensionResources() as $info) {
-                //     $collection[$prefix . "/" . $info['package']] = $info['path'];
-                // }
+                foreach ($this->packageManager->getPackages() as $package) {
+                    $metadata = $package->getMetadata();
+                    $extensionReflectionClass = new \ReflectionClass(current(array_keys($metadata->getExtensionReferences())));
 
-                // foreach ($collection as $symlink => $original_path) {
-                //     if (!is_dir($original_path)) {
-                //         continue;
-                //     }
+                    $source = dirname($extensionReflectionClass->getFileName()) . '/Resources/public';
 
-                //     $path = substr($symlink, 0, strrpos($symlink, '/'));
+                    if (file_exists($source) && is_dir($source)) {
+                        $assets[] = [
+                            'source' => $source,
+                            'destination' => [
+                                'base' => $base . "/" . $metadata->getVendor(),
+                                'path' => $base . "/" . $metadata->getVendor() . "/" . $metadata->getPackage(),
+                            ],
+                        ];
+                    }
+                }
+                
+                // Clear existing resources from extensions directory
+                $this->emptyDirectory($base);
 
-                //     if (!is_dir($path)) {
-                //         mkdir($path, 0755, true);
-                //         symlink($original_path, $symlink);
-                //     } else if (is_dir($symlink)) {
-                //         // Remove directory
-                //         symlink($original_path, $symlink);
-                //     }
-                // }
+                // Link package assets within bundle assets
+                foreach ($assets as $asset) {
+                    if (!is_dir($asset['destination']['base'])) {
+                        mkdir($asset['destination']['base'], 0755, true);
+                    }
+
+                    symlink($asset['source'], $asset['destination']['path']);
+                }
                 break;
             default:
                 break;
@@ -69,5 +77,19 @@ class Console
     public function onConsoleTerminate(ConsoleTerminateEvent $event)
     {
         return;
+    }
+
+    private function emptyDirectory($path)
+    {
+        $iterator = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $collection = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($collection as $info) {
+            if ($info->isDir()) {
+                rmdir($info->getRealPath());
+            } else {
+                unlink($info->getRealPath());
+            }
+        }
     }
 }

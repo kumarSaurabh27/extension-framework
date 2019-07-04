@@ -6,13 +6,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 abstract class Module implements ModuleInterface
 {
-    CONST EXTENSION_TYPE = 'uvdesk-module';
-
-    final public function __construct()
-    {
-        return;
-    }
-
     public function getConfiguration() : ?ConfigurationInterface
     {
         return null;

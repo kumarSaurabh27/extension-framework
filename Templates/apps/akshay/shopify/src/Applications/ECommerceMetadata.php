@@ -28,6 +28,6 @@ class ECommerceMetadata extends ApplicationMetadata
 
     public function getDashboardTemplate() : string
     {
-        return '@_uvdesk_extension_akshay_shopify//dashboard.html.twig';
+        return '@_uvdesk_extension_akshay_shopify/apps/ecommerce/dashboard.html.twig';
     }
 }

@@ -18,6 +18,6 @@ final class Commons extends Module
 
     public function getApplicationReferences() : array
     {
-        return array(Apps\CustomerNotes::class, Apps\Memo::class);
+        return array(Applications\CustomerNotes::class, Applications\Memo::class);
     }
 }

@@ -25,7 +25,7 @@ SVG;
 
     public static function getRouteName() : string
     {
-        return 'uvdesk_extensions_dashboard';
+        return 'uvdesk_extensions_applications_dashboard';
     }
 
     public static function getSectionReferenceId() : string
