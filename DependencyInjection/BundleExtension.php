@@ -47,7 +47,7 @@ class BundleExtension extends Extension
         $loader->load('services.yaml');
 
         // Configure services
-        $container->registerForAutoconfiguration(RoutineInterface::class)->addTag(RoutineInterface::class);
+        $container->registerForAutoconfiguration(RoutineInterface::class)->setLazy(true);
 
         // Process uvdesk lock file
         $path = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";

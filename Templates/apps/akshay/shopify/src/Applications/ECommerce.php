@@ -6,8 +6,8 @@ use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\ApiRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\RenderDashboardRoutine;
 
 class ECommerce extends Application
 {
@@ -24,10 +24,10 @@ class ECommerce extends Application
     public static function getSubscribedEvents()
     {
         return array(
-            ApiRoutine::NAME => array(
+            ApiRoutine::getName() => array(
                 array('handleApiRequest'),
             ),
-            RenderDashboardRoutine::NAME => array(
+            RenderDashboardRoutine::getName() => array(
                 array('prepareDashboard'),
             ),
         );
@@ -35,13 +35,16 @@ class ECommerce extends Application
 
     public function prepareDashboard(RenderDashboardRoutine $event)
     {
-        $event->getDashboardExtension();
+        $dashboardTemplate = $event->getDashboardTemplate();
 
-        $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
-
-        $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
+        // Add loadable resources to templates
         $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/main.css');
         $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
+
+        // Configure dashboard
+        $event
+            ->setTemplateReference('@_uvdesk_extension_akshay_shopify/apps/ecommerce/dashboard.html.twig')
+            ->addTemplateData('channels', $this->getPackage()->parseConfigurations());
     }
 
     public function handleApiRequest(ApiRoutine $event)

@@ -16,7 +16,5 @@ class ExtensionFrameworkBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-
-        $container->addCompilerPass(new DependencyInjection\Passes\ConfigureRoutines());
     }
 }
