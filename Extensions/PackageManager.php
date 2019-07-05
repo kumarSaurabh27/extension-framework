@@ -14,6 +14,7 @@ use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentInterface;
 class PackageManager implements ExtendableComponentInterface
 {
 	private $packages = [];
+	private $applications = [];
 	private $organizedCollection = [];
 
 	public function __construct(ContainerInterface $container, RequestStack $requestStack, RouterInterface $router)

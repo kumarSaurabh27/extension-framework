@@ -9,48 +9,46 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Events\Application\Routine;
+
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
 
 class Application extends Controller
 {
     public function dashboard($vendor, $extension, $application, Request $request)
     {
         $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplicationByAttributes($vendor, $extension, $application);
-
-        if (empty($application)) {
-            return new Response('', 404);
-        }
         
-        $dispatcher = new EventDispatcher();
-        $event = new GenericEvent(Routine::PREPARE_DASHBOARD, array('request' => $request));
+        dump($application);
+        die;
 
-        $dispatcher->addSubscriber($application);
-        $dispatcher->dispatch(Routine::PREPARE_DASHBOARD, $event);
+        // $dispatcher = new EventDispatcher();        
+        // $dispatcher->addSubscriber($application);
+        // $dispatcher->dispatch(RenderDashboardRoutine::NAME, ($event = Routine::create(RenderDashboardRoutine::NAME)));
 
-        return $this->render('@ExtensionFramework//applicationDashboard.html.twig', [
-            'application' => $application
-        ]);
+        // dump($event);
+        // die;
+
+        // return $this->render('@ExtensionFramework//applicationDashboard.html.twig', [
+        //     'application' => $application
+        // ]);
     }
 
     public function apiEndpointXHR($vendor, $extension, $application, Request $request)
     {
         $application = $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplicationByAttributes($vendor, $extension, $application);
 
-        if (empty($application)) {
-            return new JsonResponse([], 404);
-        }
+        dump($application);
+        die;
 
-        $dispatcher = new EventDispatcher();
-        $event = new GenericEvent(Routine::HANDLE_API_REQUEST, array('request' => $request));
+        // $dispatcher = new EventDispatcher();        
+        // $dispatcher->addSubscriber($application);
+        // $dispatcher->dispatch(ApiRoutine::NAME, ($event = Routine::create(ApiRoutine::NAME)));
 
-        $dispatcher->addSubscriber($application);
-        $dispatcher->dispatch(Routine::HANDLE_API_REQUEST, $event);
+        // dump($event);
+        // die;
 
-        return new JsonResponse([]);
-    }
-
-    public function callbackEndpointXHR(Request $request)
-    {
-        return new JsonResponse([]);
+        // return new JsonResponse([]);
     }
 }

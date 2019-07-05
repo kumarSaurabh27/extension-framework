@@ -4,20 +4,16 @@ namespace UVDesk\CommunityPackages\Akshay\Shopify\Applications;
 
 use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Events\Application\Routine;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
-use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
-use UVDesk\CommunityPackages\Akshay\Shopify\ShopifyPackage;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
 
-class ECommerce extends Application implements EventSubscriberInterface
+class ECommerce extends Application
 {
-    public function __construct(ContainerInterface $container, ExtendableComponentManager $extendableComponentManager, ShopifyPackage $package)
+    public function __construct(ContainerInterface $container)
 	{
-        $this->package = $package;
         $this->container = $container;
-        $this->extendableComponentManager = $extendableComponentManager;
     }
 
     public static function getMetadata() : ApplicationMetadata
@@ -28,20 +24,19 @@ class ECommerce extends Application implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Routine::PREPARE_DASHBOARD => array(
-                array('prepareDashboard'),
-            ),
-            Routine::HANDLE_API_REQUEST => array(
+            ApiRoutine::NAME => array(
                 array('handleApiRequest'),
             ),
-            Routine::HANDLE_CALLBACK_REQUEST => array(
-                array('handleCallbackRequest'),
+            RenderDashboardRoutine::NAME => array(
+                array('prepareDashboard'),
             ),
         );
     }
 
-    public function prepareDashboard($event)
+    public function prepareDashboard(RenderDashboardRoutine $event)
     {
+        $event->getDashboardExtension();
+
         $dashboardExtension = $this->extendableComponentManager->getRegisteredComponent(Dashboard::class);
 
         $dashboardTemplate = $dashboardExtension->getDashboardTemplate();
@@ -49,15 +44,10 @@ class ECommerce extends Application implements EventSubscriberInterface
         $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
     }
 
-    public function handleApiRequest($event)
+    public function handleApiRequest(ApiRoutine $event)
     {
         dump($event);
         dump($this->package->getConfigurations());
         die;
-    }
-
-    public function handleCallbackRequest($event)
-    {
-        dump($event);
     }
 }

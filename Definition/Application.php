@@ -12,7 +12,9 @@ abstract class Application implements ApplicationInterface, EventSubscriberInter
 
     final public function setPackage(PackageInterface $package) : ApplicationInterface
 	{
-        $this->package = $package;
+        if (empty($this->package)) {
+            $this->package = $package;
+        }
 
         return $this;
     }
