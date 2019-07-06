@@ -11,9 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\ApiRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\RenderDashboardRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
 
 class Application extends Controller
 {

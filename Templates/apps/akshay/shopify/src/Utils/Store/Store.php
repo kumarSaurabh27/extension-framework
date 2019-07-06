@@ -1,8 +1,8 @@
 <?php
 
-namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Channel;
+namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Store;
 
-class Channel
+class Store
 {
     const TEMPLATE = __DIR__ . "/../../../templates/channel.php";
 

@@ -1,12 +1,13 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine;
 
+use Symfony\Component\EventDispatcher\Event;
 use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\DashboardTemplate;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Application\RoutineInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
 
-class RenderDashboardRoutine implements RoutineInterface
+class RenderDashboardRoutine extends Event implements RoutineInterface
 {
     const NAME = 'uvdesk_extensions.application_routine.prepare_dashboard';
 

@@ -4,7 +4,7 @@ namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils;
 
 use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Channel\Channel;
 
-final class ChannelConfiguration
+final class ShopifyConfiguration
 {
     const DEFAULT_TEMPLATE = __DIR__ . "/../../templates/defaults.yaml";
     const CONFIGURATION_TEMPLATE = __DIR__ . "/../../templates/configs.php";

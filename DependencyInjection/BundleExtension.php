@@ -12,7 +12,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\RoutineInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
 
 class BundleExtension extends Extension
@@ -45,9 +44,6 @@ class BundleExtension extends Extension
         // Load Services
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
-
-        // Configure services
-        $container->registerForAutoconfiguration(RoutineInterface::class)->setLazy(true);
 
         // Process uvdesk lock file
         $path = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";

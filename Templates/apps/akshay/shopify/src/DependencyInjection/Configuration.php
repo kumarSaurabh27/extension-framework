@@ -10,9 +10,22 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $treeBuilder->root('akshay_shopify')
+        $treeBuilder->root('shopify')
             ->children()
-                ->node('channels', 'scalar')->end()
+                ->node('stores', 'scalar')->end()
+            ->end();
+        
+        $treeBuilder->root('shopify')
+            ->children()
+                ->node('stores', 'array')
+                    ->arrayPrototype()
+                        ->children()
+                            ->node('domain', 'scalar')->cannotBeEmpty()->end()
+                            ->node('api_key', 'scalar')->cannotBeEmpty()->end()
+                            ->node('password', 'scalar')->cannotBeEmpty()->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

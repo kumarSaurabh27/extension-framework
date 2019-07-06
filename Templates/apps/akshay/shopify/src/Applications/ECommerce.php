@@ -6,8 +6,8 @@ use Webkul\UVDesk\CoreFrameworkBundle\Dashboard\Dashboard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\ApiRoutine;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Event\RenderDashboardRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
 
 class ECommerce extends Application
 {
