@@ -1,32 +1,3 @@
-// var ChannelModel = Backbone.Model.extend({
-//     idAttribute: "id",
-//     validation: {
-//     }
-// });
-
-// var ChannelCollection = Backbone.Collection.extend({
-//     url: "",
-//     model: ChannelModel,
-//     syncData : function() {
-//         app.appView.showLoader();
-
-//         this.fetch({
-//             reset: true,
-//             success: function(collection, response) {
-//                 if (typeof(channelListView) == 'undefined') {
-//                     channelListView = new ChannelListView();
-//                 }
-
-//                 channelListView.render(collection);
-//                 app.appView.hideLoader();
-//             },
-//             error: function (response) {
-//                 app.appView.hideLoader();
-//             }
-//         });
-//     },
-// });
-
 // var ChannelListView = Backbone.View.extend({
 //     el: $('#configure>.uv-app-screen'),
 //     appSplashTemplate: _.template($('#app-splash-template').html()),
@@ -107,7 +78,29 @@
 // });
 
 $(function () {
-    var ShopifyECommerce = Backbone.View.extend({
+    const templates = {
+        loading_screen_template: $("#shopify-dashboard-loading-screen-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+        welcome_screen_template: $("#shopify-dashboard-welcome-screen-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+        manage_stores_template: $("#shopify-dashboard-manage-stores-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+    };
+
+    var Animation = Backbone.View.extend({
+        el: $("#applicationDashboard"),
+        loading_screen_template: _.template(templates.loading_screen_template),
+        enable: function (text) {
+            this.$el.append(this.loading_screen_template({ text: text }));
+        },
+        disable: function () {
+            this.$el.find('.shopify-dashboard-loader').remove();
+        }
+    });
+
+    var StoreConfigurationModel = Backbone.Model.extend({
+        idAttribute: "id",
+        validation: {}
+    });
+
+    var StoreConfigurationView = Backbone.View.extend({
         el: $("#applicationDashboard"),
         events: {
             'click .uv-app-shopify-cta-setup' : 'setupApplication',
@@ -134,31 +127,63 @@ $(function () {
         setupApplication: function (e) {
             console.log(e);
         }
-        // editChannel: function(e) {
-        //     e.preventDefault();
-        //     item = this.model;
+    });
+    
+    var ShopifyConfiguration = Backbone.Collection.extend({
+        url: "./../../api/akshay/shopify/ecommerce-connector",
+        model: StoreConfigurationModel,
+        parse: function (response) {
+            return response.stores;
+        },
+        syncData: function(dashboard) {
+            dashboard.animations.enable('Please wait while your dashboard is being prepared...');
 
-        //     channelForm.model.clear().set(this.model.toJSON());
-        //     channelForm.render();
-        //     $('.uv-aside-back').addClass('edit-back');
-        // },
-        // editSettings: function(e) {
-        //     e.preventDefault();
-        //     item = this.model;
+            this.fetch({
+                reset: true,
+                data: {
+                    endpoint: 'store-configurations'
+                },
+                success: function(collection, response) {
+                    dashboard.animations.disable();
 
-        //     channelSetting.model.clear().set(this.model.toJSON());
-        //     channelSetting.render();
-        //     $('.uv-aside-back').addClass('edit-back');
-        // },
-        // confirmRemove: function(e) {
-        //     e.preventDefault();
-        //     app.appView.openConfirmModal(this);
-        // },
-        // removeItem : function (e) {
-        //     app.appView.showLoader();
-        //     self = this;
-        // },
+                    // if (collection.length > 0) {
+                    //     dashboard.renderSettingsPanel();
+                    // } else {
+                    //     dashboard.renderWelcomeScreen();
+                    // }
+                },
+                error: function (response) {
+                    console.log('error:', response)
+                }
+            });
+        }
     });
 
-    new ShopifyECommerce();
+    var WelcomeScreen = Backbone.View.extend({
+        el: $("#applicationDashboard"),
+        template: _.template(templates.welcome_screen_template)
+    });
+
+    var DashboardPanel = Backbone.View.extend({
+        el: $("#applicationDashboard"),
+        template: _.template(templates.manage_stores_template),
+        initialize: function() {
+        },
+        render: function () {
+            this.$el.html(this.manage_stores_template({ stores: this.configurations.models}));
+        }
+    });
+
+    var Shopify = Backbone.View.extend({
+        el: $("#applicationDashboard"),
+        initialize: function() {
+            this.$el.empty();
+            this.animations = new Animation();
+            this.configurations = new ShopifyConfiguration();
+
+            this.configurations.syncData(this);
+        }
+    });
+
+    let dashboard = new Shopify();
 });

@@ -35,23 +35,40 @@ class ECommerce extends Application
 
     public function prepareDashboard(RenderDashboardRoutine $event)
     {
-        $dashboardTemplate = $event->getDashboardTemplate();
+        $dashboard = $event->getDashboardTemplate();
+        $shopifyConfiguration = $this->getPackage()->getParsedConfigurations();
 
         // Add loadable resources to templates
-        $dashboardTemplate->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/main.css');
-        $dashboardTemplate->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
+        $dashboard->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/csspin.css');
+        $dashboard->appendStylesheet('bundles/extensionframework/extensions/akshay/shopify/css/main.css');
+        $dashboard->appendJavascript('bundles/extensionframework/extensions/akshay/shopify/js/main.js');
 
         // Configure dashboard
         $event
             ->setTemplateReference('@_uvdesk_extension_akshay_shopify/apps/ecommerce/dashboard.html.twig')
-            ->addTemplateData('channels', $this->getPackage()->parseConfigurations());
+            ->addTemplateData('shopifyConfiguration', $shopifyConfiguration);
     }
 
     public function handleApiRequest(ApiRoutine $event)
     {
-        dump($event);
-        dump($this->package->getConfigurations());
-        die;
+        $request = $event->getRequest();
+
+        switch ($request->query->get('endpoint')) {
+            case 'store-configurations':
+                $response = ['stores' => []];
+                $shopifyConfiguration = $this->getPackage()->getParsedConfigurations();
+
+                // foreach ($shopifyConfiguration->getStoreConfigurations() as $configuration) {
+                //     $response['stores'] = [
+                //         'domain' => $configuration->getDomain(),
+                //     ];
+                // }
+
+                $event->setResponseData($response);
+                break;
+            default:
+                break;
+        }
     }
 
     // private function getOrderResponse($orderId, array $platformConfiguration)

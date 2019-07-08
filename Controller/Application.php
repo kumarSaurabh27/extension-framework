@@ -23,21 +23,23 @@ class Application extends Controller
         $dispatcher->addSubscriber($application);
         $dispatcher->dispatch($event, $event::getName());
 
-        // Get event response
-        $templateData = array_merge(['application' => $application], $event->getTemplateData());
+        // Prepare template data
+        $templateData = array_merge([
+            'dashboard' => [
+                'template' => $event->getTemplateReference()
+            ],
+            'application' => $application
+        ], $event->getTemplateData());
 
         return $this->render('@ExtensionFramework//applicationDashboard.html.twig', $templateData);
     }
 
     public function apiEndpointXHR(ApplicationInterface $application, ApiRoutine $event)
     {
-        $dispatcher = new EventDispatcher();        
+        $dispatcher = new EventDispatcher();
         $dispatcher->addSubscriber($application);
-        $dispatcher->dispatch(ApiRoutine::NAME, ($event = Routine::create(ApiRoutine::NAME)));
+        $dispatcher->dispatch($event, $event::getName());
 
-        dump($event);
-        die;
-
-        // return new JsonResponse([]);
+        return new JsonResponse($event->getResponseData(), $event->getResponseCode());
     }
 }

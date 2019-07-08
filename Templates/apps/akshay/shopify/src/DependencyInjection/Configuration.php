@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
                         ->children()
                             ->node('domain', 'scalar')->cannotBeEmpty()->end()
                             ->node('api_key', 'scalar')->cannotBeEmpty()->end()
-                            ->node('password', 'scalar')->cannotBeEmpty()->end()
+                            ->node('api_password', 'scalar')->cannotBeEmpty()->end()
                         ->end()
                     ->end()
                 ->end()

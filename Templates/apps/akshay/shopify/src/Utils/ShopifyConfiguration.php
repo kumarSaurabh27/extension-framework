@@ -2,45 +2,39 @@
 
 namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils;
 
-use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Channel\Channel;
+use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Metadata\StoreConfiguration;
 
 final class ShopifyConfiguration
 {
     const DEFAULT_TEMPLATE = __DIR__ . "/../../templates/defaults.yaml";
     const CONFIGURATION_TEMPLATE = __DIR__ . "/../../templates/configs.php";
 
-    private $collection = [];
+    private $stores = [];
 
-    public function addChannel(Channel $mailbox)
+    public function addStoreConfiguration(StoreConfiguration $configuration)
     {
-        $this->collection[] = $mailbox;
+        $this->stores[$configuration->getDomain()] = $configuration;
 
         return $this;
     }
 
-    public function removeChannel(Channel $mailbox)
+    public function getStoreConfigurations() : array
     {
-        if ($mailbox->getId() != null) {
-            foreach ($this->collection as $index => $configuration) {
-                if ($configuration->getId() == null) {
-                    continue;
-                }
-                
-                if ($configuration->getId() == $mailbox->getId()) {
-                    unset($this->collection[$index]);
-                    break;
-                }
-            }
+        return $this->stores;
+    }
+
+    public function getStoreConfiguration($domain) : ?StoreConfiguration
+    {
+        return $this->stores[$domain] ?? null;
+    }
+
+    public function removeStoreConfiguration(StoreConfiguration $configuration)
+    {
+        if (!empty($this->stores[$configuration->getDomain()])) {
+            unset($this->stores[$configuration->getDomain()]);
         }
 
-        $this->collection = array_values($this->collection);
-
         return $this;
-    }
-
-    public function getChannels() : array
-    {
-        return $this->collection;
     }
 
     public function __toString()

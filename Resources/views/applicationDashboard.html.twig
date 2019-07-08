@@ -15,7 +15,9 @@
 		<div class="uv-view" style="padding-left: 20px;">
 			<!-- @TODO: add components to manage tabs dynamically -->
             <div id="applicationDashboard" class="uv-app-screen">
-				{{ include(application.metadata.getDashboardTemplate()) }}
+				{% if dashboard.template is not empty %}
+					{{ include(dashboard.template) }}
+				{% endif %}
 			</div>
 		</div>
 	</div>

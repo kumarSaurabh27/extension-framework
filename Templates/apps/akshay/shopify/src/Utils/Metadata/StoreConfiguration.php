@@ -1,51 +1,49 @@
 <?php
 
-namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Store;
+namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Metadata;
 
-class Store
+class StoreConfiguration
 {
     const TEMPLATE = __DIR__ . "/../../../templates/channel.php";
 
-    private $id = null;
-    private $name = null;
+    private $domain;
+    private $api_key;
+    private $api_password;
 
-    public function __construct($id = null)
+    public function setDomain($domain)
     {
-        $this->id = $id;
-    }
-
-    private function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
+        $this->domain = $domain;
 
         return $this;
     }
 
-    public function getName()
+    public function getDomain()
     {
-        return $this->name;
+        return $this->domain;
     }
 
-    public function setIsEnabled(bool $isEnabled)
+    public function setApiKey($api_key)
     {
-        $this->isEnabled = $isEnabled;
+        $this->api_key = $api_key;
 
         return $this;
     }
 
-    public function getIsEnabled() : bool
+    public function getApiKey()
     {
-        return $this->isEnabled;
+        return $this->api_key;
+    }
+
+    public function setApiPassword($api_password)
+    {
+        $this->api_password = $api_password;
+
+        return $this;
+    }
+
+    public function getApiPassword()
+    {
+        return $this->api_password;
     }
 
     public function __toString()
