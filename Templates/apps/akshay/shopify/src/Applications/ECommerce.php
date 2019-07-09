@@ -8,6 +8,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\ApiRoutine;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Application\Routine\RenderDashboardRoutine;
+use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Metadata\StoreConfiguration;
 
 class ECommerce extends Application
 {
@@ -54,18 +55,38 @@ class ECommerce extends Application
         $request = $event->getRequest();
 
         switch ($request->query->get('endpoint')) {
-            case 'store-configurations':
-                $response = ['stores' => []];
+            case 'save-store-configuration':
+                $attributes = json_decode($request->getContent(), true);
                 $shopifyConfiguration = $this->getPackage()->getParsedConfigurations();
 
+                if ('POST' == $request->getMethod()) {
+                    $storeConfiguration = new StoreConfiguration();
+                    $storeConfiguration
+                        ->setDomain($attributes['domain'])
+                        ->setApiKey($attributes['api_key'])
+                        ->setApiPassword($attributes['api_password']);
+
+                    if ($storeConfiguration->validate(true)) {
+                        $shopifyConfiguration->addStoreConfiguration($storeConfiguration);
+                    } else {
+                        $event->setResponseCode(500);
+                    }
+                } else if ('PUT' == $request->getMethod()) {
+                    dump('update configuration');
+                    die;
+                }
+                break;
+            case 'get-configurations':
+                $response = ['stores' => []];
+                $shopifyConfiguration = $this->getPackage()->getParsedConfigurations();
+                
                 // foreach ($shopifyConfiguration->getStoreConfigurations() as $configuration) {
                 //     $response['stores'] = [
                 //         'domain' => $configuration->getDomain(),
                 //     ];
                 // }
-
+                    
                 $event->setResponseData($response);
-                break;
             default:
                 break;
         }

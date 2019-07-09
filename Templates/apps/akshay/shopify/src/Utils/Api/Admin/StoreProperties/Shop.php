@@ -7,15 +7,21 @@ namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Api\Admin\StorePropertie
  */
 abstract class Shop
 {
-    public static function get($shop_domain, $auth_code, $client_id, $client_secret)
+    public static function get($shop_domain, $api_key, $api_password)
     {
-        $curlHandler = curl_init('https://' . $shopDomain . '/admin/shop.json');
+        $curlHandler = curl_init();
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curlHandler, CURLOPT_HTTPHEADER, ["X-Shopify-Access-Token: " . $accessToken]);
+        curl_setopt($curlHandler, CURLOPT_URL, "https://$shop_domain/admin/shop.json");
+        curl_setopt($curlHandler, CURLOPT_HTTPHEADER, [
+            'Accept: application/xml',
+            'Content-Type: application/xml',
+            'Authorization: Basic ' . base64_encode("$api_key:$api_password")
+        ]);
 
         $curlResponse = curl_exec($curlHandler);
-        $jsonResponse = json_decode($curlResponse, true);
         curl_close($curlHandler);
+
+        $jsonResponse = json_decode($curlResponse, true);
 
         if (empty($jsonResponse['shop'])) {
             throw new \Exception('Unable to retrieve store details');

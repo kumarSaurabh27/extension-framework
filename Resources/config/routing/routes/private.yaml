@@ -13,12 +13,12 @@ uvdesk_extensions_standalone_application_dashboard:
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::dashboard
 
 uvdesk_extensions_standalone_application_api_endpoint:
-    path:     /apps/api/{vendor}/{extension}/{application}
+    path:     /apps/{vendor}/{extension}/{application}/api
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::apiEndpointXHR
     methods: [GET, POST]
 
 uvdesk_extensions_standalone_application_callback_endpoint:
-    path:     /apps/callback/{vendor}/{extension}/{application}
+    path:     /apps/{vendor}/{extension}/{application}/callback
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::callbackEndpointXHR
     methods: [GET, POST]
 

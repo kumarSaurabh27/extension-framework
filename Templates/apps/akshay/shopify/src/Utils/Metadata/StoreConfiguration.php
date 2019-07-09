@@ -2,6 +2,8 @@
 
 namespace UVDesk\CommunityPackages\Akshay\Shopify\Utils\Metadata;
 
+use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Api\Admin\StoreProperties\Shop;
+
 class StoreConfiguration
 {
     const TEMPLATE = __DIR__ . "/../../../templates/channel.php";
@@ -9,6 +11,7 @@ class StoreConfiguration
     private $domain;
     private $api_key;
     private $api_password;
+    private $metadata = [];
 
     public function setDomain($domain)
     {
@@ -44,6 +47,26 @@ class StoreConfiguration
     public function getApiPassword()
     {
         return $this->api_password;
+    }
+
+    public function validate($set_metadata = false)
+    {
+        $response = Shop::get($this->getDomain(), $this->getApiKey(), $this->getApiPassword());
+
+        if (empty($response['id'])) {
+            return false;
+        }
+
+        $this->metadata = [
+            'id' => $response['id'],
+            'name' => $response['name'],
+            'email' => $response['email'],
+            'timezone' => $response['timezone'],
+            'iana_timezone' => $response['iana_timezone'],
+            'money_with_currency_format' => $response['money_with_currency_format'],
+        ];
+
+        return true;
     }
 
     public function __toString()
