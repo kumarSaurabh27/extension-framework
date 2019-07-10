@@ -106,6 +106,22 @@
     margin-right: unset;
 }
 
+.shopify-store-item .shopify-store-status-flag {
+    width: 9px;
+    height: 9px;
+    display: inline-block;
+    border-radius: 10px;
+    margin-right: 4px;
+}
+
+.shopify-store-item .shopify-store-status-flag.active {
+    background: #47d04c;
+}
+
+.shopify-store-item .shopify-store-status-flag.inactive {
+    background: #FF5656;
+}
+
 .shopify-store-item .shopify-store-item-buttons button {
     color: #2750C4;
     font-size: 14px;

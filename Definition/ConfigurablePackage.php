@@ -4,25 +4,31 @@ namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition;
 
 abstract class ConfigurablePackage extends Package implements ConfigurablePackageInterface
 {
-    public static $root = '';
+    protected $pathToConfigurationFile;
 
-    public static function install(PackageMetadata $metadata) : void
+    public function setPathToConfigurationFile(string $pathToConfigurationFile) : void
+    {
+        if (empty($this->pathToConfigurationFile)) {
+            $this->pathToConfigurationFile = $pathToConfigurationFile;
+        }
+    }
+
+    public function getPathToConfigurationFile() : string
+    {
+        return $this->pathToConfigurationFile;
+    }
+
+    public function install() : void
     {
         return;
     }
 
-    public static function updatePackageConfiguration(PackageMetadata $metadata, string $content) : void
+    public function updatePackageConfiguration(string $content) : void
     {
         if (empty($content)) {
             throw new \Exception('Configuration file cannot be empty');
         }
 
-        $path = self::$root . "/" . str_replace('/', '_', $metadata->getName()) . ".yaml";
-
-        if (!file_exists($path) || is_dir($path)) {
-            file_put_contents($path, $content);
-        }
-
-        return;
+        file_put_contents($this->getPathToConfigurationFile(), $content);
     }
 }

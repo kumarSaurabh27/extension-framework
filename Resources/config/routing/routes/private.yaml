@@ -15,7 +15,7 @@ uvdesk_extensions_standalone_application_dashboard:
 uvdesk_extensions_standalone_application_api_endpoint:
     path:     /apps/{vendor}/{extension}/{application}/api
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::apiEndpointXHR
-    methods: [GET, POST]
+    methods: [GET, POST, PUT]
 
 uvdesk_extensions_standalone_application_callback_endpoint:
     path:     /apps/{vendor}/{extension}/{application}/callback

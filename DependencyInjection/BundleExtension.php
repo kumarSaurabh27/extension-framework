@@ -12,6 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
 
 class BundleExtension extends Extension
@@ -51,8 +52,10 @@ class BundleExtension extends Extension
         if (file_exists($path) && $container->has(PackageManager::class)) {
             $env = $container->getParameter('kernel.environment');
             $uvdesk = json_decode(file_get_contents($path), true);
+            $pathToConfigs = $container->getParameter("kernel.project_dir") . "/config/extensions";
+
             $packageManagerDefinition = $container->findDefinition(PackageManager::class);
-            $extensionConfigurations = $this->parseExtensionConfigurations($container->getParameter("kernel.project_dir") . "/config/extensions");
+            $extensionConfigurations = $this->parseExtensionConfigurations($pathToConfigs);
 
             // Prepare packages for configuration
             foreach ($uvdesk['packages'] as $package) {
@@ -66,7 +69,7 @@ class BundleExtension extends Extension
                     if (!$class->implementsInterface(ModuleInterface::class)) {
                         throw new \Exception("Class $reference could not be registered as an extension. Please check that it implements the " . ModuleInterface::class . " interface.");
                     }
-
+                    
                     $extension = $class->newInstanceWithoutConstructor();
 
                     // Load extension services

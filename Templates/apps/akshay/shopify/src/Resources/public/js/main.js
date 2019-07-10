@@ -5,6 +5,7 @@ $(function () {
         loading_screen_template: $("#akshay-shopify-loading-screen-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
         welcome_section_template: $("#akshay-shopify-welcome-section-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
         manage_stores_template: $("#akshay-shopify-manage-stores-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
+        manage_store_settings_template: $("#akshay-shopify-manage-store-settings-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
         manage_store_form_template: $("#akshay-shopify-manage-store-form-template").html().replace(/&lt;/g, '<').replace(/&gt;/g, '>'),
     };
 
@@ -21,7 +22,7 @@ $(function () {
     });
 
     var ShopifyStore = Backbone.Model.extend({
-        url: "./ecommerce-connector/api?endpoint=save-store-configuration",
+        url: "./ecommerce-connector/api?endpoint=save-store",
         defaults: function() {
             return {
                 domain: "",
@@ -61,12 +62,13 @@ $(function () {
     });
 
     var ShopifyStoreCollection = Backbone.Collection.extend({
-        url: "./ecommerce-connector/api?endpoint=get-configurations",
+        url: "./ecommerce-connector/api?endpoint=get-stores",
         model: ShopifyStore,
         parse: function (response) {
             return response.stores;
         },
         fetch: function () {
+            console.log('fetching stores...');
             let collection = this;
 
             $.ajax({
@@ -116,9 +118,13 @@ $(function () {
         handleSync: function (model, response, options) {
             console.log('model synced:', model);
             shopifyStoreCollection.add(model);
+            app.appView.renderResponseAlert({ alertClass: 'success', alertMessage: 'Settings saved successfully' });
         },
         handleSyncFailure: function (model, xhr, options) {
-            console.log('failed to sync model:', model, xhr, options);
+            let response = xhr.responseJSON;
+            let message = response.hasOwnProperty('error') ? response.error : 'An unexpected error occurred. Please try again later.';
+
+            app.appView.renderResponseAlert({ alertClass: 'danger', alertMessage: message });
         }
     });
 
@@ -126,13 +132,19 @@ $(function () {
         el: $("#applicationDashboard"),
         template: _.template(templates.welcome_section_template),
         events: {
-            'click .uv-app-shopify-cta-setup': 'setupStore'
+            'click .uv-app-shopify-cta-setup': 'renderStoreSettingsForm'
+        },
+        initialize: function() {
+            this.listenTo(shopifyStoreCollection, 'add', this.addShopifyStore);
+
+            this.animation.showDashboardLoader('Please wait while your dashboard is being prepared...');
+            shopifyStoreCollection.fetch();
         },
         render: function () {
             this.$el.html(this.template());
         },
-        setupStore: function(e) {
-            app.animation.showDashboardLoader();
+        renderStoreSettingsForm: function(e) {
+            shopifyApp.animation.showDashboardLoader();
 
             let self = this;
             this.model = new ShopifyStore();
@@ -141,20 +153,73 @@ $(function () {
             this.$el.find('.welcome-screen.banner').fadeOut(100, () => {
                 self.welcomeForm.render(this.$el.find('.welcome-screen.configure-store form'));
                 self.$el.find('.welcome-screen.configure-store').fadeIn(200, () => {
-                    app.animation.hideDashboardLoader();
+                    shopifyApp.animation.hideDashboardLoader();
                 });
             });
+        },
+        addShopifyStore: function(shopifyStore) {
+            console.log('adding shopify store:', shopifyStore);
+
+            shopifyApp.render();
         }
     });
 
     var Dashboard = Backbone.View.extend({
         el: $("#applicationDashboard"),
         template: _.template(templates.manage_stores_template),
-        initialize: function() {
+        settings_template: _.template(templates.manage_store_settings_template),
+        events: {
+            'click button.edit': 'manageSettings',
+            'input form input': 'setAttribute',
+            'submit form': 'submitForm'
         },
         render: function () {
-            console.log('render application dashboard');
-            // this.$el.html(this.manage_stores_template({ stores: this.configurations.models}));
+            console.log('rendering dashboard');
+
+            shopifyStoreCollection.each(function (model) {
+                console.log("model:", model.get('id'))
+            })
+
+            this.$el.html(this.template({ stores : shopifyStoreCollection.toJSON() }));
+        },
+        manageSettings: function (e) {
+            let id = $(e.currentTarget).closest('.shopify-store-item').data('id');
+            this.activeModel = shopifyStoreCollection.get(id);
+            
+            console.log('managing settings for store:', id, this.activeModel.toJSON());
+
+            this.listenTo(this.activeModel, 'sync', this.handleSync);
+            this.listenTo(this.activeModel, 'error', this.handleSyncFailure);
+
+            this.$el.html(this.settings_template(this.activeModel.toJSON()));
+        },
+        setAttribute: function(ev) {
+            let name = $(ev.currentTarget)[0].name.trim();
+            let value = $(ev.currentTarget)[0].value.trim();
+
+            if (this.activeModel.has(name)) {
+                this.activeModel.set(name, value);
+            }
+        },
+        submitForm: function (ev) {
+            ev.preventDefault();
+
+            if (this.activeModel.isValid()) {
+                console.log('saving model');
+                this.activeModel.save();
+            }
+        },
+        handleSync: function (model, response, options) {
+            console.log('model synced:', model);
+            app.appView.renderResponseAlert({ alertClass: 'success', alertMessage: 'Settings saved successfully' });
+
+            shopifyApp.render();
+        },
+        handleSyncFailure: function (model, xhr, options) {
+            let response = xhr.responseJSON;
+            let message = response.hasOwnProperty('error') ? response.error : 'An unexpected error occurred. Please try again later.';
+
+            app.appView.renderResponseAlert({ alertClass: 'danger', alertMessage: message });
         }
     });
 
@@ -164,42 +229,28 @@ $(function () {
             this.$el.empty();
             this.animation = new DashboardAnimations();
 
-            this.listenTo(shopifyStoreCollection, 'add', this.addShopifyStore);
-            this.listenTo(shopifyStoreCollection, 'reset', this.reset);
-            this.listenTo(shopifyStoreCollection, 'all', this.render);
+            // this.listenTo(shopifyStoreCollection, 'add', this.addShopifyStore);
+            this.listenTo(shopifyStoreCollection, 'reset', this.render);
+            // this.listenTo(shopifyStoreCollection, 'update', this.render);
 
             this.animation.showDashboardLoader('Please wait while your dashboard is being prepared...');
             shopifyStoreCollection.fetch();
         },
         render: function() {
-            console.log('render:', shopifyStoreCollection);
             this.animation.hideDashboardLoader();
 
-            if (!shopifyStoreCollection.length) {
-                if (false == this.hasOwnProperty('welcome') || typeof this.welcome == 'undefined') {
-                    this.welcome = new Welcome();
-                }
+            // // Remove and unbind current section
+            // if (this.hasOwnProperty('section') || typeof this.section != 'undefined') {
+            //     this.section.remove();
+            // }
 
-                this.welcome.render();
-            } else {
-                if (false == this.hasOwnProperty('dashboard') || typeof this.dashboard == 'undefined') {
-                    this.dashboard = new Dashboard();
-                }
+            console.log('shopify collection:', shopifyStoreCollection.length, shopifyStoreCollection.toJSON());
 
-                this.dashboard.render();
-            }
-        },
-        addShopifyStore: function(todo) {
-            console.log('addShopifyStore:', shopifyStoreCollection);
-            // var view = new TodoView({model: todo});
-            // this.$("#todo-list").append(view.render().el);
-        },
-        reset: function() {
-            console.log('reset:', shopifyStoreCollection);
-            shopifyStoreCollection.each(this.addShopifyStore, this);
-        },
+            this.section = !shopifyStoreCollection.length ? new Welcome() : new Dashboard();
+            this.section.render();
+        }
     });
 
     let shopifyStoreCollection = new ShopifyStoreCollection();
-    let app = new ShopifyApp(shopifyStoreCollection);
+    let shopifyApp = new ShopifyApp(shopifyStoreCollection);
 });

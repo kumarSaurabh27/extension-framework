@@ -26,6 +26,78 @@
     </div>
 </template>
 
+<template id="akshay-shopify-manage-stores-template">
+    <div id="uv-app-shopify-header" class="uv-app-shopify-header">
+        <h2>Manage Configurations</h2>
+
+        <ul>
+            <li><button class="uv-btn-action shopify-button">Add Store</button></li>
+        </ul>
+    </div>
+
+    <div id="uv-app-shopify-dashboard" class="uv-app-shopify-dashboard">
+        <div id="uv-app-shopify-stores" class="shopify-store-listing">
+            <% _.each(stores, function (store) { %>
+                <div class="shopify-store-item" data-id="<%- store.id %>">
+                    <p style="line-height: 1.4em; margin: unset;">
+                        <% if (store.enabled) { %>
+                            <span class="shopify-store-status-flag active" data-status="active"></span>
+                        <% } else { %>
+                            <span class="shopify-store-status-flag inactive" data-status="inactive"></span>
+                        <% } %>
+                        <span style="font-weight: 700; text-transform: uppercase;"><%- store.name %></span>
+                    </p>
+
+                    <p style="line-height: 1.4em; margin: unset; font-size: 12px; font-weight: bold;"><%- store.domain %></p>
+
+                    <ul class="shopify-store-item-buttons">
+                        <li><button class="edit">Edit</button></li>
+                        <li><button class="delete">Delete</button></li>
+                    </ul>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</template>
+
+<template id="akshay-shopify-manage-store-settings-template">
+    <div id="uv-app-shopify-header" class="uv-app-shopify-header">
+        <h2>Manage settings for <%- name %></h2>
+    </div>
+
+    <div id="uv-app-shopify-dashboard" class="uv-app-shopify-dashboard">
+        <form class="configure-store-form">
+            <div class="form-element">
+                <label>Domain :</label>
+                <div class="form-field">
+                    <p class="form-field-info">Your Shopify Store Name</p>
+                    <input name="domain" class="uv-field" type="text" placeholder="example.myshopify.com" value="<%- domain %>">
+                </div>
+            </div>
+
+            <div class="form-element">
+                <label>API Key :</label>
+                <div class="form-field">
+                    <p class="form-field-info">Enter your shopify api key</p>
+                    <input name="api_key" class="uv-field" type="password" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-element">
+                <label>API Password :</label>
+                <div class="form-field">
+                    <p class="form-field-info">Enter your shopify api password</p>
+                    <input name="api_password" class="uv-field" type="password" placeholder="">
+                </div>
+            </div>
+            
+            <div class="uv-action-buttons">
+                <input type="submit" class="form-field uv-btn" id="save-channel" value="Add Store">
+            </div>
+        </form>
+    </div>
+</template>
+
 <template id="akshay-shopify-manage-store-form-template">
     {# <div class="uv-instructions-block" style="">
         <h3><span class="uv-icon-info uv-margin-right-5"></span>{{ 'Configuring your application:'|trans }}</h3>
@@ -65,32 +137,5 @@
     
     <div class="uv-action-buttons">
         <input type="submit" class="form-field uv-btn" id="save-channel" value="Add Store">
-    </div>
-</template>
-
-<template id="akshay-shopify-manage-stores-template">
-    <div id="uv-app-shopify-header" class="uv-app-shopify-header">
-        <h2>Manage Configurations</h2>
-
-        <ul>
-            <li><button class="uv-btn-action shopify-button">Add Store</button></li>
-        </ul>
-    </div>
-
-    <div id="uv-app-shopify-dashboard" class="uv-app-shopify-dashboard">
-        <div id="uv-app-shopify-stores" class="shopify-store-listing">
-            <% _.each(stores, function (store) { %>
-                <div class="shopify-store-item">
-                    <p style="line-height: 1.4em; margin: unset;">
-                        <span style="font-weight: 700; text-transform: uppercase;"><%- store.attributes.domain %></span>
-                    </p>
-
-                    <ul class="shopify-store-item-buttons">
-                        <li><button>Edit</button></li>
-                        <li><button class="delete">Delete</button></li>
-                    </ul>
-                </div>
-            <% }) %>
-        </div>
     </div>
 </template>

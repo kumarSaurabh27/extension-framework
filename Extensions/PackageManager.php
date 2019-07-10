@@ -9,6 +9,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentInterface;
 
 class PackageManager implements ExtendableComponentInterface
@@ -22,6 +23,7 @@ class PackageManager implements ExtendableComponentInterface
 		$this->router = $router;
 		$this->container = $container;
 		$this->requestStack = $requestStack;
+		$this->pathToPackageConfigurations = $container->getParameter("kernel.project_dir") . "/config/extensions";
 	}
 
 	public function autoconfigure()
@@ -55,6 +57,10 @@ class PackageManager implements ExtendableComponentInterface
 
 		$package->setMetadata($metadata);
 		$package->setConfigurations($configs);
+
+		if ($package instanceof ConfigurablePackageInterface) {
+			$package->setPathToConfigurationFile($this->pathToPackageConfigurations . "/" . str_replace('/', '_', $metadata->getName()) . ".yaml");
+		}
 
 		$this->packages[] = $package;
 	}

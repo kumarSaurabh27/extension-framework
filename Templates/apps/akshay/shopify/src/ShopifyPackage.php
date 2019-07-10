@@ -3,18 +3,18 @@
 namespace UVDesk\CommunityPackages\Akshay\Shopify;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
-use UVDesk\CommunityPackages\Akshay\Shopify\Utils\ShopifyConfiguration;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackage;
-use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Metadata\StoreConfiguration;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
+use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Configuration\ShopifyConfiguration;
+use UVDesk\CommunityPackages\Akshay\Shopify\Utils\Configuration\ShopifyStoreConfiguration;
 
 class ShopifyPackage extends ConfigurablePackage implements ConfigurablePackageInterface
 {
     private $shopifyConfiguration;
 
-    public static function install(PackageMetadata $metadata) : void
+    public function install() : void
     {
-        self::updatePackageConfiguration($metadata, file_get_contents(__DIR__ . "/../templates/defaults.yaml"));
+        $this->updatePackageConfiguration(file_get_contents(__DIR__ . "/../templates/defaults.yaml"));
     }
 
     public function getParsedConfigurations() : ShopifyConfiguration
@@ -23,14 +23,16 @@ class ShopifyPackage extends ConfigurablePackage implements ConfigurablePackageI
             $this->shopifyConfiguration = new ShopifyConfiguration();
             
             // Read configurations from package config.
-            $configs = $this->getConfigurations();
-
-            // Add stores to configuration
-            foreach ($configs['stores'] as $attributes) {
-                ($store = new StoreConfiguration())
+            foreach ($this->getConfigurations()['stores'] as $attributes) {
+                ($store = new ShopifyStoreConfiguration($attributes['id']))
+                    ->setName($attributes['name'])
                     ->setDomain($attributes['domain'])
-                    ->setApiKey($attributes['domain'])
-                    ->setApiPassword($attributes['domain']);
+                    ->setClient($attributes['client'])
+                    ->setPassword($attributes['password'])
+                    ->setTimezone($attributes['timezone'])
+                    ->setIanaTimezone($attributes['iana_timezone'])
+                    ->setCurrencyFormat($attributes['currency_format'])
+                    ->setIsEnabled($attributes['enabled']);
                 
                 $this->shopifyConfiguration->addStoreConfiguration($store);
             }
