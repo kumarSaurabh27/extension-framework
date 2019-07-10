@@ -186,8 +186,9 @@ class BuildExtensions extends Command
             $packageReflectionClass = $this->getUnloadedReflectionClass($extension->getPackageReference(), $packageMetadata);
 
             if ($packageReflectionClass->implementsInterface(ConfigurablePackageInterface::class)) {
-                $packageReflectionClass->setStaticPropertyValue('root', $pathToConfig);
-                $packageReflectionClass->getMethod('install')->invoke(null, $packageMetadata);
+                $configurablePackage = $packageReflectionClass->newInstanceWithoutConstructor();
+                $configurablePackage->setPathToConfigurationFile($pathToConfig . "/" . str_replace('/', '_', $packageMetadata->getName()) . ".yaml");
+                $configurablePackage->install();
             }
         }
     }
