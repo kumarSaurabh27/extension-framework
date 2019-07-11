@@ -39,7 +39,7 @@ SVG;
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        return $this->twig->render('@_uvdesk_extension_uvdesk_commons//customerNotes.html.twig', [
+        return $this->twig->render('@_uvdesk_extension_uvdesk_commons/apps/customer-notes/widget.html.twig', [
             'id' => $request->get('ticketId')
         ]);
     }

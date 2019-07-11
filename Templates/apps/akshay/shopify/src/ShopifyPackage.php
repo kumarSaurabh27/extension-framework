@@ -14,7 +14,7 @@ class ShopifyPackage extends ConfigurablePackage implements ConfigurablePackageI
 
     public function install() : void
     {
-        $this->updatePackageConfiguration(file_get_contents(__DIR__ . "/../templates/defaults.yaml"));
+        $this->updatePackageConfiguration(file_get_contents(__DIR__ . "/../templates/configs/defaults.yaml"));
     }
 
     public function getParsedConfigurations() : ShopifyConfiguration

@@ -122,7 +122,7 @@ $(function () {
         },
         handleSyncFailure: function (model, xhr, options) {
             let response = xhr.responseJSON;
-            let message = response.hasOwnProperty('error') ? response.error : 'An unexpected error occurred. Please try again later.';
+            let message = (typeof(response) == 'undefined' || false == response.hasOwnProperty('error')) ? 'An unexpected error occurred. Please try again later.' : response.error;
 
             app.appView.renderResponseAlert({ alertClass: 'danger', alertMessage: message });
         }
@@ -136,26 +136,18 @@ $(function () {
         },
         initialize: function() {
             this.listenTo(shopifyStoreCollection, 'add', this.addShopifyStore);
-
-            this.animation.showDashboardLoader('Please wait while your dashboard is being prepared...');
-            shopifyStoreCollection.fetch();
         },
         render: function () {
             this.$el.html(this.template());
         },
         renderStoreSettingsForm: function(e) {
-            shopifyApp.animation.showDashboardLoader();
-
             let self = this;
             this.model = new ShopifyStore();
             this.welcomeForm = new ShopifyStoreSettingsForm({ model: this.model });
-            
-            this.$el.find('.welcome-screen.banner').fadeOut(100, () => {
-                self.welcomeForm.render(this.$el.find('.welcome-screen.configure-store form'));
-                self.$el.find('.welcome-screen.configure-store').fadeIn(200, () => {
-                    shopifyApp.animation.hideDashboardLoader();
-                });
-            });
+
+            this.$el.find('.welcome-screen.banner').hide();
+            this.welcomeForm.render(this.$el.find('.welcome-screen.configure-store form'));
+            this.$el.find('.welcome-screen.configure-store').show();
         },
         addShopifyStore: function(shopifyStore) {
             console.log('adding shopify store:', shopifyStore);
@@ -227,18 +219,11 @@ $(function () {
         el: $("#applicationDashboard"),
         initialize: function(shopifyStoreCollection) {
             this.$el.empty();
-            this.animation = new DashboardAnimations();
-
-            // this.listenTo(shopifyStoreCollection, 'add', this.addShopifyStore);
             this.listenTo(shopifyStoreCollection, 'reset', this.render);
-            // this.listenTo(shopifyStoreCollection, 'update', this.render);
 
-            this.animation.showDashboardLoader('Please wait while your dashboard is being prepared...');
             shopifyStoreCollection.fetch();
         },
         render: function() {
-            this.animation.hideDashboardLoader();
-
             // // Remove and unbind current section
             // if (this.hasOwnProperty('section') || typeof this.section != 'undefined') {
             //     this.section.remove();

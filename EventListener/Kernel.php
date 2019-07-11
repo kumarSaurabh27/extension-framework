@@ -41,7 +41,7 @@ class Kernel
             $controllerArguments = $event->getArguments();
 
             foreach ($reflectionClass->getMethod($method)->getParameters() as $index => $parameter) {
-                if (ApplicationInterface::class === $parameter->getType()->getName()) {
+                if ($parameter->getType() != null && ApplicationInterface::class === $parameter->getType()->getName()) {
                     if (false === (bool) ($controllerArguments[$index] instanceof ApplicationInterface)) {
                         $vendor = $request->get('vendor');
                         $package = $request->get('extension');
@@ -62,14 +62,5 @@ class Kernel
 
             $event->setArguments($args);
         }
-
-        // switch ($request->get('_route')) {
-        //     case 'uvdesk_extensions_standalone_application_dashboard':
-        //     case 'uvdesk_extensions_standalone_application_api_endpoint':
-        //     case 'uvdesk_extensions_standalone_application_callback_endpoint':
-        //         break;
-        //     default:
-        //         break;
-        // }
     }
 }

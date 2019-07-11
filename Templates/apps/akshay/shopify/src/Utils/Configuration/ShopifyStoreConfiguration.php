@@ -18,7 +18,7 @@ class ShopifyStoreConfiguration
     private $isVerified = false;
     private $verificationErrorMessage;
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
     }
