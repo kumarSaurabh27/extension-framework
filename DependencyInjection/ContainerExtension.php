@@ -10,12 +10,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\Package;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Module\ClassMap;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 
-class BundleExtension extends Extension
+class ContainerExtension extends Extension
 {
     public function getAlias()
     {
@@ -24,7 +26,7 @@ class BundleExtension extends Extension
 
     public function getConfiguration(array $configs, ContainerBuilder $container)
     {
-        return new BundleConfiguration();
+        return new Configuration();
     }
 
     public function load(array $configs, ContainerBuilder $container)
@@ -49,38 +51,46 @@ class BundleExtension extends Extension
         // Process uvdesk lock file
         $path = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";
 
-        if (file_exists($path) && $container->has(PackageManager::class)) {
+        if (file_exists($path) && $container->has(Package::class) && $container->has(ClassMap::class)) {
+            $package = $container->findDefinition(Package::class);
+            $classMap = $container->findDefinition(ClassMap::class);
+
+            // $container->registerForAutoconfiguration(RoutingResourceInterface::class)->addTag(RoutingResourceInterface::class);
+
             $env = $container->getParameter('kernel.environment');
             $uvdesk = json_decode(file_get_contents($path), true);
             $pathToConfigs = $container->getParameter("kernel.project_dir") . "/config/extensions";
 
-            $packageManagerDefinition = $container->findDefinition(PackageManager::class);
             $extensionConfigurations = $this->parseExtensionConfigurations($pathToConfigs);
 
             // Prepare packages for configuration
-            foreach ($uvdesk['packages'] as $package) {
-                $reference = current(array_keys($package['extensions']));
-                $supportedEnvironments = $package['extensions'][$reference];
+            foreach ($uvdesk['packages'] as $metadata) {
+                $reference = current(array_keys($metadata['extensions']));
+                $supportedEnvironments = $metadata['extensions'][$reference];
 
                 // Check if extension is supported in the current environment
                 if (in_array('all', $supportedEnvironments) || in_array($env, $supportedEnvironments)) {
                     $class = new \ReflectionClass($reference);
                     
                     if (!$class->implementsInterface(ModuleInterface::class)) {
-                        throw new \Exception("Class $reference could not be registered as an extension. Please check that it implements the " . ModuleInterface::class . " interface.");
+                        throw new \Exception("Class $reference could not be registered as a module. Please check that it implements the " . ModuleInterface::class . " interface.");
                     }
                     
-                    $extension = $class->newInstanceWithoutConstructor();
+                    $module = $class->newInstanceWithoutConstructor();
 
-                    // Load extension services
-                    foreach ((array) $extension->getServices() as $resource) {
-                        $loader->load($resource);
-                    }
+                    dump($module);
+
+                    // // Load extension services
+                    // foreach ((array) $extension->getServices() as $resource) {
+                    //     $loader->load($resource);
+                    // }
                     
                     // Prepare extension for configuration
-                    $this->prepareExtension($extension, $container, $packageManagerDefinition, $package, $extensionConfigurations);
+                    $this->prepareModule($container, $package, $module, $metadata, $extensionConfigurations);
                 }
             }
+
+            die;
     
             // Delegate further configuration to service upon init.
             $packageManagerDefinition->addMethodCall('autoconfigure');
@@ -104,7 +114,7 @@ class BundleExtension extends Extension
         return $configs;
     }
 
-    private function prepareExtension(ModuleInterface $module, ContainerBuilder $container, Definition $packageManagerDefinition, array $package = [], array $availableConfigurations = [])
+    private function prepareModule(ContainerBuilder $container, Definition $package, ModuleInterface $module, array $metadata = [], array $configurations = [])
     {
         // Override module definition
         $moduleDefinition = $container->findDefinition(get_class($module));
@@ -124,17 +134,17 @@ class BundleExtension extends Extension
         $moduleConfiguration = $module->getConfiguration();
 
         if (!empty($moduleConfiguration)) {
-            $qualifiedName = str_replace('/', '_', $package['name']);
+            $qualifiedName = str_replace('/', '_', $metadata['name']);
 
-            if (empty($availableConfigurations[$qualifiedName])) {
-                throw new \Exception("No available configurations found for package '" . $package['name'] . "'");
+            if (empty($configurations[$qualifiedName])) {
+                throw new \Exception("No available configurations found for package '" . $metadata['name'] . "'");
             }
 
-            $params = $this->processConfiguration($moduleConfiguration, $availableConfigurations[$qualifiedName]);
+            $params = $this->processConfiguration($moduleConfiguration, $configurations[$qualifiedName]);
         }
 
-        $root = $container->getParameter("uvdesk_extensions.dir") . "/" . $package['name'];
-        $packageManagerDefinition->addMethodCall('configurePackage', array($root, $package, $params, new Reference($module->getPackageReference())));
+        $root = $container->getParameter("uvdesk_extensions.dir") . "/" . $metadata['name'];
+        $package->addMethodCall('configurePackage', array($root, $metadata, $params, new Reference($module->getPackageReference())));
 
         // Register available applications with the extension manager for auto init.
         foreach ($module->getApplicationReferences() as $reference) {
@@ -151,7 +161,7 @@ class BundleExtension extends Extension
                 ->setAutowired(true)
                 ->setAutoconfigured(false);
 
-            $packageManagerDefinition->addMethodCall('configureApplication', array(new Reference($reference), new Reference($module->getPackageReference())));
+            $package->addMethodCall('configureApplication', array(new Reference($reference), new Reference($module->getPackageReference())));
         }
     }
 }

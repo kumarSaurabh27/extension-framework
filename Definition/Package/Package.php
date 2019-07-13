@@ -1,28 +1,23 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Extensions;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package;
 
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
-use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentInterface;
 
-class PackageManager implements ExtendableComponentInterface
+class Package
 {
 	private $packages = [];
 	private $applications = [];
 	private $organizedCollection = [];
 
-	public function __construct(ContainerInterface $container, RequestStack $requestStack, RouterInterface $router)
+	public function __construct(ContainerInterface $container)
 	{
-		$this->router = $router;
 		$this->container = $container;
-		$this->requestStack = $requestStack;
 		$this->pathToPackageConfigurations = $container->getParameter("kernel.project_dir") . "/config/extensions";
 	}
 

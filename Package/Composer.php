@@ -11,8 +11,7 @@ class Composer extends ComposerPackageExtension
     {
         $composerPackage = new ComposerPackage();
         $composerPackage
-            ->movePackageConfig('config/packages/uvdesk_extensions.yaml', 'Templates/config.yaml')
-            ->movePackageConfig('config/routes/uvdesk_extensions.yaml', 'Templates/routes.yaml');
+            ->movePackageConfig('config/packages/uvdesk_extensions.yaml', 'Templates/config.yaml');
         
         return $composerPackage;
     }
