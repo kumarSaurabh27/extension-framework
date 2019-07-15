@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition;
+namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 
 abstract class ApplicationMetadata
 {

@@ -5,7 +5,9 @@ namespace Webkul\UVDesk\ExtensionFrameworkBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\ContainerExtension;
-use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\RoutingConfigurator;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\RoutingPass;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\PackagePass;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\ApplicationPass;
 
 class ExtensionFrameworkBundle extends Bundle
 {
@@ -18,6 +20,9 @@ class ExtensionFrameworkBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new RoutingConfigurator());
+        $container
+            ->addCompilerPass(new RoutingPass())
+            ->addCompilerPass(new PackagePass())
+            ->addCompilerPass(new ApplicationPass());
     }
 }

@@ -10,7 +10,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RoutingResourceInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExposedRoutingResourceInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ProtectedRoutingResourceInterface;
 
-class RoutingConfigurator implements CompilerPassInterface
+class RoutingPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {

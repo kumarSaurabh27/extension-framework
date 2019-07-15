@@ -6,7 +6,7 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Definition\RouterInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageManager;
 
 class RouteLoader extends Loader implements RouterInterface
 {
@@ -86,9 +86,9 @@ class RouteLoader extends Loader implements RouterInterface
             $routeCollection->addCollection($collection);
         }
 
-        dump($routeCollection);
-        dump($this->packageManager->getPackages());
-        die;
+        // dump($routeCollection);
+        // dump($this->packageManager->getPackages());
+        // die;
 
         return $routeCollection;
     }

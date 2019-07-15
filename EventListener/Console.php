@@ -9,7 +9,7 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Command as SymfonyFrameworkCommand;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageManager;
 
 class Console
 {

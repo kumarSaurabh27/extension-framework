@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\FilterControllerArgumentsEvent;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageManager;
 use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
 

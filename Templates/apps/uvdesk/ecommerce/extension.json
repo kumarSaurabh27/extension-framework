@@ -11,7 +11,7 @@
     "autoload": {
         "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\": "src/"
     },
-    "extensions": {
-        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommerce": ["all"]
+    "package": {
+        "UVDesk\\CommunityPackages\\UVDesk\\ECommerce\\ECommercePackage": ["all"]
     }
 }
