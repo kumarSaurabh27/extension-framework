@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\MappingResource;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\AppConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\PackageConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
@@ -47,10 +47,12 @@ class ContainerExtension extends Extension
         // Define services
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
-
+        
         // Compile modules
         $env = $container->getParameter('kernel.environment');
         $path = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";
+        $mappingResource = $container->findDefinition(MappingResource::class);
+        $packageConfigurations = $this->parsePackageConfigurations($container->getParameter("kernel.project_dir") . "/config/extensions");
 
         foreach ($this->getCachedPackages($path) as $attributes) {
             $reference = current(array_keys($attributes['package']));
@@ -64,17 +66,35 @@ class ContainerExtension extends Extension
                     throw new \Exception("Class $reference could not be registered as a package. Please check that it implements the " . PackageInterface::class . " interface.");
                 }
 
+                // @TODO: Check package configurations
+                $configuration = $class->newInstanceWithoutConstructor()->getConfiguration();
+
+                if (!empty($configuration)) {
+                    $qualifiedName = str_replace('/', '_', $attributes['name']);
+
+                    dump($configuration);
+                    dump($qualifiedName);
+                    die;
+
+                    // if (empty($availableConfigurations[$qualifiedName])) {
+                    //     throw new \Exception("No available configurations found for package '" . $attributes['name'] . "'");
+                    // }
+
+                    // $params = $this->processConfiguration($moduleConfiguration, $availableConfigurations[$qualifiedName]);
+                }
+
                 // Prepare package for configuration
-                // https://symfony.com/doc/current/service_container/configurators.html
-                $this->preparePackage($container, $loader, $class, $attributes);
+                $this->loadPackageServices($class->getFileName(), $loader);
+
+                if ($container->hasDefinition($reference)) {
+                    $mappingResource->addMethodCall('setMetadata', array($reference, $attributes));
+                }
             }
         }
 
         // Configure services
-        $container->registerForAutoconfiguration(PackageInterface::class)->addTag(PackageInterface::class);
-        $container->registerForAutoconfiguration(ApplicationInterface::class)->addTag(ApplicationInterface::class);
-        $container->registerForAutoconfiguration(PackageInterface::class)->setConfigurator([PackageConfigurator::class, 'configure']);
-        $container->registerForAutoconfiguration(ApplicationInterface::class)->setConfigurator([ApplicationConfigurator::class, 'configure']);
+        $container->registerForAutoconfiguration(PackageInterface::class)->addTag(PackageInterface::class)->setLazy(true)->setPublic(true);
+        $container->registerForAutoconfiguration(ApplicationInterface::class)->addTag(ApplicationInterface::class)->setLazy(true)->setPublic(true);
     }
 
     private function getCachedPackages($path) : array
@@ -89,15 +109,16 @@ class ContainerExtension extends Extension
         }
     }
 
-    private function parseConfigurations()
+    private function loadPackageServices($classPath, YamlFileLoader $loader)
     {
-        // $pathToConfigs = $container->getParameter("kernel.project_dir") . "/config/extensions";
+        $path = dirname($classPath) . "/Resources/config/services.yaml";
 
-        // $extensionConfigurations = $this->parseExtensionConfigurations($pathToConfigs);
-        return null;
+        if (file_exists($path)) {
+            $loader->load($path);
+        }
     }
 
-    private function parseExtensionConfigurations($prefix) : array
+    private function parsePackageConfigurations($prefix) : array
     {
         $configs = [];
 
@@ -112,55 +133,5 @@ class ContainerExtension extends Extension
         }
 
         return $configs;
-    }
-
-    private function preparePackage(ContainerBuilder $container, YamlFileLoader $services, \ReflectionClass $reflection, array $attributes)
-    {
-        $package = $reflection->newInstance();
-
-        // Process package configuration
-        // $configuration = $package->getConfiguration();
-
-        // if (!empty($configuration)) {
-        //     $qualifiedName = str_replace('/', '_', $metadata['name']);
-
-        //     if (empty($configurations[$qualifiedName])) {
-        //         throw new \Exception("No available configurations found for package '" . $metadata['name'] . "'");
-        //     }
-
-        //     $params = $this->processConfiguration($moduleConfiguration, $configurations[$qualifiedName]);
-        // }
-
-        // Load package services
-        $path = dirname($reflection->getFileName()) . "/Resources/config/services.yaml";
-
-        if (file_exists($path)) {
-            $services->load($path);
-        }
-
-        // Configure package
-        // $package = $module->getPackage();
-        // @TODO: Configure packages using configurator
-
-        // $root = $container->getParameter("uvdesk_extensions.dir") . "/" . $metadata['name'];
-        // $packageManager->addMethodCall('configurePackage', array($root, $metadata, $params, new Reference($module->getPackageReference())));
-
-        // // Register available applications with the extension manager for auto init.
-        // foreach ($module->getApplicationReferences() as $reference) {
-        //     $class = new \ReflectionClass($reference);
-
-        //     if (!$class->implementsInterface(ApplicationInterface::class) || !$class->implementsInterface(EventSubscriberInterface::class)) {
-        //         throw new \Exception("Class $reference could not be registered as an application. Please check that it implements both the " . ApplicationInterface::class . " and " . EventSubscriberInterface::class . " interfaces.");
-        //     }
-
-        //     // Override application definition
-        //     $applicationDefinition = $container->findDefinition($reference);
-        //     $applicationDefinition
-        //         ->setPrivate(true)
-        //         ->setAutowired(true)
-        //         ->setAutoconfigured(false);
-
-        //     $packageManager->addMethodCall('configureApplication', array(new Reference($reference), new Reference($module->getPackageReference())));
-        // }
     }
 }

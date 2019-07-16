@@ -3,10 +3,11 @@
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Applications;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\Application;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
 
-class ECommerceOrders extends Application implements EventSubscriberInterface
+class ECommerceOrders extends Application implements ApplicationInterface, EventSubscriberInterface
 {
     public static function getMetadata() : ApplicationMetadata
     {

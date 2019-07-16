@@ -7,15 +7,15 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\FilterControllerArgumentsEvent;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageManager;
 use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Utils\Applications;
 
 class Kernel
 {
-    public function __construct(PackageManager $packageManager)
+    public function __construct(Applications $applicationCollection)
     {
-        $this->packageManager = $packageManager;
+        $this->applicationCollection = $applicationCollection;
     }
 
     public function onKernelRequest(GetResponseEvent $event)
@@ -47,7 +47,7 @@ class Kernel
                         $package = $request->get('extension');
                         $name = $request->get('application');
 
-                        $application = $this->packageManager->getApplicationByAttributes($vendor, $package, $name);
+                        $application = $this->applicationCollection->getApplicationByAttributes($vendor, $package, $name);
 
                         if (!empty($application)) {
                             $args[] = $application;

@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Extensions\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Utils\Applications;
 
 class Dashboard extends Controller
 {
@@ -15,7 +15,7 @@ class Dashboard extends Controller
         return $this->render('@ExtensionFramework//dashboard.html.twig', []);
     }
 
-    public function applicationsXHR(Request $request)
+    public function applicationsXHR(Request $request, Applications $applications)
     {
         $collection = array_map(function ($application) {
             $metadata = $application->getMetadata();
@@ -31,7 +31,7 @@ class Dashboard extends Controller
                     'package' => $packageMetadata->getPackage(),
                 ],
             ];
-        }, $this->get('uvdesk.extensibles')->getRegisteredComponent(PackageManager::class)->getApplications());
+        }, $applications->getCollection());
 
         return new JsonResponse($collection);
     }

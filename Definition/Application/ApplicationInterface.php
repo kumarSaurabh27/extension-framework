@@ -2,6 +2,8 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
+
 interface ApplicationInterface
 {
     public static function getMetadata() : ApplicationMetadata;

@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Applications;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ApplicationMetadata;
 
 class ECommerceOrdersMetadata extends ApplicationMetadata
 {

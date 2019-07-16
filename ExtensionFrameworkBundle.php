@@ -6,8 +6,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\ContainerExtension;
 use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\RoutingPass;
-use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\PackagePass;
-use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\ApplicationPass;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\ConfigurationPass;
+use Webkul\UVDesk\ExtensionFrameworkBundle\DependencyInjection\Passes\TwigPaths;
 
 class ExtensionFrameworkBundle extends Bundle
 {
@@ -22,7 +22,7 @@ class ExtensionFrameworkBundle extends Bundle
 
         $container
             ->addCompilerPass(new RoutingPass())
-            ->addCompilerPass(new PackagePass())
-            ->addCompilerPass(new ApplicationPass());
+            ->addCompilerPass(new ConfigurationPass())
+            ->addCompilerPass(new TwigPaths());
     }
 }

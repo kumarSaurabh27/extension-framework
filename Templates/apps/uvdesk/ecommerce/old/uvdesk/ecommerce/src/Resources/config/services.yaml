@@ -6,4 +6,5 @@ services:
     
     UVDesk\CommunityPackages\UVDesk\ECommerce\:
         resource: '../../*'
-        # exclude: '../../{Scripts}'
+        exclude: '../../{Scripts}'
+    

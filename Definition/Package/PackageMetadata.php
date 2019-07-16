@@ -34,9 +34,9 @@ class PackageMetadata
                     case 'autoload':
                         $this->setDefinedNamespaces($value);
                         break;
-                    case 'extensions':
-                        foreach ($value as $extensionReference => $env) {
-                            $this->addExtensionReference($extensionReference, $env);
+                    case 'package':
+                        foreach ($value as $reference => $env) {
+                            $this->addPackageReference($reference, $env);
                         }
 
                         break;
@@ -125,15 +125,15 @@ class PackageMetadata
         return $this->definedNamespaces;
     }
 
-    public function addExtensionReference($extensionReference, $env)
+    public function addPackageReference($reference, $env)
     {
-        $this->extensionReference[$extensionReference] = $env;
+        $this->packageReference[$reference] = $env;
 
         return $this;
     }
 
-    public function getExtensionReferences()
+    public function getPackageReferences()
     {
-        return $this->extensionReference;
+        return $this->packageReference;
     }
 }

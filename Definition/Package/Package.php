@@ -6,6 +6,9 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 abstract class Package implements PackageInterface
 {
+    protected $configs;
+    protected $metadata;
+
     final public function setMetadata(PackageMetadata $metadata) : PackageInterface
 	{
         $this->metadata = $metadata;

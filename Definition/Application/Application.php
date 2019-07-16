@@ -3,9 +3,12 @@
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
 
 abstract class Application implements ApplicationInterface, EventSubscriberInterface
 {
+    protected $package;
+
     public static abstract function getMetadata() : ApplicationMetadata;
 
     public static abstract function getSubscribedEvents();
