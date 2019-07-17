@@ -75,8 +75,8 @@
 	</script>
 
 	<script id="application_list_item_tmp" type="text/template">
-		<% pathToApplication = "{{ path('uvdesk_extensions_standalone_application_dashboard', {'vendor': 'rep_v', 'extension': 'rep_e', 'application': 'rep_a'}) }}" %>
-		<% pathToApplication = pathToApplication.replace('rep_v', reference.vendor).replace('rep_e', reference.package).replace('rep_a', qname) %>
+		<% pathToApplication = "{{ path('uvdesk_extensions_standalone_application_dashboard', {'vendor': 'rep_v', 'package': 'rep_e', 'qualifiedName': 'rep_q'}) }}" %>
+		<% pathToApplication = pathToApplication.replace('rep_v', reference.vendor).replace('rep_e', reference.package).replace('rep_q', qname) %>
 
 		<a href="<%= pathToApplication %>">
 			<div class="uv-app-banner"><%= icon %></div>

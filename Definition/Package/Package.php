@@ -2,11 +2,8 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package;
 
-use Symfony\Component\Config\Definition\ConfigurationInterface;
-
 abstract class Package implements PackageInterface
 {
-    protected $configs;
     protected $metadata;
 
     final public function setMetadata(PackageMetadata $metadata) : PackageInterface
@@ -19,22 +16,5 @@ abstract class Package implements PackageInterface
     final public function getMetadata() : PackageMetadata
     {
         return $this->metadata;
-    }
-
-    final public function setConfigurations(array $configs = [])  : PackageInterface
-    {
-        $this->configs = $configs;
-
-        return $this;
-    }
-
-    final public function getConfigurations() : array
-    {
-        return $this->configs;
-    }
-
-    public function getConfiguration() : ?ConfigurationInterface
-    {
-        return null;
     }
 }

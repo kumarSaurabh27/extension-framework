@@ -12,9 +12,14 @@ class MappingResource
         $this->packages[$id]['tags'] = $tags;
     }
 
-    public function setMetadata($id, array $metadata)
+    public function setPackageMetadata($id, array $metadata)
     {
         $this->packages[$id]['metadata'] = $metadata;
+    }
+
+    public function setPackageConfigurations($id, array $configurations)
+    {
+        $this->packages[$id]['configurations'] = $configurations;
     }
 
     public function setApplication($id, array $tags)

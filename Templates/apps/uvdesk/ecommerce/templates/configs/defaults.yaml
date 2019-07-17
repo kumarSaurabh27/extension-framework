@@ -1,0 +1,4 @@
+uvdesk_ecommerce:
+    shopify:
+        # Configure your shopify stores here
+        stores: ~

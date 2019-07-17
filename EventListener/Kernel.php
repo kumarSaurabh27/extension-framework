@@ -4,24 +4,30 @@ namespace Webkul\UVDesk\ExtensionFrameworkBundle\EventListener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Event\FilterControllerArgumentsEvent;
-use Webkul\UVDesk\CoreFrameworkBundle\Framework\ExtendableComponentManager;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Utils\Applications;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\MappingResource;
 
 class Kernel
 {
-    public function __construct(Applications $applicationCollection)
+    private $isTwigConfigured = false;
+
+    public function __construct(ContainerInterface $container, MappingResource $mappingResource)
     {
-        $this->applicationCollection = $applicationCollection;
+        $this->container = $container;
+        $this->mappingResource = $mappingResource;
     }
 
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
+        }
+
+        if ('GET' === strtoupper($event->getRequest()->getMethod())) {
+            $this->configureTwigResources();
         }
     }
 
@@ -31,36 +37,59 @@ class Kernel
             return;
         }
 
-        $request = $event->getRequest();
-        list($class, $method) = explode('::', $request->get('_controller'));
+        // $request = $event->getRequest();
+        // list($class, $method) = explode('::', $request->get('_controller'));
 
-        $reflectionClass = new \ReflectionClass($class);
+        // $reflectionClass = new \ReflectionClass($class);
         
-        if ($reflectionClass->hasMethod($method)) {
-            $args = [];
-            $controllerArguments = $event->getArguments();
+        // if ($reflectionClass->hasMethod($method)) {
+        //     $args = [];
+        //     $controllerArguments = $event->getArguments();
 
-            foreach ($reflectionClass->getMethod($method)->getParameters() as $index => $parameter) {
-                if ($parameter->getType() != null && ApplicationInterface::class === $parameter->getType()->getName()) {
-                    if (false === (bool) ($controllerArguments[$index] instanceof ApplicationInterface)) {
-                        $vendor = $request->get('vendor');
-                        $package = $request->get('extension');
-                        $name = $request->get('application');
+        //     foreach ($reflectionClass->getMethod($method)->getParameters() as $index => $parameter) {
+        //         if ($parameter->getType() != null && ApplicationInterface::class === $parameter->getType()->getName()) {
+        //             if (false === (bool) ($controllerArguments[$index] instanceof ApplicationInterface)) {
+        //                 $vendor = $request->get('vendor');
+        //                 $package = $request->get('extension');
+        //                 $name = $request->get('application');
 
-                        $application = $this->applicationCollection->getApplicationByAttributes($vendor, $package, $name);
+        //                 $application = $this->applicationCollection->findApplicationByFullyQualifiedName($vendor, $package, $name);
 
-                        if (!empty($application)) {
-                            $args[] = $application;
+        //                 if (!empty($application)) {
+        //                     $args[] = $application;
 
-                            continue;
-                        }
-                    }
-                }
+        //                     continue;
+        //                 }
+        //             }
+        //         }
                 
-                $args[] = $controllerArguments[$index];
-            }
+        //         $args[] = $controllerArguments[$index];
+        //     }
 
-            $event->setArguments($args);
+        //     $event->setArguments($args);
+        // }
+    }
+
+    private function configureTwigResources()
+    {
+        if ($this->isTwigConfigured) {
+            return $this;
         }
+
+        $twig = $this->container->get('uvdesk_extension.twig_loader');
+
+        foreach ($this->mappingResource->getPackages() as $id => $attributes) {
+            $class = new \ReflectionClass($id);
+            $resources = dirname($class->getFileName()) . "/Resources/views";
+
+            list($vendor, $package) = explode('/', $attributes['metadata']['name']);
+
+            if (is_dir($resources)) {
+                $twig->addPath($resources, sprintf("_uvdesk_extension_%s_%s", $vendor, $package));
+            }
+        }
+
+        $this->isTwigConfigured = true;
+        return $this;
     }
 }

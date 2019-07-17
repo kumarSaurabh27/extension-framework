@@ -15,6 +15,7 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\AppConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\PackageConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\ConfigurablePackageInterface;
 
 // use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RoutingResourceInterface;
 // use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
@@ -52,8 +53,8 @@ class ContainerExtension extends Extension
         $env = $container->getParameter('kernel.environment');
         $path = $container->getParameter("kernel.project_dir") . "/uvdesk.lock";
         $mappingResource = $container->findDefinition(MappingResource::class);
-        $packageConfigurations = $this->parsePackageConfigurations($container->getParameter("kernel.project_dir") . "/config/extensions");
-
+        $availableConfigurations = $this->parsePackageConfigurations($container->getParameter("kernel.project_dir") . "/config/extensions");
+        
         foreach ($this->getCachedPackages($path) as $attributes) {
             $reference = current(array_keys($attributes['package']));
             $supportedEnvironments = $attributes['package'][$reference];
@@ -66,30 +67,39 @@ class ContainerExtension extends Extension
                     throw new \Exception("Class $reference could not be registered as a package. Please check that it implements the " . PackageInterface::class . " interface.");
                 }
 
-                // @TODO: Check package configurations
-                $configuration = $class->newInstanceWithoutConstructor()->getConfiguration();
+                if ($class->implementsInterface(ConfigurablePackageInterface::class)) {
+                    $schema = $class->newInstanceWithoutConstructor()->getConfiguration();
 
-                if (!empty($configuration)) {
-                    $qualifiedName = str_replace('/', '_', $attributes['name']);
+                    if (!empty($schema)) {
+                        $qualifiedName = str_replace('/', '_', $attributes['name']);
+    
+                        if (empty($availableConfigurations[$qualifiedName])) {
+                            throw new \Exception("No available configurations found for package '" . $attributes['name'] . "'");
+                        }
 
-                    dump($configuration);
-                    dump($qualifiedName);
-                    die;
+                        // Validate package configuration params
+                        $packageConfigurations = $this->processConfiguration($schema, $availableConfigurations[$qualifiedName]);
 
-                    // if (empty($availableConfigurations[$qualifiedName])) {
-                    //     throw new \Exception("No available configurations found for package '" . $attributes['name'] . "'");
-                    // }
-
-                    // $params = $this->processConfiguration($moduleConfiguration, $availableConfigurations[$qualifiedName]);
+                        // Unset and cache package params for later re-use
+                        unset($availableConfigurations[$qualifiedName]);
+                        $mappingResource->addMethodCall('setPackageConfigurations', array($reference, $packageConfigurations));
+                    }
                 }
 
                 // Prepare package for configuration
                 $this->loadPackageServices($class->getFileName(), $loader);
 
                 if ($container->hasDefinition($reference)) {
-                    $mappingResource->addMethodCall('setMetadata', array($reference, $attributes));
+                    $mappingResource->addMethodCall('setPackageMetadata', array($reference, $attributes));
                 }
             }
+        }
+
+        if (!empty($availableConfigurations)) {
+            // @TODO: Raise exception about invalid configurations
+            dump('Invalid configurations found');
+            dump($availableConfigurations);
+            die;
         }
 
         // Configure services

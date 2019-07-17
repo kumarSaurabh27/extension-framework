@@ -32,7 +32,6 @@ class Configurator
 		}
 
 		$root = $this->container->getParameter("uvdesk_extensions.dir") . "/" . $attributes['metadata']['name'];
-		$config = $this->container->getParameter("kernel.project_dir") . "/config/extensions/" . str_replace('/', '_', $attributes['metadata']['name']) . ".yaml";
 
 		$metadata
 			->setRoot($root)
@@ -46,10 +45,12 @@ class Configurator
 		}
 
 		$package->setMetadata($metadata);
-		// $package->setConfigurations($configs);
 
 		if ($package instanceof ConfigurablePackageInterface) {
-			$package->setPathToConfigurationFile($config);
+			$configurationFilepath = $this->container->getParameter("kernel.project_dir") . "/config/extensions/" . str_replace('/', '_', $attributes['metadata']['name']) . ".yaml";
+
+			$package->setConfigurationFilepath($configurationFilepath);
+			$package->setConfigurationParameters($attributes['configurations']);
 		}
 	}
 	

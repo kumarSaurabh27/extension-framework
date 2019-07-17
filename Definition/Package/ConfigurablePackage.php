@@ -2,20 +2,44 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package;
 
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+
 abstract class ConfigurablePackage extends Package implements ConfigurablePackageInterface
 {
-    protected $pathToConfigurationFile;
+    protected $configurationFilepath;
+    protected $configurationParameters = [];
 
-    public function setPathToConfigurationFile(string $pathToConfigurationFile) : void
+    public function getConfiguration() : ?ConfigurationInterface
     {
-        if (empty($this->pathToConfigurationFile)) {
-            $this->pathToConfigurationFile = $pathToConfigurationFile;
-        }
+        return null;
     }
 
-    public function getPathToConfigurationFile() : string
+    final public function setConfigurationFilepath(string $configurationFilepath) : ConfigurablePackageInterface
     {
-        return $this->pathToConfigurationFile;
+        if (empty($this->configurationFilepath)) {
+            $this->configurationFilepath = $configurationFilepath;
+        }
+
+        return $this;
+    }
+
+    final public function getConfigurationFilepath() : string
+    {
+        return $this->configurationFilepath;
+    }
+
+    final public function setConfigurationParameters(array $configurationParameters) : ConfigurablePackageInterface
+    {
+        if (empty($this->configurationParameters)) {
+            $this->configurationParameters = $configurationParameters;
+        }
+
+        return $this;
+    }
+
+    final public function getConfigurationParameters() : array
+    {
+        return $this->configurationParameters;
     }
 
     public function install() : void
@@ -23,12 +47,12 @@ abstract class ConfigurablePackage extends Package implements ConfigurablePackag
         return;
     }
 
-    public function updatePackageConfiguration(string $content) : void
-    {
-        if (empty($content)) {
-            throw new \Exception('Configuration file cannot be empty');
-        }
+    // public function updatePackageConfiguration(string $content) : void
+    // {
+    //     if (empty($content)) {
+    //         throw new \Exception('Configuration file cannot be empty');
+    //     }
 
-        file_put_contents($this->getPathToConfigurationFile(), $content);
-    }
+    //     file_put_contents($this->getPathToConfigurationFile(), $content);
+    // }
 }

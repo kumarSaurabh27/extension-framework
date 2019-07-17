@@ -9,16 +9,16 @@ uvdesk_extensions_applications_dashboard_xhr:
     methods: [GET, POST]
 
 uvdesk_extensions_standalone_application_dashboard:
-    path:     /apps/{vendor}/{extension}/{application}
+    path:     /apps/{vendor}/{package}/{qualifiedName}
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::dashboard
 
 uvdesk_extensions_standalone_application_api_endpoint:
-    path:     /apps/{vendor}/{extension}/{application}/api
+    path:     /apps/{vendor}/{package}/{qualifiedName}/api
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::apiEndpointXHR
     methods: [GET, POST, PUT]
 
 uvdesk_extensions_standalone_application_callback_endpoint:
-    path:     /apps/{vendor}/{extension}/{application}/callback
+    path:     /apps/{vendor}/{package}/{qualifiedName}/callback
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::callbackEndpointXHR
     methods: [GET, POST]
 

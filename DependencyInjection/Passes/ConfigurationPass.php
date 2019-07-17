@@ -9,6 +9,8 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\Configurator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Utils\PackageCollection;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Utils\ApplicationCollection;
 
 class ConfigurationPass implements CompilerPassInterface
 {
@@ -33,6 +35,16 @@ class ConfigurationPass implements CompilerPassInterface
             }
 
             $container->findDefinition(Configurator::class)->addMethodCall('autoconfigure');
+        }
+
+        if ($container->has(PackageCollection::class)) {
+            $packageCollectionDefinition = $container->findDefinition(PackageCollection::class);
+            $packageCollectionDefinition->setLazy(true)->addMethodCall('organizeCollection');
+        }
+
+        if ($container->has(ApplicationCollection::class)) {
+            $packageCollectionDefinition = $container->findDefinition(ApplicationCollection::class);
+            $packageCollectionDefinition->setLazy(true)->addMethodCall('organizeCollection')->setLazy(true);
         }
     }
 }

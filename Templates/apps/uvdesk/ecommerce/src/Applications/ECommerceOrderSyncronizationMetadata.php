@@ -4,11 +4,11 @@ namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Applications;
 
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationMetadata;
 
-class ECommerceOrdersMetadata extends ApplicationMetadata
+class ECommerceOrderSyncronizationMetadata extends ApplicationMetadata
 {
     public function getName() : string
     {
-        return "ECommerce";
+        return "ECommerce Order Syncronization";
     }
 
     public function getSummary() : string
@@ -23,11 +23,11 @@ class ECommerceOrdersMetadata extends ApplicationMetadata
 
     public function getQualifiedName() : string
     {
-        return "ecommerce-orders";
+        return "order-syncronization";
     }
 
     public function getDashboardTemplate() : string
     {
-        return '@_uvdesk_extension_uvdesk_ecommerce/apps/ecommerce-orders/dashboard.html.twig';
+        return '@_uvdesk_extension_uvdesk_ecommerce/apps/order-syncronization/dashboard.html.twig';
     }
 }
