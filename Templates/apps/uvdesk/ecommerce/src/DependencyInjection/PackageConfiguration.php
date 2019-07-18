@@ -14,7 +14,7 @@ class PackageConfiguration implements ConfigurationInterface
             ->children()
                 ->node('shopify', 'array')
                     ->children()
-                        ->node('stores', 'array')
+                        ->node('channels', 'array')
                             ->arrayPrototype()
                                 ->children()
                                     ->node('id', 'scalar')->cannotBeEmpty()->end()

@@ -1,12 +1,14 @@
 <?php
 
-namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\Platforms\Shopify;
+namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\Platforms;
 
+use UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\ECommerceChannelInterface;
 use UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\Api\Admin\StoreProperties\Shop;
-use UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\ECommerceChannelConfigurationInterface;
 
-class ChannelConfiguration implements ECommerceChannelConfigurationInterface
+class ShopifyECommerceChannel implements ECommerceChannelInterface
 {
+    const TEMPLATE = __DIR__ . "/../../../templates/configs/shopify/store-template.php";
+
     private $id;
     private $name;
     private $domain;
@@ -150,7 +152,7 @@ class ChannelConfiguration implements ECommerceChannelConfigurationInterface
 
     public function __toString()
     {
-        $template = require __DIR__ . "/../../../templates/configs/store-configuration.php";
+        $template = require self::TEMPLATE;
 
         return strtr($template, [
             '[[ id ]]' => $this->getId(),

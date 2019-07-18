@@ -47,12 +47,12 @@ abstract class ConfigurablePackage extends Package implements ConfigurablePackag
         return;
     }
 
-    // public function updatePackageConfiguration(string $content) : void
-    // {
-    //     if (empty($content)) {
-    //         throw new \Exception('Configuration file cannot be empty');
-    //     }
+    public function updatePackageConfiguration(string $content) : void
+    {
+        if (empty($content)) {
+            throw new \Exception('Configuration file cannot be empty');
+        }
 
-    //     file_put_contents($this->getPathToConfigurationFile(), $content);
-    // }
+        file_put_contents($this->getConfigurationFilepath(), $content);
+    }
 }
