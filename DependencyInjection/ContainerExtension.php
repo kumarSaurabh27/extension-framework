@@ -117,8 +117,9 @@ class ContainerExtension extends Extension
             }
         } catch (\Exception $e) {
             // Skip module compilation ...
-            return [];
         }
+
+        return [];
     }
 
     private function loadPackageServices($classPath, YamlFileLoader $loader)
