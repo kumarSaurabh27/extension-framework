@@ -88,6 +88,17 @@ class ShopifyECommercePlatform implements ECommercePlatformInterface
         return $eCommerceChannel;
     }
 
+    public function getECommerceChannel($id) : ?ECommerceChannelInterface
+    {
+        foreach ($this->collection as $eCommerceChannel) {
+            if ($eCommerceChannel->getId() == $id) {
+                return $eCommerceChannel;
+            }
+        }
+
+        return null;
+    }
+
     public function getECommerceChannelCollection() : array
     {
         return array_values($this->collection);

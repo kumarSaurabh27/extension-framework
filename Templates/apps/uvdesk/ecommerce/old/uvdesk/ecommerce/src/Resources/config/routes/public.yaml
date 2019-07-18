@@ -1,3 +1,0 @@
-akshay_shopify_ecommerce_public:
-    path:     test
-    controller: UVDesk\CommunityPackages\UVDesk\ECommerce\Controller\Test::public

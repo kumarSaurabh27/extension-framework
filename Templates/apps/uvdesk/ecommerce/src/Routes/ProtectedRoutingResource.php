@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Routes;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ProtectedRoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ProtectedRoutingResourceInterface;
 
 class ProtectedRoutingResource implements ProtectedRoutingResourceInterface
 {

@@ -2,9 +2,11 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Widgets;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment as TwigEnvironment;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Webkul\UVDesk\CoreFrameworkBundle\Widgets\TicketWidgetInterface;
+use UVDesk\CommunityPackages\UVDesk\ECommerce\Utils\ECommerceConfiguration;
 
 class ECommerceOrders implements TicketWidgetInterface
 {
@@ -14,10 +16,12 @@ class ECommerceOrders implements TicketWidgetInterface
 </svg>
 SVG;
 
-    public function __construct(RequestStack $requestStack, TwigEnvironment $twig)
+    public function __construct(RequestStack $requestStack, TwigEnvironment $twig, ECommerceConfiguration $eCommerceConfiguration, EntityManagerInterface $entityManager)
     {
         $this->twig = $twig;
         $this->requestStack = $requestStack;
+        $this->eCommerceConfiguration = $eCommerceConfiguration;
+        $this->entityManager = $entityManager;
     }
 
     public static function getIcon()
@@ -37,10 +41,30 @@ SVG;
 
     public function getTemplate()
     {
+        $eCommerceChannelCollection = [];
         $request = $this->requestStack->getCurrentRequest();
 
-        return $this->twig->render('@_uvdesk_extension_uvdesk_ecommerce/apps/ecommerce-orders/widget.html.twig', [
-            'id' => $request->get('ticketId')
+        foreach ($this->eCommerceConfiguration->getECommercePlatforms() as $eCommercePlatform) {
+            foreach ($eCommercePlatform->getECommerceChannelCollection() as $eCommerceChannel) {
+                $eCommerceChannelCollection[] = [
+                    'id' => $eCommerceChannel->getId(),
+                    'name' => $eCommerceChannel->getName(),
+                    'platform' => [
+                        'id' => $eCommercePlatform->getQualifiedName(),
+                        'name' => $eCommercePlatform->getName(),
+                    ],
+                ];
+            }
+        }
+
+        $ticketId = $request->get('ticketId');
+        $ticket = $this->entityManager->getRepository('CoreFrameworkBundle:Ticket')->findOneById($ticketId);
+        $eCommerceOrders = $this->entityManager->getRepository('UVDeskECommercePackage:ECommerceOrder')->findByTicket($ticket);
+
+        return $this->twig->render('@_uvdesk_extension_uvdesk_ecommerce/widgets/ecommerce-orders/widget.html.twig', [
+            'id' => $request->get('ticketId'),
+            'eCommerceChannelCollection' => $eCommerceChannelCollection,
+            'eCommerceOrders' => !empty($eCommerceOrders) ? current($eCommerceOrders)->getOrderDetails() : null,
         ]);
     }
 }

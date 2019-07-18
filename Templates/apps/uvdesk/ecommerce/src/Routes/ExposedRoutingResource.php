@@ -2,7 +2,7 @@
 
 namespace UVDesk\CommunityPackages\UVDesk\ECommerce\Routes;
 
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExposedRoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ExposedRoutingResourceInterface;
 
 class ExposedRoutingResource implements ExposedRoutingResourceInterface
 {
