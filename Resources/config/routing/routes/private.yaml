@@ -22,13 +22,6 @@ uvdesk_extensions_standalone_application_callback_endpoint:
     controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\Application::callbackEndpointXHR
     methods: [GET, POST]
 
-ecommerce_channel_retrieve_order:
-    path:     /ticket/{ticketId}/addorder
-    controller: Webkul\UVDesk\ExtensionFrameworkBundle\Controller\ECommerce::fetchOrderDetails
-    methods: [POST,PUT]
-    requirements:
-        ticketId: '\d+'
-
 # # Base application routes
 # app_save_application_channel:
 #     path:     /apps/{applicationRouteName}/channel/save/{channelId}

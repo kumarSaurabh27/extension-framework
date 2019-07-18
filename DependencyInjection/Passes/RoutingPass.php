@@ -6,9 +6,9 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RouteLoader;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RoutingResourceInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExposedRoutingResourceInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ProtectedRoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\RoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ExposedRoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ProtectedRoutingResourceInterface;
 
 class RoutingPass implements CompilerPassInterface
 {

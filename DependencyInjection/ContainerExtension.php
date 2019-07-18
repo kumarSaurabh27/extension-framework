@@ -14,12 +14,11 @@ use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\MappingResource;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\AppConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Configurators\PackageConfigurator;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\RoutingResourceInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Application\ApplicationInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\ConfigurablePackageInterface;
 use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\ContainerBuilderAwarePackageInterface;
 
-// use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\RoutingResourceInterface;
-// use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
 
 class ContainerExtension extends Extension
 {
@@ -107,6 +106,7 @@ class ContainerExtension extends Extension
         $container->registerForAutoconfiguration(PackageInterface::class)->addTag(PackageInterface::class)->setLazy(true)->setPublic(true);
         $container->registerForAutoconfiguration(ApplicationInterface::class)->addTag(ApplicationInterface::class)->setLazy(true)->setPublic(true);
         $container->registerForAutoconfiguration(ContainerBuilderAwarePackageInterface::class)->addTag(ContainerBuilderAwarePackageInterface::class);
+        $container->registerForAutoconfiguration(RoutingResourceInterface::class)->addTag(RoutingResourceInterface::class);
     }
 
     private function getCachedPackages($path) : array

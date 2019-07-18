@@ -6,7 +6,9 @@ use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Webkul\UVDesk\CoreFrameworkBundle\Definition\RouterInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageManager;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\RoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ExposedRoutingResourceInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Routing\ProtectedRoutingResourceInterface;
 
 class RouteLoader extends Loader implements RouterInterface
 {
@@ -16,10 +18,9 @@ class RouteLoader extends Loader implements RouterInterface
     private $exposedRoutingResources = [];
     private $protectedRoutingResources = [];
     
-    public function __construct(ContainerInterface $container, PackageManager $packageManager)
+    public function __construct(ContainerInterface $container)
 	{
         $this->env = $container->get('kernel')->getEnvironment();
-        $this->packageManager = $packageManager;
     }
 
     public function addExposedRoutingResource(ExposedRoutingResourceInterface $routingResource, array $tags = [])
@@ -85,10 +86,6 @@ class RouteLoader extends Loader implements RouterInterface
 
             $routeCollection->addCollection($collection);
         }
-
-        // dump($routeCollection);
-        // dump($this->packageManager->getPackages());
-        // die;
 
         return $routeCollection;
     }
