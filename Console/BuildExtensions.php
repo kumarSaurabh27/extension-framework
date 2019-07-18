@@ -3,17 +3,12 @@
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Console;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\PackageMetadata;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ModuleInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackage;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ExecutablePackageInterface;
-use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\ConfigurablePackageInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageMetadata;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\PackageInterface;
+use Webkul\UVDesk\ExtensionFrameworkBundle\Definition\Package\ConfigurablePackageInterface;
 
 class BuildExtensions extends Command
 {
@@ -94,7 +89,7 @@ class BuildExtensions extends Command
                     'description' => $packageMetadata->getDescription(),
                     'type' => $packageMetadata->getType(),
                     'autoload' => $packageMetadata->getDefinedNamespaces(),
-                    'extensions' => $packageMetadata->getExtensionReferences(),
+                    'package' => $packageMetadata->getPackageReferences(),
                 ];;
             }, $metadata),
         ];
@@ -175,20 +170,20 @@ class BuildExtensions extends Command
         }
 
         foreach ($metadata as $packageMetadata) {
-            $class = current(array_keys($packageMetadata->getExtensionReferences()));
-            $reflectionClass = $this->getUnloadedReflectionClass($class, $packageMetadata);
+            $class = current(array_keys($packageMetadata->getPackageReferences()));
+            $packageReflectionClass = $this->getUnloadedReflectionClass($class, $packageMetadata);
             
-            if (!$reflectionClass->implementsInterface(ModuleInterface::class)) {
-                throw new \Exception("Class $class could not be registered as an extension. Please check that it implements the " . ModuleInterface::class . " interface.");
+            if (!$packageReflectionClass->implementsInterface(PackageInterface::class)) {
+                throw new \Exception("Class $class could not be registered as an package. Please check that it implements the " . PackageInterface::class . " interface.");
             }
-
-            $extension = $reflectionClass->newInstance();
-            $packageReflectionClass = $this->getUnloadedReflectionClass($extension->getPackageReference(), $packageMetadata);
 
             if ($packageReflectionClass->implementsInterface(ConfigurablePackageInterface::class)) {
                 $configurablePackage = $packageReflectionClass->newInstanceWithoutConstructor();
-                $configurablePackage->setPathToConfigurationFile($pathToConfig . "/" . str_replace('/', '_', $packageMetadata->getName()) . ".yaml");
-                $configurablePackage->install();
+                $configurablePackage->setConfigurationFilepath($pathToConfig . "/" . str_replace('/', '_', $packageMetadata->getName()) . ".yaml");
+
+                if (!file_exists($configurablePackage->getConfigurationFilepath()) || is_dir($configurablePackage->getConfigurationFilepath())) {
+                    $configurablePackage->install();
+                }
             }
         }
     }

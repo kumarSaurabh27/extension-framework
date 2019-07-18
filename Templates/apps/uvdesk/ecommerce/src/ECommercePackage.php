@@ -32,6 +32,8 @@ class ECommercePackage extends ConfigurablePackage implements ConfigurablePackag
 
     public function install() : void
     {
-        $this->updatePackageConfiguration(file_get_contents(__DIR__ . "/../templates/configs/defaults.yaml"));
+        $template = file_get_contents(__DIR__ . "/../templates/configs/defaults.yaml");
+
+        $this->updatePackageConfiguration($template);
     }
 }
