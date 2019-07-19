@@ -99,50 +99,52 @@
 </template>
 
 <template id="uvdesk-order-syncronization-manage-store-form-template">
-    <div class="form-element">
-        <label>Domain :</label>
-        <div class="form-field">
-            <p class="form-field-info">Your Shopify Store Name</p>
-            <input name="domain" class="uv-field" type="text" placeholder="example.myshopify.com" value="<%= channelDetails.name %>">
+    <form id="uv-channel-action-form">
+        <div class="form-element">
+            <label>Domain :</label>
+            <div class="form-field">
+                <p class="form-field-info">Your Shopify Store Name</p>
+                <input name="domain" class="uv-field" type="text" placeholder="example.myshopify.com" value="<%= channelDetails.domain %>">
+            </div>
         </div>
-    </div>
 
-    <div class="form-element">
-        <label>API Key :</label>
-        <div class="form-field">
-            <p class="form-field-info">Enter your shopify api key</p>
-            <input name="api_key" class="uv-field" type="password" placeholder="" value="<%= channelDetails.name %>">
+        <div class="form-element">
+            <label>API Key :</label>
+            <div class="form-field">
+                <p class="form-field-info">Enter your shopify api key</p>
+                <input name="api_key" class="uv-field" type="password" placeholder="" value="<%= channelDetails.apiKey %>">
+            </div>
         </div>
-    </div>
 
-    <div class="form-element">
-        <label>API Password :</label>
-        <div class="form-field">
-            <p class="form-field-info">Enter your shopify api password</p>
-            <input name="api_password" class="uv-field" type="password" placeholder="" value="<%= channelDetails.name %>">
+        <div class="form-element">
+            <label>API Password :</label>
+            <div class="form-field">
+                <p class="form-field-info">Enter your shopify api password</p>
+                <input name="api_password" class="uv-field" type="password" placeholder="" value="<%= channelDetails.apiPassword %>">
+            </div>
         </div>
-    </div>
 
-    <div class="uv-action-buttons">
-        <input type="submit" class="form-field uv-btn" id="save-channel" value="Add Store">
-        <input type="button" class="form-field uv-btn cancel" id="cancel" value="Cancel">
-    </div>
+        <div class="uv-action-buttons" id="<%= channelDetails.channelIndex %>">
+            <input type="submit" class="form-field uv-btn" id="save-channel" value="Add Store">
+            <input type="button" class="form-field uv-btn cancel" id="cancel" value="Cancel">
+        </div>
+    </form>
 </template>
 
 <template id="uvdesk-order-syncronization-manage-stores">
-    <% if (platform.addedChannels.length == 0) { %>
+    <% if (platform.channels.length == 0) { %>
         <div class="uv-no-channel-content">No Channels Added Yet</div>
     <% } else { %>
         <div class="channel-list">
-            <% _.each(platform.addedChannels, function(channel, index) { %>
+            <% _.each(platform.channels, function(channel, index) { %>
                 <div class="uv-app-list-brick">
                     <div class="uv-app-list-brick-lt">
                       <span class="uv-channel-count">#<%= index + 1 %></span>
                     </div>
                     <div class="uv-app-list-brick-rt">
-                        <label><%= channel.name %></label  >
+                        <label><%= channel.name %></label>
                         <p>
-                            <span class="uv-app-list-flag-active"><%= channel.status ? 'Active' : 'Inactive' %></span>
+                            <span class="uv-app-list-flag-<%= channel.enabled ? 'active': 'inactive' %>"><%= channel.enabled ? 'Active' : 'Inactive' %></span>
                         </p>
                         <div class="uv-app-list-actions" id="<%= index %>">
                             <span class="edit-channel">Edit</span>
@@ -156,19 +158,25 @@
 </template>
 
 <template id="uvdesk-platform-accordion-template">
-    <div class="uv-accordion-container">
-        <% _.each(platformsCollection, function(platform, index) { %>
-            <div class="uv-extension-accordion-view" id="<%= index %>">
-                <div id="uv-accordion-btn-<%= platform.id %>">
-                    <button><%= platform.platformTitle %></button>
-                    <span class="uv-accordion-arrow right"></span>
+    <div class="uv-app-view-wrapper">
+        <header>
+            <h1>ECommerce App</h1>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley .</p>
+        </header>
+        <div class="uv-accordion-container">
+            <% _.each(platformsCollection, function(platform, index) { %>
+                <div class="uv-extension-accordion-view" id="<%= index %>">
+                    <div id="uv-accordion-btn-<%= index %>">
+                        <button><%= platform.title %></button>
+                        <span class="uv-accordion-arrow right"></span>
+                    </div>
+                    <div class="uv-accordion-description-container">
+                        <p class="uv-accordion-description"><%= platform.description %></button>
+                        <span class="uv-add-channel-icon" title="Add new channel"></span>
+                        <div id="uv-channel-view-<%= index %>"></div>
+                    </div>
                 </div>
-                <div class="uv-accordion-description-container">
-                    <p class="uv-accordion-description"><%= platform.platformDescription %></button>
-                    <span class="uv-add-channel-icon" title="Add new channel"></span>
-                    <div id="uv-channel-view-<%= index %>"></div>
-                </div>
-            </div>
-        <% }); %>
+            <% }); %>
+        </div>
     </div>
 </template>

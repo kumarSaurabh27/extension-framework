@@ -67,26 +67,54 @@ class ECommerceOrderSyncronization extends Application implements ApplicationInt
                             return [
                                 'id' => $eCommerceChannel->getId(),
                                 'name' => $eCommerceChannel->getName(),
+                                'domain' => $eCommerceChannel->getDomain(),
+                                'apiKey' => $eCommerceChannel->getClient(),
+                                'apiPassword' => $eCommerceChannel->getPassword(),
+                                'enabled' => $eCommerceChannel->getIsEnabled(),
                             ];
                         }, $eCommercePlatform->getECommerceChannelCollection()),
                     ];
                 }
-                
+
                 $event->setResponseData($response);
                 break;
             case 'save-store':
+                // get request params
                 $attributes = json_decode($request->getContent(), true);
+                $attributes = !$attributes ? $request->request->all() : $attributes;
+
+                // get platform id
+                $platformId = array_keys($attributes)[0];
+                $attributes = $attributes[$platformId];
+
                 $eCommercePlatform = $this->eCommerceConfiguration->getECommercePlatformByQualifiedName('shopify');
 
                 if (!empty($eCommercePlatform)) {
-                    if ('POST' == $request->getMethod()) {
-                        $channel = $eCommercePlatform->createECommerceChannel($attributes);
-                    } else if ('PUT' == $request->getMethod()) {
-                        $channel = $eCommercePlatform->updateECommerceChannel($attributes);
-                    }
+                    try {
+                        if ('POST' == $request->getMethod()) {
+                            $channel = $eCommercePlatform->createECommerceChannel($attributes);
+                        } else if ('PUT' == $request->getMethod()) {
+                            $channel = $eCommercePlatform->updateECommerceChannel($attributes);
+                        }
+                    } catch (\Exception $exception) {}
 
                     $this->getPackage()->updatePackageConfiguration((string) $this->eCommerceConfiguration);
                 }
+
+                break;
+            case 'remove-store':
+                // get request params
+                $attributes = json_decode($request->getContent(), true);
+                $attributes = !$attributes ? $request->request->all() : $attributes;
+
+                // get platform id
+                $platformId = array_keys($attributes)[0];
+                $attributes = $attributes[$platformId];
+
+                $eCommercePlatform = $this->eCommerceConfiguration->getECommercePlatformByQualifiedName('shopify');
+
+                $channel = $eCommercePlatform->removeECommerceChannel($attributes);
+                $this->getPackage()->updatePackageConfiguration((string) $this->eCommerceConfiguration);
 
                 break;
             default:
