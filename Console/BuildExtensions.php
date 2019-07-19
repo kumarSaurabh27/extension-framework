@@ -2,6 +2,7 @@
 
 namespace Webkul\UVDesk\ExtensionFrameworkBundle\Console;
 
+use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -118,7 +119,9 @@ class BuildExtensions extends Command
             $json['autoload']['psr-4'] = $psr4_modified;
             file_put_contents($path, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-            $output->writeln("New extensions have been found and added to composer.json. Please run 'composer dump-autoload' to update your composer autloading schematic.");
+            $output->writeln("New extensions have been found and added to composer.json. Dumping composer autoloader...\n");
+
+            shell_exec('composer dump-autoload');
         }
     }
 
@@ -164,9 +167,31 @@ class BuildExtensions extends Command
     private function autoconfigurePackages(array $metadata = [], $output)
     {
         $pathToConfig = $this->container->getParameter('kernel.project_dir') . "/config/extensions";
+        $pathToDoctrineConfig = $this->container->getParameter('kernel.project_dir') . "/config/packages/doctrine.yaml";
 
         if (!file_exists($pathToConfig) || !is_dir($pathToConfig)) {
             mkdir($pathToConfig, 0755, true);
+        }
+
+        if (file_exists($pathToDoctrineConfig)) {
+            $expiredNamespaces = [];
+            $doctrine = Yaml::parseFile($pathToDoctrineConfig);
+            $doctrineMappings = $doctrine['doctrine']['orm']['mappings'];
+
+            // Filter out existing community package configurations
+            foreach ($doctrineMappings as $namespace => $mappingDetails) {
+                $namespaceIterations = explode('\\', $namespace);
+
+                if (count($namespaceIterations) >= 2) {
+                    if ('UVDesk' == $namespaceIterations[0] && 'CommunityPackages' == $namespaceIterations[1]) {
+                        $expiredNamespaces[] = $namespace;
+                    }
+                }
+            }
+
+            foreach ($expiredNamespaces as $namespace) {
+                unset($doctrineMappings[$namespace]);
+            }
         }
 
         foreach ($metadata as $packageMetadata) {
@@ -175,6 +200,15 @@ class BuildExtensions extends Command
             
             if (!$packageReflectionClass->implementsInterface(PackageInterface::class)) {
                 throw new \Exception("Class $class could not be registered as an package. Please check that it implements the " . PackageInterface::class . " interface.");
+            }
+
+            if (!empty($doctrineMappings)) {
+                $packageDoctrineMetadata = $this->getPackageDoctrineMetadata($packageMetadata);
+
+                if (!empty($packageDoctrineMetadata)) {
+                    $namespace = current(array_keys($packageDoctrineMetadata));
+                    $doctrineMappings[$namespace] = $packageDoctrineMetadata[$namespace];
+                }
             }
 
             if ($packageReflectionClass->implementsInterface(ConfigurablePackageInterface::class)) {
@@ -186,5 +220,101 @@ class BuildExtensions extends Command
                 }
             }
         }
+
+        if (!empty($doctrine) && !empty($doctrineMappings)) {
+            // Add quotes, we will remove later any extra quotes
+            foreach ($doctrineMappings as $namespace => $attributes) {
+                $attributes['dir'] = "'" . $attributes['dir'] . "'";
+                $attributes['prefix'] = "'" . $attributes['prefix'] . "'";
+
+                $doctrineMappings[$namespace] = $attributes;
+            }
+
+            $doctrine['doctrine']['orm']['mappings'] = $doctrineMappings;
+
+            $originalContent = file_get_contents($pathToDoctrineConfig);
+            $modifiedContent = YAML::dump($doctrine, 6);
+
+            $explodedOriginalContent = preg_split("/\r\n|\n|\r/", $originalContent);
+            $explodedModifiedContent = preg_split("/\r\n|\n|\r/", $modifiedContent);
+
+            $incr = 0;
+            $skipFlag = false;
+            $processedModifiedContent = [];
+
+            foreach ($explodedModifiedContent as $index => $content) {
+                if ($skipFlag || !isset($explodedOriginalContent[$index + $incr])) {
+                    $processedModifiedContent[] = $content;
+
+                    continue;
+                }
+
+                if ('mappings:' == trim($explodedOriginalContent[$index + $incr]) || 'mappings:' == trim($explodedModifiedContent[$index])) {
+                    $skipFlag = true;
+                    $processedModifiedContent[] = $content;
+
+                    continue;
+                } else if ($content == $explodedOriginalContent[$index + $incr]) {
+                    $processedModifiedContent[] = $content;
+                } else {
+                    if (str_replace(['\'', '"'], '', $content) == str_replace(['\'', '"'], '', $explodedOriginalContent[$index + $incr])) {
+                        $processedModifiedContent[] = $explodedOriginalContent[$index + $incr];
+
+                        continue;
+                    }
+
+                    for ($i = $index + $incr; $i < count($explodedOriginalContent); $i++) {
+                        if (trim($explodedModifiedContent[$index]) == trim($explodedOriginalContent[$i])) {
+                            $processedModifiedContent[] = $content;
+                            break;
+                        } else if (str_replace(['\'', '"'], '', trim($explodedModifiedContent[$index])) == str_replace(['\'', '"'], '', trim($explodedOriginalContent[$i]))) {
+                            $processedModifiedContent[] = $explodedOriginalContent[$i];
+                            break;
+                        }
+
+                        $incr++;
+                        $processedModifiedContent[] = $explodedOriginalContent[$i];
+                    }
+                }
+            }
+
+            $content = str_replace("'''", "'", implode(PHP_EOL, $processedModifiedContent));
+            file_put_contents($pathToDoctrineConfig, $content);
+        }
+    }
+
+    private function getPackageDoctrineMetadata($packageMetadata)
+    {
+        $params = [
+            'is_bundle' => false,
+            'type' => 'annotation',
+        ];
+
+        $baseNamespace = current(array_keys($packageMetadata->getDefinedNamespaces()));
+        $packageClassPath = current(array_keys($packageMetadata->getPackageReferences()));
+        $relativePathToNamespace = $packageMetadata->getDefinedNamespaces()[$baseNamespace];
+
+        $baseNamespace = rtrim($baseNamespace, '\\');
+        $pathToNamespace = rtrim($packageMetadata->getRoot(), '/') . "/" . rtrim(ltrim($relativePathToNamespace, '/'), '/') . "/";
+        $pathToEntities = $pathToNamespace . "Entity";
+
+        if (file_exists($pathToEntities) && is_dir($pathToEntities)) {
+            // Parse qualified vendor name
+            $p1 = strrpos($baseNamespace, '\\');
+            $p2 = strrpos(substr($baseNamespace, 0, $p1), '\\');
+            $vendor = substr($baseNamespace, $p2 + 1, $p1 - $p2 - 1);
+
+            // Parse qualified package name
+            $p1 = strrpos($packageClassPath, '\\');
+            $package = substr($packageClassPath, $p1 + 1);
+
+            $params['dir'] = str_replace($this->container->getParameter('kernel.project_dir'), '%kernel.project_dir%', $pathToEntities);
+            $params['prefix'] = "$baseNamespace\\Entity";
+            $params['alias'] = "$vendor$package";
+
+            return [$baseNamespace => $params];
+        }
+
+        return null;
     }
 }

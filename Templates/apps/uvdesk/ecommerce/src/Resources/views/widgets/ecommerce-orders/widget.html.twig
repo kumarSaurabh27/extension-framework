@@ -64,7 +64,6 @@
                             </option>
                             
                             {% for eCommerceChannel in eCommerceChannelCollection %}
-                                {# {% if ticketOrder.ecommerceChannel is defined and ticketOrder.ecommerceChannel == channel %}selected="selected"{% endif %} #}
                                 <option data-platform="{{ eCommerceChannel.platform.id }}" value="{{ eCommerceChannel.id }}">{{ eCommerceChannel.name }}</option>
                             {% endfor %}
                         </select>
@@ -84,7 +83,6 @@
             {% endif %}
         </form>
 
-        <div class="uv-hr"></div>
         <div id="ecommerce-order-details" class="uv-order-details"></div>
     </div>
 </div>
